@@ -22,6 +22,35 @@
     --cart-bubble-text: #fff;
     background: linear-gradient(to bottom, rgb(22 11 14 / .72) 0%, rgb(22 11 14 / .36) 54%, transparent 100%);
   }
+<<<<<<< HEAD
+=======
+  .custom-desktop-header__bar { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; padding: var(--cdh-padding-top) clamp(24px, 3vw, 56px) var(--cdh-padding-bottom); background: transparent; transition: background-color .3s ease, color .3s ease; }
+  .custom-desktop-header.is-scrolled { color: var(--cdh-scrolled-text); --color-account-icon: var(--cdh-scrolled-icon); --cart-bubble-background: var(--cdh-scrolled-icon); }
+  .custom-desktop-header.is-scrolled .custom-desktop-header__bar { background: var(--cdh-scrolled-bg); box-shadow: 0 1px 0 rgb(0 0 0 / .08); }
+  .custom-desktop-header__left, .custom-desktop-header__right { display: flex; align-items: center; gap: clamp(18px, 2vw, 34px); min-width: 0; }
+  .custom-desktop-header__left { justify-self: start; }
+  .custom-desktop-header__right { justify-self: end; }
+  .custom-desktop-header__action { display: inline-flex; align-items: center; gap: 9px; color: inherit; font: inherit; font-size: 12px; letter-spacing: .1em; }
+  .custom-desktop-header__icon { display: inline-flex; color: var(--cdh-initial-icon); transition: color .3s ease; }
+  .is-scrolled .custom-desktop-header__icon { color: var(--cdh-scrolled-icon); }
+  .custom-desktop-header__icon svg { width: 20px; height: 20px; }
+  .custom-desktop-header__logo { display: block; color: inherit; }
+  .custom-desktop-header__logo-wrapper { position: relative; display: grid; place-items: center; width: min(40vw, 420px); height: var(--cdh-logo-height-desktop); }
+  .custom-desktop-header__logo-image, .custom-desktop-header__logo-text { position: absolute; left: 0; top: 0; grid-area: 1 / 1; width: 100%; height: 100%; object-fit: contain; transition: opacity .28s ease; }
+  .custom-desktop-header__logo-image--after { opacity: 0; }
+  .is-scrolled .custom-desktop-header__logo-image--before { opacity: 0; }
+  .is-scrolled .custom-desktop-header__logo-image--after { opacity: 1; }
+  .custom-desktop-header__logo-text { display: grid; place-items: center; text-align: center; font-family: var(--font-heading--family); font-size: 24px; }
+  .custom-desktop-header__right { color: var(--cdh-initial-icon); transition: color .3s ease; }
+  .is-scrolled .custom-desktop-header__right { color: var(--cdh-scrolled-icon); }
+  .custom-desktop-header__wishlist,
+  .custom-desktop-header__icon-action { display: grid; place-items: center; width: 44px; height: 44px; color: inherit; }
+  .custom-desktop-header__wishlist > svg,
+  .custom-desktop-header__icon-action > svg,
+  .custom-desktop-header__cart-icon > svg { width: 21px; height: 21px; }
+  .custom-desktop-header__cart-icon { position: relative; display: grid; place-items: center; }
+  .custom-desktop-header__cart-icon .cart-bubble { position: absolute; width: 18px; top: -9px; right: -11px; }
+>>>>>>> 1786e9f6ff7cb2a0692b21e5a40d1a282d9bfdd3
 
   .custom-desktop-header__bar {
     position: relative;
