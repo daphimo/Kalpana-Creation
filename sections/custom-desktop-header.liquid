@@ -1,0 +1,187 @@
+<link rel="stylesheet" href="{{ 'custom-desktop-header.css' | asset_url }}" media="(min-width: 750px)">
+
+{% style %}
+  @media screen and (max-width: 749px) {
+    #header-component .header-logo__image {
+      width: auto;
+      height: {{ section.settings.logo_height_mobile }}px;
+    }
+  }
+{% endstyle %}
+
+{% liquid
+  assign logo_before = section.settings.logo_before | default: settings.logo
+  assign logo_after = section.settings.logo_after | default: logo_before
+  assign wishlist_url = section.settings.wishlist_url | default: '/pages/wishlist'
+  assign alternate_color = section.settings.alternate_color | default: '#6B1F3A'
+%}
+
+<custom-desktop-header
+  class="custom-desktop-header"
+  data-section-id="{{ section.id }}"
+  data-scroll-threshold="{{ section.settings.scroll_threshold }}"
+  style="
+    --cdh-padding-top: {{ section.settings.padding_top }}px;
+    --cdh-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --cdh-logo-height-desktop: {{ section.settings.logo_height_desktop }}px;
+    --cdh-logo-height-mobile: {{ section.settings.logo_height_mobile }}px;
+    --cdh-initial-text: {{ section.settings.initial_text_color }};
+    --cdh-initial-icon: {{ section.settings.initial_icon_color }};
+    --cdh-scrolled-bg: {{ section.settings.scrolled_background }};
+    --cdh-scrolled-text: {{ alternate_color }};
+    --cdh-scrolled-icon: {{ alternate_color }};
+  "
+>
+  <header class="custom-desktop-header__bar" aria-label="Site header">
+    <div class="custom-desktop-header__left">
+      <button
+        class="custom-desktop-header__action custom-desktop-header__menu-trigger button-unstyled"
+        type="button"
+        aria-label="Open menu"
+        aria-haspopup="dialog"
+        aria-controls="CustomDesktopDrawer-{{ section.id }}"
+        aria-expanded="false"
+      >
+        <span class="custom-desktop-header__icon">{{ 'custom-header-icon-menu.svg' | inline_asset_content }}</span>
+        <span>MENU</span>
+      </button>
+
+      <button
+        class="custom-desktop-header__action button-unstyled"
+        type="button"
+        on:click="#search-modal/showDialog"
+        aria-label="{{ 'content.search_input_label' | t }}"
+        aria-haspopup="dialog"
+      >
+        <span class="custom-desktop-header__icon">{{ 'custom-header-icon-search.svg' | inline_asset_content }}</span>
+        <span>{{ 'content.search' | t | upcase }}</span>
+      </button>
+    </div>
+
+    <a class="custom-desktop-header__logo" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
+      <div class="custom-desktop-header__logo-wrapper">
+        {% if logo_before != blank %}
+          {{ logo_before | image_url: width: 800 | image_tag: class: 'custom-desktop-header__logo-image custom-desktop-header__logo-image--before', widths: '160, 240, 320, 480, 640, 800', loading: 'eager', alt: shop.name }}
+        {% else %}
+          <span class="custom-desktop-header__logo-text custom-desktop-header__logo-image--before">{{ shop.name }}</span>
+        {% endif %}
+        {% if logo_after != blank %}
+          {{ logo_after | image_url: width: 800 | image_tag: class: 'custom-desktop-header__logo-image custom-desktop-header__logo-image--after', widths: '160, 240, 320, 480, 640, 800', loading: 'eager', alt: shop.name }}
+        {% else %}
+          <span class="custom-desktop-header__logo-text custom-desktop-header__logo-image--after">{{ shop.name }}</span>
+        {% endif %}
+      </div>
+    </a>
+
+    <div class="custom-desktop-header__right">
+      <a
+        class="custom-desktop-header__wishlist swym-wishlist wishlist-link"
+        href="{{ wishlist_url }}"
+        aria-label="Wishlist"
+        data-with-epi="true"
+      >
+        {{ 'custom-header-icon-wishlist.svg' | inline_asset_content }}
+      </a>
+
+      {% if settings.cart_type == 'drawer' and template.name != 'cart' %}
+        <button class="custom-desktop-header__icon-action button-unstyled" type="button" on:click="#cart-drawer/toggle" aria-haspopup="dialog" aria-controls="cart-drawer" aria-label="{{ 'accessibility.cart' | t }}">
+          <cart-icon class="custom-desktop-header__cart-icon">
+            {{ 'custom-header-icon-cart.svg' | inline_asset_content }}
+            {% render 'cart-bubble', limit: 100 %}
+          </cart-icon>
+        </button>
+      {% else %}
+        <a class="custom-desktop-header__icon-action" href="{{ routes.cart_url }}" aria-label="{{ 'accessibility.cart' | t }}">
+          <cart-icon class="custom-desktop-header__cart-icon">
+            {{ 'custom-header-icon-cart.svg' | inline_asset_content }}
+            {% render 'cart-bubble', limit: 100 %}
+          </cart-icon>
+        </a>
+      {% endif %}
+
+      <a class="custom-desktop-header__icon-action" href="{{ routes.account_url }}" aria-label="{{ 'content.account_title' | t }}">
+        {{ 'custom-header-icon-account.svg' | inline_asset_content }}
+      </a>
+    </div>
+  </header>
+
+  <div class="custom-desktop-header__overlay" aria-hidden="true"></div>
+  <aside
+    id="CustomDesktopDrawer-{{ section.id }}"
+    class="custom-desktop-header__drawer"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Menu"
+    aria-hidden="true"
+  >
+    <button class="custom-desktop-header__close button-unstyled" type="button" aria-label="Close menu">
+      {{ 'icon-close.svg' | inline_asset_content }}
+    </button>
+    <div class="custom-desktop-header__drawer-content">
+      {% for block in section.blocks %}
+        <section class="custom-desktop-header__group" {{ block.shopify_attributes }}>
+          {% if block.settings.title != blank %}
+            <h2 class="custom-desktop-header__group-title">{{ block.settings.title | escape }}</h2>
+          {% endif %}
+          {% if block.settings.collections.count > 0 %}
+            <div class="custom-desktop-header__grid">
+              {% for collection in block.settings.collections %}
+                <a class="custom-desktop-header__card" href="{{ collection.url }}">
+                  <div class="custom-desktop-header__card-image">
+                    {% if collection.featured_image != blank %}
+                      {{ collection.featured_image | image_url: width: 700 | image_tag: widths: '240, 360, 480, 700', loading: 'lazy', alt: collection.title }}
+                    {% else %}
+                      {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                    {% endif %}
+                  </div>
+                  <span>{{ collection.title | escape }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </section>
+      {% endfor %}
+    </div>
+  </aside>
+</custom-desktop-header>
+
+<script type="module" src="{{ 'cart-icon.js' | asset_url }}" fetchpriority="low"></script>
+
+<script>
+  if (window.matchMedia('(min-width: 750px)').matches) {
+    import({{ 'custom-desktop-header.js' | asset_url | json }});
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Custom desktop header",
+  "class": "custom-desktop-header-section",
+  "limit": 1,
+  "settings": [
+    { "type": "image_picker", "id": "logo_before", "label": "Desktop Logo — Before Scroll" },
+    { "type": "image_picker", "id": "logo_after", "label": "Desktop Logo — After Scroll" },
+    { "type": "range", "id": "logo_height_desktop", "label": "Desktop Logo Height", "min": 20, "max": 100, "step": 2, "unit": "px", "default": 48 },
+    { "type": "range", "id": "logo_height_mobile", "label": "Mobile Logo Height", "min": 16, "max": 72, "step": 2, "unit": "px", "default": 36 },
+    { "type": "range", "id": "padding_top", "label": "Padding Top", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 16 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding Bottom", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 16 },
+    { "type": "color", "id": "initial_text_color", "label": "Initial Header Text Color", "default": "#ffffff" },
+    { "type": "color", "id": "initial_icon_color", "label": "Initial Header Icon Color", "default": "#ffffff" },
+    { "type": "color", "id": "scrolled_background", "label": "Header Background — After Scroll", "default": "#ffffff" },
+    { "type": "color", "id": "alternate_color", "label": "Alternate Text and Icon Color", "default": "#6B1F3A" },
+    { "type": "range", "id": "scroll_threshold", "label": "Switch to Alternate Color After", "min": 0, "max": 500, "step": 10, "unit": "px", "default": 70 },
+    { "type": "url", "id": "wishlist_url", "label": "Wishlist URL" }
+  ],
+  "blocks": [
+    {
+      "type": "collection_group",
+      "name": "Collection group",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "SAREES" },
+        { "type": "collection_list", "id": "collections", "label": "Collections", "limit": 16 }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Custom desktop header" }]
+}
+{% endschema %}

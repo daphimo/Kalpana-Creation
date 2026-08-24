@@ -1,0 +1,7 @@
+/* Custom desktop header is desktop-only. */
+@media screen and (max-width: 749px) {
+  .custom-desktop-header,
+  .custom-desktop-header-section {
+    display: none !important;
+  }
+}
