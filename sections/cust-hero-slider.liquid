@@ -1,0 +1,159 @@
+{{ 'cust-splide-core.min.css' | asset_url | stylesheet_tag }}
+{{ 'cust-hero-slider.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cust-splide.min.js' | asset_url }}" defer></script>
+<script src="{{ 'cust-hero-slider.js' | asset_url }}" defer></script>
+
+{% liquid
+  assign autoplay_ms = section.settings.autoplay_duration | times: 1000
+  assign first_slide = true
+  assign keyword_values = ''
+  for block in section.blocks
+    if block.type == 'keyword' and block.settings.keyword != blank
+      assign escaped_keyword = block.settings.keyword | json
+      if keyword_values != blank
+        assign keyword_values = keyword_values | append: ','
+      endif
+      assign keyword_values = keyword_values | append: escaped_keyword
+    endif
+  endfor
+%}
+
+<section
+  id="CustHeroSlider-{{ section.id }}"
+  class="cust-hero-slider splide"
+  aria-label="{{ section.settings.accessibility_label | escape }}"
+  data-autoplay="{{ section.settings.enable_autoplay }}"
+  data-keywords="[{{ keyword_values | escape }}]"
+  data-splide='{"type":"loop","perPage":1,"perMove":1,"arrows":{{ section.settings.show_navigation }},"pagination":{{ section.settings.show_pagination }},"autoplay":{{ section.settings.enable_autoplay }},"interval":{{ autoplay_ms }},"pauseOnHover":false,"pauseOnFocus":false,"keyboard":"global","speed":650,"reducedMotion":{"speed":0,"rewindSpeed":0,"autoplay":"pause"},"i18n":{"prev":"Previous slide","next":"Next slide","first":"Go to first slide","last":"Go to last slide","slideX":"Go to slide %s","pageX":"Go to page %s","play":"Start autoplay","pause":"Pause autoplay"}}'
+  style="--cust-hero-autoplay-duration: {{ section.settings.autoplay_duration }}s;"
+>
+  {% render 'cust-mobile-hero-header' %}
+  <div class="splide__track">
+    <ul class="splide__list">
+      {% for block in section.blocks %}
+        {% if block.type == 'slide' %}
+          {% liquid
+            assign desktop_image = block.settings.desktop_image
+            assign mobile_image = block.settings.mobile_image | default: desktop_image
+            assign image_alt = block.settings.image_alt | default: desktop_image.alt
+          %}
+          <li class="cust-hero-slider__slide splide__slide" {{ block.shopify_attributes }}>
+            {% if block.settings.image_link != blank -%}
+              <a class="cust-hero-slider__media" href="{{ block.settings.image_link }}">
+            {%- else %}
+              <div class="cust-hero-slider__media">
+            {% endif %}
+            {% if desktop_image != blank %}
+              <picture class="cust-hero-slider__picture">
+                <source
+                  media="(max-width: 749px)"
+                  srcset="{{ mobile_image | image_url: width: 480 }} 480w, {{ mobile_image | image_url: width: 750 }} 750w, {{ mobile_image | image_url: width: 1100 }} 1100w"
+                  sizes="100vw"
+                  width="{{ mobile_image.width }}"
+                  height="{{ mobile_image.height }}"
+                >
+                <img
+                  class="cust-hero-slider__image"
+                  src="{{ desktop_image | image_url: width: 1600 }}"
+                  srcset="{{ desktop_image | image_url: width: 750 }} 750w, {{ desktop_image | image_url: width: 1100 }} 1100w, {{ desktop_image | image_url: width: 1600 }} 1600w, {{ desktop_image | image_url: width: 2200 }} 2200w, {{ desktop_image | image_url: width: 3000 }} 3000w"
+                  sizes="100vw"
+                  width="{{ desktop_image.width }}"
+                  height="{{ desktop_image.height }}"
+                  alt="{{ image_alt | escape }}"
+                  loading="{% if first_slide %}eager{% else %}lazy{% endif %}"
+                  {% if first_slide %}
+                    fetchpriority="high"
+                  {% else %}
+                    fetchpriority="low"
+                  {% endif %}
+                  decoding="async"
+                >
+              </picture>
+            {% else %}
+              {{ 'lifestyle-1' | placeholder_svg_tag: 'cust-hero-slider__placeholder' }}
+            {% endif %}
+            {% if block.settings.image_link != blank %}</a>{% else %}</div>{% endif %}
+          </li>
+          {% assign first_slide = false %}
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Premium hero slider",
+  "tag": "section",
+  "class": "cust-hero-slider-section",
+  "max_blocks": 15,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Use images with consistent dimensions across all slides for the best visual result."
+    },
+    { "type": "text", "id": "accessibility_label", "label": "Accessibility label", "default": "Featured promotions" },
+    { "type": "checkbox", "id": "show_navigation", "label": "Show navigation buttons", "default": true },
+    { "type": "checkbox", "id": "show_pagination", "label": "Show pagination", "default": true },
+    { "type": "checkbox", "id": "enable_autoplay", "label": "Enable autoplay", "default": true },
+    {
+      "type": "range",
+      "id": "autoplay_duration",
+      "label": "Autoplay duration",
+      "min": 2,
+      "max": 15,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    { "type": "header", "content": "Mobile search keywords" },
+    { "type": "paragraph", "content": "Add keyword blocks below. The word “Search” remains static." }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "desktop_image",
+          "label": "Desktop image",
+          "info": "Recommended dimensions: 1600px x 600px"
+        },
+        {
+          "type": "image_picker",
+          "id": "mobile_image",
+          "label": "Mobile image",
+          "info": "Recommended dimensions: 1000px x 1250px"
+        },
+        { "type": "url", "id": "image_link", "label": "Image link" },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Image alt text",
+          "info": "Describe the image. Leave blank for decorative imagery."
+        }
+      ]
+    },
+    {
+      "type": "keyword",
+      "name": "Search keyword",
+      "limit": 5,
+      "settings": [{ "type": "text", "id": "keyword", "label": "Keyword", "default": "Saree" }]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Premium hero slider",
+      "blocks": [
+        { "type": "slide" },
+        { "type": "slide" },
+        { "type": "keyword", "settings": { "keyword": "Saree" } },
+        { "type": "keyword", "settings": { "keyword": "Banarasi Saree" } },
+        { "type": "keyword", "settings": { "keyword": "Silk Saree" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

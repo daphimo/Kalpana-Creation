@@ -1,0 +1,42 @@
+{% comment %}Mobile presentation layer; search and wishlist delegate to the theme's existing controls.{% endcomment %}
+<div class="cust-hero-slider__mobile-header" data-cust-mobile-header>
+  <div class="cust-hero-slider__mobile-row">
+    <a class="cust-hero-slider__mobile-logo" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
+      {% if settings.logo != blank %}
+        {{ settings.logo | image_url: width: 360 | image_tag: widths: '120, 180, 240, 360', sizes: '140px', loading: 'eager', alt: shop.name }}
+      {% else %}
+        <span>{{ shop.name }}</span>
+      {% endif %}
+    </a>
+
+    <div class="cust-hero-slider__mobile-actions">
+      <button
+        type="button"
+        class="cust-hero-slider__mobile-action button-unstyled"
+        data-cust-wishlist-trigger
+        aria-label="Wishlist"
+      >
+        {{ 'custom-header-icon-wishlist.svg' | inline_asset_content }}
+      </button>
+      <a class="cust-hero-slider__mobile-action" href="{{ routes.account_url }}" aria-label="{{ 'content.account_title' | t }}">
+        {{ 'custom-header-icon-account.svg' | inline_asset_content }}
+      </a>
+    </div>
+  </div>
+
+  <button
+    type="button"
+    class="cust-hero-slider__search button-unstyled"
+    on:click="#search-modal/showDialog"
+    aria-label="{{ 'content.search_input_label' | t }}"
+    aria-haspopup="dialog"
+  >
+    <span class="cust-hero-slider__search-copy" aria-hidden="true">
+      <span>Search</span>
+      <span data-cust-keyword></span>
+    </span>
+    <span class="cust-hero-slider__search-icon" aria-hidden="true">
+      {{ 'custom-header-icon-search.svg' | inline_asset_content }}
+    </span>
+  </button>
+</div>
