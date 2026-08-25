@@ -97,6 +97,25 @@
     },
     "custom_desktop_header_HnFCEy": {
       "type": "custom-desktop-header",
+      "blocks": {
+        "collection_group_9xWjLh": {
+          "type": "collection_group",
+          "settings": {
+            "title": "Fabric",
+            "collections": [
+              "cotton",
+              "silk",
+              "satin",
+              "georgette",
+              "chiffon",
+              "organza"
+            ]
+          }
+        }
+      },
+      "block_order": [
+        "collection_group_9xWjLh"
+      ],
       "name": "Custom desktop header",
       "settings": {
         "logo_before": "shopify://shop_images/Kalpana_Creations_White_logo.png",
@@ -108,7 +127,7 @@
         "initial_text_color": "#ffffff",
         "initial_icon_color": "#ffffff",
         "scrolled_background": "#ffffff",
-        "alternate_color": "#6B1F3A",
+        "alternate_color": "#6b1f3a",
         "scroll_threshold": 70,
         "wishlist_url": ""
       }
