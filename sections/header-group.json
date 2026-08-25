@@ -111,10 +111,53 @@
               "organza"
             ]
           }
+        },
+        "collection_group_ee3AUD": {
+          "type": "collection_group",
+          "settings": {
+            "title": "Saree Style",
+            "collections": [
+              "printed-saree",
+              "embroidered-saree",
+              "banarasi-saree",
+              "designer-saree",
+              "handloom-saree",
+              "sequin-shimmer-saree"
+            ]
+          }
+        },
+        "collection_group_X3Xzn4": {
+          "type": "collection_group",
+          "settings": {
+            "title": "Festival",
+            "collections": [
+              "diwali",
+              "holi",
+              "navratri",
+              "onam",
+              "pongal",
+              "raksha-bandhan"
+            ]
+          }
+        },
+        "collection_group_peXFhx": {
+          "type": "collection_group",
+          "settings": {
+            "title": "Occasion",
+            "collections": [
+              "party-wear",
+              "office-wear",
+              "wedding",
+              "casual-everyday"
+            ]
+          }
         }
       },
       "block_order": [
-        "collection_group_9xWjLh"
+        "collection_group_9xWjLh",
+        "collection_group_ee3AUD",
+        "collection_group_X3Xzn4",
+        "collection_group_peXFhx"
       ],
       "name": "Custom desktop header",
       "settings": {
