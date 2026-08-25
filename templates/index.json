@@ -20,10 +20,45 @@
             "image_link": "",
             "image_alt": ""
           }
+        },
+        "keyword_43V89L": {
+          "type": "keyword",
+          "settings": {
+            "keyword": "Party Wear"
+          }
+        },
+        "keyword_xFzMQn": {
+          "type": "keyword",
+          "settings": {
+            "keyword": "Festive Wear"
+          }
+        },
+        "keyword_yciULd": {
+          "type": "keyword",
+          "settings": {
+            "keyword": "Silk Saree"
+          }
+        },
+        "keyword_pat9H8": {
+          "type": "keyword",
+          "settings": {
+            "keyword": "Satin Saree"
+          }
+        },
+        "keyword_HXTxXc": {
+          "type": "keyword",
+          "settings": {
+            "keyword": "Cotton Saree"
+          }
         }
       },
       "block_order": [
-        "slide_mAe8B6"
+        "slide_mAe8B6",
+        "keyword_43V89L",
+        "keyword_xFzMQn",
+        "keyword_yciULd",
+        "keyword_pat9H8",
+        "keyword_HXTxXc"
       ],
       "name": "Premium hero slider",
       "settings": {
