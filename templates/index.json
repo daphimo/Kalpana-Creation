@@ -133,8 +133,60 @@
       "settings": {
         "section_title": "",
         "grid_per_desktop": 6,
-        "grid_per_mobile": 2.5,
+        "grid_per_mobile": 3.5,
         "mobile_layout": "slide",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "responsive_flex_grid_mzmCmE": {
+      "type": "responsive-flex-grid",
+      "blocks": {
+        "image_block_kBDJBT": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/DM_01.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_JhbEWW": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Pure_Silk_Sarees_10.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_cwWCwX": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Sarees_-_Tile_Banner.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_6gcJrA": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Kurta_Sets_5.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "image_block_kBDJBT",
+        "image_block_JhbEWW",
+        "image_block_cwWCwX",
+        "image_block_6gcJrA"
+      ],
+      "name": "Responsive flex grid",
+      "settings": {
+        "section_title": "THE SAVINGS EDIT",
+        "grid_per_desktop": 4,
+        "grid_per_mobile": 2,
+        "mobile_layout": "stack",
         "padding_top": 24,
         "padding_bottom": 24
       }
@@ -142,6 +194,7 @@
   },
   "order": [
     "cust_hero_slider_3CVCek",
-    "responsive_flex_grid_fctXQK"
+    "responsive_flex_grid_fctXQK",
+    "responsive_flex_grid_mzmCmE"
   ]
 }
