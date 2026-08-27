@@ -109,7 +109,7 @@
       ],
       "name": "Responsive flex grid",
       "settings": {
-        "section_title": "Shop by collection",
+        "section_title": "",
         "grid_per_desktop": 4,
         "grid_per_mobile": 2.5,
         "mobile_layout": "slide",
