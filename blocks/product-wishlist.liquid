@@ -1,0 +1,13 @@
+<div class="product-wishlist" {{ block.shopify_attributes }}>
+  {% render 'wishlist-button', product: closest.product, class: 'product-wishlist' %}
+  <span class="product-wishlist__label" aria-hidden="true">Add to wishlist</span>
+</div>
+
+{% schema %}
+{
+  "name": "Wishlist",
+  "tag": null,
+  "settings": [],
+  "presets": [{ "name": "Wishlist" }]
+}
+{% endschema %}

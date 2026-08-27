@@ -97,6 +97,68 @@
     },
     "custom_desktop_header_HnFCEy": {
       "type": "custom-desktop-header",
+      "blocks": {
+        "collection_group_9xWjLh": {
+          "type": "collection_group",
+          "settings": {
+            "title": "Fabric",
+            "collections": [
+              "cotton",
+              "silk",
+              "satin",
+              "georgette",
+              "chiffon",
+              "organza"
+            ]
+          }
+        },
+        "collection_group_ee3AUD": {
+          "type": "collection_group",
+          "settings": {
+            "title": "Saree Style",
+            "collections": [
+              "printed-saree",
+              "embroidered-saree",
+              "banarasi-saree",
+              "designer-saree",
+              "handloom-saree",
+              "sequin-shimmer-saree"
+            ]
+          }
+        },
+        "collection_group_X3Xzn4": {
+          "type": "collection_group",
+          "settings": {
+            "title": "Festival",
+            "collections": [
+              "diwali",
+              "holi",
+              "navratri",
+              "onam",
+              "pongal",
+              "raksha-bandhan"
+            ]
+          }
+        },
+        "collection_group_peXFhx": {
+          "type": "collection_group",
+          "settings": {
+            "title": "Occasion",
+            "collections": [
+              "party-wear",
+              "office-wear",
+              "wedding",
+              "casual-everyday"
+            ]
+          }
+        }
+      },
+      "block_order": [
+        "collection_group_9xWjLh",
+        "collection_group_ee3AUD",
+        "collection_group_X3Xzn4",
+        "collection_group_peXFhx"
+      ],
       "name": "Custom desktop header",
       "settings": {
         "logo_before": "shopify://shop_images/Kalpana_Creations_White_logo.png",
@@ -108,7 +170,7 @@
         "initial_text_color": "#ffffff",
         "initial_icon_color": "#ffffff",
         "scrolled_background": "#ffffff",
-        "alternate_color": "#6B1F3A",
+        "alternate_color": "#6b1f3a",
         "scroll_threshold": 70,
         "wishlist_url": ""
       }

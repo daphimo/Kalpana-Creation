@@ -16,7 +16,7 @@
         data-cust-wishlist-trigger
         aria-label="Wishlist"
       >
-        {{ 'custom-header-icon-wishlist.svg' | inline_asset_content }}
+        {% render 'wishlist-header' %}
       </button>
       <a class="cust-hero-slider__mobile-action" href="{{ routes.account_url }}" aria-label="{{ 'content.account_title' | t }}">
         {{ 'custom-header-icon-account.svg' | inline_asset_content }}

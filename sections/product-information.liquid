@@ -26,6 +26,7 @@
 
 {% render 'deferred-media-product-model-styles' %}
 {% render 'deferred-media-video-styles' %}
+{{ 'product-page-custom-blocks.css' | asset_url | stylesheet_tag }}
 
 {% if section.settings.enable_sticky_add_to_cart %}
   {% render 'fly-to-cart-styles' %}

@@ -21,6 +21,7 @@
     src="{{ 'cart-drawer.js' | asset_url }}"
     fetchpriority="low"
   ></script>
+  {{ 'custom-cart-drawer.css' | asset_url | stylesheet_tag }}
 
   {% capture empty_cart_drawer_content %}
     <div
@@ -43,6 +44,7 @@
   <theme-drawer
     id="cart-drawer"
     data-skip-node-update
+    no-persist
   >
     <dialog
       ref="panel"
@@ -93,7 +95,7 @@
                 </span>
               {% endif %}
             {% endcapture %}
-            {% assign cart_drawer_title = 'content.cart_title' | t %}
+            {% assign cart_drawer_title = 'Shopping Bag' %}
             {% render 'theme-drawer-header',
               title: cart_drawer_title,
               drawer_id: 'cart-drawer',
@@ -115,6 +117,7 @@
                 </scroll-hint>
 
                 <div class="cart-drawer__summary">
+                  {% render 'cart-drawer-offers' %}
                   {% render 'cart-summary', section_id: 'cart-drawer-section' %}
                 </div>
               </scroll-hint>

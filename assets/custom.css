@@ -5,3 +5,11 @@
     display: none !important;
   }
 }
+
+/* Mobile bottom bar is mobile-only. */
+@media screen and (min-width: 750px) {
+  .mobile-bar,
+  .mobile-bar-section {
+    display: none !important;
+  }
+}

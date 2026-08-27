@@ -1,6 +1,6 @@
 import { Component } from '@theme/component';
 import { StandardEvents } from '@shopify/events';
-import { DrawerOpenEvent } from '@theme/theme-drawer';
+import { DrawerCloseEvent, DrawerOpenEvent } from '@theme/theme-drawer';
 
 /**
  * A custom element that manages cart drawer behavior within a `<theme-drawer>`.
@@ -15,9 +15,6 @@ import { DrawerOpenEvent } from '@theme/theme-drawer';
  * @extends {Component}
  */
 class CartDrawerComponent extends Component {
-  /** @type {number} */
-  #summaryThreshold = 0.5;
-
   /** @type {import('@theme/theme-drawer').ThemeDrawer | null} */
   get #themeDrawer() {
     return /** @type {import('@theme/theme-drawer').ThemeDrawer | null} */ (this.closest('theme-drawer'));
@@ -32,6 +29,8 @@ class CartDrawerComponent extends Component {
     super.connectedCallback();
     document.addEventListener(StandardEvents.cartLinesUpdate, this.#handleCartLinesUpdate);
     this.#themeDrawer?.addEventListener(DrawerOpenEvent.eventName, this.#handleDrawerOpen);
+    this.#themeDrawer?.addEventListener(DrawerCloseEvent.eventName, this.#handleDrawerClose);
+    this.addEventListener('click', this.#handleOfferClick);
 
     // The restore path sets [open] before this module loads, so the
     // theme-drawer:open event will have already fired. Use the attribute
@@ -45,12 +44,16 @@ class CartDrawerComponent extends Component {
     super.disconnectedCallback();
     document.removeEventListener(StandardEvents.cartLinesUpdate, this.#handleCartLinesUpdate);
     this.#themeDrawer?.removeEventListener(DrawerOpenEvent.eventName, this.#handleDrawerOpen);
+    this.#themeDrawer?.removeEventListener(DrawerCloseEvent.eventName, this.#handleDrawerClose);
+    this.removeEventListener('click', this.#handleOfferClick);
+    document.documentElement.classList.remove('cart_active');
   }
 
   /**
    * Handles the theme-drawer opening — updates sticky state and wires up the installments CTA.
    */
   #handleDrawerOpen = () => {
+    document.documentElement.classList.add('cart_active');
     this.#updateStickyState();
 
     // Close cart drawer when installments CTA is clicked to avoid overlapping dialogs.
@@ -60,6 +63,35 @@ class CartDrawerComponent extends Component {
       const cta = this.querySelector('shopify-payment-terms')?.shadowRoot?.querySelector('#shopify-installments-cta');
       cta?.addEventListener('click', () => this.#themeDrawer?.close(), { once: true });
     });
+  };
+
+  #handleDrawerClose = () => {
+    document.documentElement.classList.remove('cart_active');
+  };
+
+  /** Sends an eligible configured offer through Horizon's existing discount form. */
+  /** @param {Event} event */
+  #handleOfferClick = (event) => {
+    if (!(event.target instanceof Element)) return;
+    const button = event.target.closest('[data-cart-offer-apply]');
+    if (!(button instanceof HTMLButtonElement) || button.disabled) return;
+
+    const offer = button.closest('[data-cart-offer]');
+    const subtotal = Number(this.querySelector('[data-cart-offers]')?.getAttribute('data-cart-total') || 0);
+    const threshold = Number(offer?.getAttribute('data-threshold') || 0);
+    const code = button.dataset.discountCode?.trim();
+    if (!code || subtotal < threshold) return;
+
+    const discountComponent = this.querySelector('cart-discount-component');
+    const input = discountComponent?.querySelector('input[name="discount"]');
+    const form = input?.closest('form');
+    if (!(input instanceof HTMLInputElement) || !(form instanceof HTMLFormElement)) return;
+
+    const disclosure = discountComponent.closest('details');
+    if (disclosure) disclosure.open = true;
+    input.value = code;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    form.requestSubmit();
   };
 
   /**
@@ -102,7 +134,9 @@ class CartDrawerComponent extends Component {
         }
       })
       .catch((error) => {
-        if (error?.name !== 'AbortError') console.warn('[cart-drawer] Event promise rejected:', error);
+        if (!(error instanceof DOMException && error.name === 'AbortError')) {
+          console.warn('[cart-drawer] Event promise rejected:', error);
+        }
       });
   };
 
@@ -124,10 +158,7 @@ class CartDrawerComponent extends Component {
       return;
     }
 
-    const drawerHeight = dialog.getBoundingClientRect().height;
-    const summaryHeight = summary.getBoundingClientRect().height;
-    const ratio = summaryHeight / drawerHeight;
-    dialog.setAttribute('cart-summary-sticky', ratio > this.#summaryThreshold ? 'false' : 'true');
+    dialog.setAttribute('cart-summary-sticky', 'true');
   }
 }
 

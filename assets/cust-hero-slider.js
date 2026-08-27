@@ -2,16 +2,20 @@
   if (customElements.get('cust-hero-slider-loader')) return;
   customElements.define('cust-hero-slider-loader', class extends HTMLElement {});
 
+  /** @type {Map<Element, {splide: any, typewriter: {destroy: () => void}, wishlistTrigger: Element | null, openWishlist: () => void}>} */
   const instances = new Map();
   const mobileQuery = window.matchMedia('(max-width: 749px)');
   const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+  /** @param {HTMLElement} root */
   function createTypewriter(root) {
     const output = root.querySelector('[data-cust-keyword]');
     const keywords = JSON.parse(root.dataset.keywords || '[]').filter(Boolean);
     if (!output || !keywords.length) return { destroy() {} };
 
+    /** @type {number | undefined} */
     let timer;
+    /** @type {IntersectionObserver} */
     let observer;
     let visible = false;
     let wordIndex = 0;
@@ -20,6 +24,7 @@
     output.textContent = keywords[0];
 
     const stop = () => { window.clearTimeout(timer); timer = undefined; };
+    /** @param {number} delay */
     const schedule = (delay) => { stop(); timer = window.setTimeout(tick, delay); };
     const canAnimate = () => mobileQuery.matches && visible && !reducedMotionQuery.matches;
 
@@ -51,7 +56,7 @@
       }
     };
 
-    observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; update(); }, { threshold: 0.05 });
+    observer = new IntersectionObserver(([entry]) => { visible = Boolean(entry?.isIntersecting); update(); }, { threshold: 0.05 });
     observer.observe(root);
     mobileQuery.addEventListener('change', update);
     reducedMotionQuery.addEventListener('change', update);
@@ -59,7 +64,9 @@
     return { destroy() { stop(); observer.disconnect(); mobileQuery.removeEventListener('change', update); reducedMotionQuery.removeEventListener('change', update); } };
   }
 
+  /** @param {Element} root */
   function initialize(root) {
+    if (!(root instanceof HTMLElement)) return;
     if (instances.has(root) || !window.Splide) return;
     if (!root.querySelector('.splide__slide')) return;
     const options = JSON.parse(root.dataset.splide || '{}');
@@ -72,6 +79,7 @@
     instances.set(root, { splide, typewriter, wishlistTrigger, openWishlist });
   }
 
+  /** @param {Element} root */
   function destroy(root) {
     const instance = instances.get(root);
     if (!instance) return;
@@ -81,11 +89,16 @@
     instances.delete(root);
   }
 
-  const initializeWithin = (scope) => scope.querySelectorAll?.('.cust-hero-slider').forEach(initialize);
+  /** @param {Document | Element} scope */
+  const initializeWithin = (scope) => scope.querySelectorAll('.cust-hero-slider').forEach(initialize);
   const boot = () => initializeWithin(document);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
   else boot();
 
-  document.addEventListener('shopify:section:load', (event) => initializeWithin(event.target));
-  document.addEventListener('shopify:section:unload', (event) => event.target.querySelectorAll?.('.cust-hero-slider').forEach(destroy));
+  document.addEventListener('shopify:section:load', (event) => {
+    if (event.target instanceof Element) initializeWithin(event.target);
+  });
+  document.addEventListener('shopify:section:unload', (event) => {
+    if (event.target instanceof Element) event.target.querySelectorAll('.cust-hero-slider').forEach(destroy);
+  });
 })();

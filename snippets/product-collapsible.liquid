@@ -1,0 +1,25 @@
+{%- doc -%}
+  Shared product-information disclosure used by description, specifications, and merchant content blocks.
+
+  @param {string} label
+  @param {string} content
+  @param {string} block_id
+  @param {string} shopify_attributes
+{%- enddoc -%}
+
+{%- capture disclosure -%}
+  <details class="product-collapsible__details" {{ shopify_attributes }}>
+    <summary class="product-collapsible__trigger" aria-expanded="false" aria-controls="ProductCollapsible-{{ block_id }}">
+      <span class="product-collapsible__label">{{ label | escape }}</span>
+      <span class="product-collapsible__icon" aria-hidden="true">
+        <span class="product-collapsible__plus">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
+        <span class="product-collapsible__minus">&minus;</span>
+      </span>
+    </summary>
+    <div id="ProductCollapsible-{{ block_id }}" class="product-collapsible__content details-content">
+      {{ content }}
+    </div>
+  </details>
+{%- endcapture -%}
+
+{% render 'accordion-custom-component', children: disclosure, class: 'product-collapsible' %}

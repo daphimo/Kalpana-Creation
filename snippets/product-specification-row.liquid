@@ -1,0 +1,6 @@
+{%- if field != blank -%}
+  <div class="product-collapsible__specification">
+    <dt>{{ label | escape }}</dt>
+    <dd>{{ field | metafield_tag }}</dd>
+  </div>
+{%- endif -%}

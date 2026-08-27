@@ -1,0 +1,19 @@
+{%- capture collapsible_content -%}
+  {%- if block.settings.content != blank -%}
+    <div class="product-collapsible__richtext rte">{{ block.settings.content }}</div>
+  {%- endif -%}
+{%- endcapture -%}
+
+{% render 'product-collapsible', label: block.settings.label, content: collapsible_content, block_id: block.id, shopify_attributes: block.shopify_attributes %}
+
+{% schema %}
+{
+  "name": "Collapsible",
+  "tag": null,
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label", "default": "More Information" },
+    { "type": "richtext", "id": "content", "label": "Content" }
+  ],
+  "presets": [{ "name": "Collapsible" }]
+}
+{% endschema %}

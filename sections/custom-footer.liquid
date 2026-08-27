@@ -1,0 +1,250 @@
+{{ 'custom-footer.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  if section.settings.background_color != blank
+    render 'contrast-override', background_color: section.settings.background_color, text_color: section.settings.text_color, section_id: section.id
+  endif
+%}
+
+<div
+  id="CustomHorizonFooter-{{ section.id }}"
+  class="custom-horizon-footer{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
+  style="
+    --custom-footer-gap: {{ section.settings.gap }}px;
+    --custom-footer-padding-top: {{ section.settings.padding_top }}px;
+    --custom-footer-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="custom-horizon-footer__inner custom-horizon-footer__inner--{{ section.settings.section_width }}">
+    <div class="custom-horizon-footer__content">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Horizon footer",
+  "class": "custom-horizon-footer-section",
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    },
+    {
+      "type": "_divider"
+    }
+  ],
+  "settings": [
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Width",
+      "options": [
+        {
+          "value": "page",
+          "label": "Page"
+        },
+        {
+          "value": "full",
+          "label": "Full width"
+        }
+      ],
+      "default": "page"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#F8DCD5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#625B59"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Content gap",
+      "min": 8,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Horizon footer",
+      "category": "Footer",
+      "blocks": {
+        "top": {
+          "type": "group",
+          "settings": {
+            "content_direction": "row",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "space-between",
+            "vertical_alignment": "flex-start",
+            "gap": 40,
+            "width": "fill"
+          },
+          "blocks": {
+            "customer-menu": {
+              "type": "menu",
+              "settings": {
+                "heading": "Customer service",
+                "show_as_accordion": true,
+                "accordion_icon": "plus",
+                "accordion_dividers": true,
+                "menu_spacing": 8,
+                "heading_preset": "h6",
+                "link_preset": "paragraph"
+              }
+            },
+            "company-menu": {
+              "type": "menu",
+              "settings": {
+                "heading": "About us",
+                "show_as_accordion": true,
+                "accordion_icon": "plus",
+                "accordion_dividers": true,
+                "menu_spacing": 8,
+                "heading_preset": "h6",
+                "link_preset": "paragraph"
+              }
+            },
+            "newsletter": {
+              "type": "group",
+              "settings": {
+                "content_direction": "column",
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "gap": 10,
+                "width": "fill"
+              },
+              "blocks": {
+                "newsletter-copy": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<h3>Sign up and save</h3><p>Subscribe to receive special offers, new arrivals, and store updates.</p>",
+                    "width": "100%",
+                    "alignment": "left",
+                    "type_preset": "rte"
+                  }
+                },
+                "newsletter-form": {
+                  "type": "email-signup",
+                  "settings": {
+                    "width": "fill",
+                    "border_style": "underline",
+                    "display_type": "arrow",
+                    "integrated_button": true
+                  }
+                },
+                "social": {
+                  "type": "social-links"
+                }
+              },
+              "block_order": ["newsletter-copy", "newsletter-form", "social"]
+            }
+          },
+          "block_order": ["customer-menu", "company-menu", "newsletter"]
+        },
+        "bottom": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "gap": 14,
+            "width": "fill"
+          },
+          "blocks": {
+            "divider": {
+              "type": "_divider",
+              "settings": {
+                "width_percent": 100,
+                "thickness": 1
+              }
+            },
+            "popular": {
+              "type": "menu",
+              "settings": {
+                "heading": "Popular searches",
+                "show_as_accordion": true,
+                "accordion_icon": "plus",
+                "accordion_dividers": true,
+                "menu_spacing": 8,
+                "heading_preset": "h6",
+                "link_preset": "paragraph"
+              }
+            },
+            "articles": {
+              "type": "menu",
+              "settings": {
+                "heading": "Explore trending articles",
+                "show_as_accordion": true,
+                "accordion_icon": "plus",
+                "accordion_dividers": true,
+                "menu_spacing": 8,
+                "heading_preset": "h6",
+                "link_preset": "paragraph"
+              }
+            },
+            "payments": {
+              "type": "payment-icons",
+              "settings": {
+                "horizontal_alignment": "center",
+                "gap": 8
+              }
+            },
+            "copyright": {
+              "type": "footer-copyright",
+              "settings": {
+                "show_powered_by": false,
+                "font_size": "0.75rem",
+                "case": "none"
+              }
+            },
+            "policies": {
+              "type": "footer-policy-list",
+              "settings": {
+                "font_size": "0.75rem",
+                "case": "none"
+              }
+            }
+          },
+          "block_order": ["divider", "popular", "articles", "payments", "copyright", "policies"]
+        }
+      },
+      "block_order": ["top", "bottom"]
+    }
+  ]
+}
+{% endschema %}

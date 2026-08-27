@@ -1,0 +1,58 @@
+{%- liquid
+  assign p = closest.product
+  assign has_general = false
+  assign has_size_fit = false
+  if p.metafields.custom.fabric != blank or p.metafields.custom.primary_color != blank or p.metafields.custom.secondary_color != blank or p.metafields.custom.pattern != blank or p.metafields.custom.craft != blank or p.metafields.custom.embellishment != blank or p.metafields.custom.weave != blank or p.metafields.custom.pallu_style != blank or p.metafields.custom.border_type != blank or p.metafields.custom.border_width != blank or p.metafields.custom.transparency != blank or p.metafields.custom.occasion != blank or p.metafields.custom.season != blank or p.metafields.custom.draping_style != blank or p.metafields.custom.fall_pico != blank
+    assign has_general = true
+  endif
+  if p.metafields.custom.saree_length != blank or p.metafields.custom.saree_width != blank or p.metafields.custom.blouse_piece != blank or p.metafields.custom.blouse_piece_length != blank
+    assign has_size_fit = true
+  endif
+-%}
+
+{%- if has_general or has_size_fit -%}
+  {%- capture specifications_content -%}
+    {%- if has_general -%}
+      <dl class="product-collapsible__specifications">
+        {% render 'product-specification-row', label: 'Fabric', field: p.metafields.custom.fabric %}
+        {% render 'product-specification-row', label: 'Primary Color', field: p.metafields.custom.primary_color %}
+        {% render 'product-specification-row', label: 'Secondary Color', field: p.metafields.custom.secondary_color %}
+        {% render 'product-specification-row', label: 'Pattern', field: p.metafields.custom.pattern %}
+        {% render 'product-specification-row', label: 'Craft', field: p.metafields.custom.craft %}
+        {% render 'product-specification-row', label: 'Embellishment', field: p.metafields.custom.embellishment %}
+        {% render 'product-specification-row', label: 'Weave', field: p.metafields.custom.weave %}
+        {% render 'product-specification-row', label: 'Pallu Style', field: p.metafields.custom.pallu_style %}
+        {% render 'product-specification-row', label: 'Border Type', field: p.metafields.custom.border_type %}
+        {% render 'product-specification-row', label: 'Border Width', field: p.metafields.custom.border_width %}
+        {% render 'product-specification-row', label: 'Transparency', field: p.metafields.custom.transparency %}
+        {% render 'product-specification-row', label: 'Occasion', field: p.metafields.custom.occasion %}
+        {% render 'product-specification-row', label: 'Season', field: p.metafields.custom.season %}
+        {% render 'product-specification-row', label: 'Draping Style', field: p.metafields.custom.draping_style %}
+        {% render 'product-specification-row', label: 'Fall Pico', field: p.metafields.custom.fall_pico %}
+      </dl>
+    {%- endif -%}
+    {%- if has_size_fit -%}
+      <section class="product-collapsible__size-fit">
+        <h3>Size &amp; Fit</h3>
+        <dl class="product-collapsible__specifications">
+          {% render 'product-specification-row', label: 'Saree Length', field: p.metafields.custom.saree_length %}
+          {% render 'product-specification-row', label: 'Saree Width', field: p.metafields.custom.saree_width %}
+          {% render 'product-specification-row', label: 'Blouse Piece', field: p.metafields.custom.blouse_piece %}
+          {% render 'product-specification-row', label: 'Blouse Piece Length', field: p.metafields.custom.blouse_piece_length %}
+        </dl>
+      </section>
+    {%- endif -%}
+  {%- endcapture -%}
+  {% render 'product-collapsible', label: block.settings.label, content: specifications_content, block_id: block.id, shopify_attributes: block.shopify_attributes %}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Specifications",
+  "tag": null,
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label", "default": "Specifications" }
+  ],
+  "presets": [{ "name": "Specifications" }]
+}
+{% endschema %}

@@ -1,0 +1,253 @@
+<section
+  class="wishlist-page section-{{ section.id }}"
+  style="
+    --wishlist-padding-top: {{ section.settings.padding_top }}px;
+    --wishlist-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --wishlist-title-size: {{ section.settings.titlesize }}px;
+    --wishlist-banner-height: {{ section.settings.banner_height }}px;
+    --wishlist-banner-height-mobile: {{ section.settings.mobile_banner_height }}px;
+  "
+>
+  {%- if section.settings.image != blank or section.settings.mobile_image != blank -%}
+    <div class="wishlist-page__banner">
+      <picture>
+        {%- if section.settings.mobile_image != blank -%}
+          <source
+            media="(max-width: 749px)"
+            srcset="{{ section.settings.mobile_image | image_url: width: 1100 }}"
+          >
+        {%- endif -%}
+
+        {%- assign banner_image = section.settings.image | default: section.settings.mobile_image -%}
+        {{
+          banner_image
+          | image_url: width: 2400
+          | image_tag:
+            widths: '750, 1100, 1500, 2000, 2400',
+            sizes: '100vw',
+            loading: 'eager',
+            class: 'wishlist-page__banner-image',
+            alt: banner_image.alt
+        }}
+      </picture>
+      <div class="wishlist-page__banner-shade" aria-hidden="true"></div>
+    </div>
+  {%- endif -%}
+
+  <div
+    class="
+      wishlist-page__inner
+      section
+      section--page-width
+
+      section-resource-list
+      spacing-style
+      gap-style
+    "
+  >
+    <header class="wishlist-page__header">
+      <div class="wishlist-page__heading">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="wishlist-page__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        <h1 class="wishlist-page__title">{{ section.settings.title }}</h1>
+        {%- if section.settings.description != blank -%}
+          <div class="wishlist-page__description rte">{{ section.settings.description }}</div>
+        {%- endif -%}
+      </div>
+
+      <div
+        class="contains-wishlist-items wishlist-page__actions"
+        data-wishlist-add-all-container
+      >
+        <button
+          type="button"
+          class="wishlist-add-all-to-cart button"
+          data-wishlist-add-all
+          aria-busy="false"
+        >
+          <span data-wishlist-add-all-label>{{ section.settings.add_all_label | escape }}</span>
+          <span data-wishlist-add-all-loader hidden>
+            <span class="wishlist-page__button-spinner" aria-hidden="true"></span>
+            Adding…
+          </span>
+        </button>
+      </div>
+    </header>
+
+    <div
+      class="wishlist__grid"
+      grid-wishlist
+      aria-live="polite"
+      aria-busy="true"
+    >
+      <div class="wishlist__loader" aria-label="Loading wishlist">
+        <span
+          class="loading-spinner"
+          style="
+            --wishlist-loader-size: {{ section.settings.loader_sz }}px;
+            --wishlist-loader-width: {{ section.settings.loader_tk }}px;
+            --wishlist-loader-track: {{ section.settings.loading_bg }};
+            --wishlist-loader-color: {{ section.settings.loading_mn }};
+          "
+        ></span>
+      </div>
+    </div>
+
+    <div class="wishlist-page__empty" data-wishlist-empty hidden>
+      <span class="wishlist-page__empty-icon">{% render 'icon-heart' %}</span>
+      <h2>{{ section.settings.empty_title | escape }}</h2>
+      <p>{{ section.settings.empty_text | escape }}</p>
+      <a class="button" href="{{ routes.all_products_collection_url }}">
+        {{ section.settings.continue_label | escape }}
+      </a>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Wishlist Container",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Desktop cover image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile cover image"
+    },
+    {
+      "type": "range",
+      "id": "banner_height",
+      "min": 180,
+      "max": 600,
+      "step": 20,
+      "unit": "px",
+      "label": "Desktop cover height",
+      "default": 360
+    },
+    {
+      "type": "range",
+      "id": "mobile_banner_height",
+      "min": 140,
+      "max": 420,
+      "step": 20,
+      "unit": "px",
+      "label": "Mobile cover height",
+      "default": 240
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Saved for you"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Page title",
+      "default": "Your Wishlist"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>A considered collection of the pieces you love.</p>"
+    },
+    {
+      "type": "range",
+      "id": "titlesize",
+      "min": 24,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size",
+      "default": 44
+    },
+    {
+      "type": "text",
+      "id": "add_all_label",
+      "label": "Add all button label",
+      "default": "Add all to cart"
+    },
+    {
+      "type": "text",
+      "id": "empty_title",
+      "label": "Empty wishlist heading",
+      "default": "Your wishlist is waiting"
+    },
+    {
+      "type": "textarea",
+      "id": "empty_text",
+      "label": "Empty wishlist text",
+      "default": "Save the pieces you love and find them here whenever you return."
+    },
+    {
+      "type": "text",
+      "id": "continue_label",
+      "label": "Continue shopping label",
+      "default": "Explore the collection"
+    },
+    {
+      "type": "color",
+      "id": "loading_bg",
+      "label": "Loader background",
+      "default": "#e8e5e1"
+    },
+    {
+      "type": "color",
+      "id": "loading_mn",
+      "label": "Loader color",
+      "default": "#7a5c3e"
+    },
+    {
+      "type": "range",
+      "id": "loader_tk",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "unit": "px",
+      "label": "Loader thickness",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "loader_sz",
+      "min": 24,
+      "max": 72,
+      "step": 4,
+      "unit": "px",
+      "label": "Loader size",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 80
+    }
+  ],
+  "presets": [
+    {
+      "name": "Wishlist Container"
+    }
+  ]
+}
+{% endschema %}

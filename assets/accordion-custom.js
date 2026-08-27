@@ -42,8 +42,10 @@ class AccordionCustom extends HTMLElement {
 
     this.addEventListener('keydown', this.#handleKeyDown, { signal });
     this.summary.addEventListener('click', this.handleClick, { signal });
+    this.details.addEventListener('toggle', this.#syncExpandedState, { signal });
     this.details.addEventListener('click', this.#handleContentClick, { signal });
     mediaQueryLarge.addEventListener('change', this.#handleMediaQueryChange, { signal });
+    this.#syncExpandedState();
   }
 
   /**
@@ -90,6 +92,13 @@ class AccordionCustom extends HTMLElement {
    */
   #handleMediaQueryChange = () => {
     this.#setDefaultOpenState();
+  };
+
+  /** Keeps explicit ARIA state synchronized for disclosures that opt into it. */
+  #syncExpandedState = () => {
+    if (this.summary.hasAttribute('aria-expanded')) {
+      this.summary.setAttribute('aria-expanded', this.details.open.toString());
+    }
   };
 
   /**

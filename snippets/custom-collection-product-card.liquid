@@ -1,0 +1,65 @@
+{%- liquid
+  assign card_image = product.featured_media.preview_image | default: product.featured_image
+  assign current_variant = product.selected_or_first_available_variant
+  assign compare_price = current_variant.compare_at_price
+  assign current_price = current_variant.price
+  assign discount_percent = 0
+  if compare_price > current_price
+    assign price_difference = compare_price | minus: current_price
+    assign discount_percent = price_difference | times: 100.0 | divided_by: compare_price | round
+  endif
+-%}
+
+<article class="custom-collection-card" data-product-id="{{ product.id }}">
+  <div class="custom-collection-card__media">
+    <a
+      class="custom-collection-card__image-link"
+      href="{{ product.url }}"
+      aria-label="{{ product.title | escape }}"
+    >
+      {% if card_image != blank %}
+        {{
+          card_image
+          | image_url: width: 1000
+          | image_tag:
+            class: 'custom-collection-card__image',
+            widths: '240, 360, 480, 640, 800, 1000',
+            sizes: '(max-width: 749px) 50vw, (max-width: 1199px) 33vw, 25vw',
+            width: card_image.width,
+            height: card_image.height,
+            loading: 'lazy',
+            alt: card_image.alt
+        }}
+      {% else %}
+        {{ 'product-1' | placeholder_svg_tag: 'custom-collection-card__image custom-collection-card__placeholder' }}
+      {% endif %}
+    </a>
+
+    {% render 'wishlist-button', product: product, class: 'custom-collection-card__wishlist' %}
+
+    {% if discount_percent > 0 %}
+      <span class="custom-collection-card__sale">{{ discount_percent }}% off</span>
+    {% endif %}
+  </div>
+
+  <div class="custom-collection-card__content">
+    <h2 class="custom-collection-card__title">
+      <a href="{{ product.url }}">{{ product.title | escape }}</a>
+    </h2>
+
+    <div class="custom-collection-card__price">
+      {% if settings.currency_code_enabled_product_cards %}
+        {% assign formatted_price = current_price | money_with_currency %}
+        {% assign formatted_compare_price = compare_price | money_with_currency %}
+      {% else %}
+        {% assign formatted_price = current_price | money %}
+        {% assign formatted_compare_price = compare_price | money %}
+      {% endif %}
+
+      <span class="custom-collection-card__current-price">{{ formatted_price }}</span>
+      {% if compare_price > current_price %}
+        <s class="custom-collection-card__compare-price">{{ formatted_compare_price }}</s>
+      {% endif %}
+    </div>
+  </div>
+</article>

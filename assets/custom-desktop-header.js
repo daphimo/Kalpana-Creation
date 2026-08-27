@@ -1,11 +1,33 @@
 const DESKTOP_QUERY = '(min-width: 750px)';
 
 class CustomDesktopHeader extends HTMLElement {
+  constructor() {
+    super();
+    this.initialized = false;
+    /** @type {Element | null} */
+    this.trigger = null;
+    /** @type {HTMLElement | null} */
+    this.closeButton = null;
+    /** @type {Element | null} */
+    this.overlay = null;
+    /** @type {Element | null} */
+    this.drawer = null;
+    /** @type {Element | null} */
+    this.scrollContainer = null;
+    this.threshold = 0;
+    /** @type {Element | null} */
+    this.lastFocus = null;
+    this.onScroll = () => {};
+    /** @type {(event: KeyboardEvent) => void} */
+    this.onKeydown = () => {};
+    this.onResize = () => {};
+  }
+
   connectedCallback() {
     if (this.initialized || !window.matchMedia(DESKTOP_QUERY).matches) return;
     this.initialized = true;
     this.trigger = this.querySelector('.custom-desktop-header__menu-trigger');
-    this.closeButton = this.querySelector('.custom-desktop-header__close');
+    this.closeButton = /** @type {HTMLElement | null} */ (this.querySelector('.custom-desktop-header__close'));
     this.overlay = this.querySelector('.custom-desktop-header__overlay');
     this.drawer = this.querySelector('.custom-desktop-header__drawer');
     this.scrollContainer = document.querySelector('.page-wrapper');
@@ -47,7 +69,7 @@ class CustomDesktopHeader extends HTMLElement {
     this.trigger?.setAttribute('aria-expanded', 'false');
     this.drawer?.setAttribute('aria-hidden', 'true');
     document.documentElement.classList.remove('custom-desktop-header-lock');
-    this.lastFocus?.focus?.();
+    if (this.lastFocus instanceof HTMLElement) this.lastFocus.focus();
   }
 
   teardown() {
@@ -69,5 +91,7 @@ if (!customElements.get('custom-desktop-header')) {
 
 window.matchMedia(DESKTOP_QUERY).addEventListener('change', (event) => {
   if (!event.matches) return;
-  document.querySelectorAll('custom-desktop-header').forEach((header) => header.connectedCallback());
+  document.querySelectorAll('custom-desktop-header').forEach((header) => {
+    if (header instanceof CustomDesktopHeader) header.connectedCallback();
+  });
 });

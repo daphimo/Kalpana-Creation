@@ -1,0 +1,26 @@
+{%- capture description_content -%}
+  <div class="product-collapsible__richtext rte">
+    {{ closest.product.description }}
+    {%- if block.settings.disclaimer != blank -%}
+      <div class="product-collapsible__supplement">{{ block.settings.disclaimer }}</div>
+    {%- endif -%}
+    {%- if block.settings.note != blank -%}
+      <div class="product-collapsible__supplement">{{ block.settings.note }}</div>
+    {%- endif -%}
+  </div>
+{%- endcapture -%}
+
+{% render 'product-collapsible', label: block.settings.label, content: description_content, block_id: block.id, shopify_attributes: block.shopify_attributes %}
+
+{% schema %}
+{
+  "name": "Description",
+  "tag": null,
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label", "default": "Description" },
+    { "type": "richtext", "id": "disclaimer", "label": "Disclaimer" },
+    { "type": "richtext", "id": "note", "label": "Note" }
+  ],
+  "presets": [{ "name": "Description" }]
+}
+{% endschema %}

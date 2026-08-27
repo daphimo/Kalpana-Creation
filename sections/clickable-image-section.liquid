@@ -1,0 +1,91 @@
+{% liquid
+  assign desktop_image = section.settings.desktop_image | default: section.settings.mobile_image
+  assign mobile_image = section.settings.mobile_image | default: desktop_image
+%}
+
+{% if desktop_image != blank %}
+  {% capture responsive_image %}
+    <picture class="clickable-image-section__picture">
+      <source
+        media="(max-width: 749px)"
+        srcset="
+          {{ mobile_image | image_url: width: 375 }} 375w,
+          {{ mobile_image | image_url: width: 550 }} 550w,
+          {{ mobile_image | image_url: width: 750 }} 750w,
+          {{ mobile_image | image_url: width: 1000 }} 1000w,
+          {{ mobile_image | image_url: width: 1500 }} 1500w
+        "
+        sizes="100vw"
+      >
+      {{
+        desktop_image
+        | image_url: width: 2400
+        | image_tag:
+          class: 'clickable-image-section__image',
+          widths: '750, 1100, 1500, 1780, 2000, 2400',
+          sizes: '100vw',
+          width: desktop_image.width,
+          height: desktop_image.height,
+          alt: section.settings.alt_text
+      }}
+    </picture>
+  {% endcapture %}
+
+  <div id="ClickableImageSection-{{ section.id }}" class="clickable-image-section">
+    {% if section.settings.link != blank %}
+      <a class="clickable-image-section__link" href="{{ section.settings.link }}">
+        {{ responsive_image }}
+      </a>
+    {% else %}
+      {{ responsive_image }}
+    {% endif %}
+  </div>
+{% endif %}
+
+{% style %}
+  #ClickableImageSection-{{ section.id }},
+  #ClickableImageSection-{{ section.id }} .clickable-image-section__link,
+  #ClickableImageSection-{{ section.id }} .clickable-image-section__picture {
+    display: block;
+    width: 100%;
+  }
+
+  #ClickableImageSection-{{ section.id }} .clickable-image-section__image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Clickable image",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "desktop_image",
+      "label": "Desktop image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile image"
+    },
+    {
+      "type": "text",
+      "id": "alt_text",
+      "label": "Alt text"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Clickable image"
+    }
+  ]
+}
+{% endschema %}

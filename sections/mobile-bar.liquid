@@ -1,0 +1,425 @@
+<script
+  type="module"
+  src="{{ 'cart-icon.js' | asset_url }}"
+  fetchpriority="low"
+></script>
+<script
+  type="module"
+  src="{{ 'header-actions.js' | asset_url }}"
+  fetchpriority="low"
+></script>
+
+<nav
+  id="MobileBar-{{ section.id }}"
+  class="mobile-bar"
+  aria-label="Mobile navigation"
+  style="
+    --mobile-bar-background: {{ section.settings.background_color }};
+    --mobile-bar-text: {{ section.settings.text_color }};
+    --mobile-bar-accent: {{ section.settings.accent_color }};
+    --mobile-bar-border: {{ section.settings.border_color }};
+    --mobile-bar-height: {{ section.settings.bar_height }}px;
+    --mobile-bar-icon-size: {{ section.settings.icon_size }}px;
+    --mobile-bar-label-size: {{ section.settings.label_size }}px;
+    --mobile-bar-item-gap: {{ section.settings.item_gap }}px;
+  "
+>
+  <header-actions class="mobile-bar__inner{% if section.settings.show_top_border %} mobile-bar__inner--bordered{% endif %}">
+    {% for block in section.blocks %}
+      {% liquid
+        assign item_label = block.settings.label | default: 'Navigation item'
+        assign is_active = false
+        if block.settings.action_type == 'link' and block.settings.link != blank
+          if block.settings.link == request.path
+            assign is_active = true
+          endif
+        endif
+      %}
+
+      {% if block.settings.action_type == 'cart' %}
+        <button
+          type="button"
+          class="mobile-bar__item mobile-bar__item--cart"
+          on:click="#cart-drawer/toggle"
+          aria-label="{{ item_label | escape }}"
+          aria-haspopup="dialog"
+          aria-expanded="false"
+          aria-controls="cart-drawer"
+          {{ block.shopify_attributes }}
+        >
+          <cart-icon class="mobile-bar__icon-wrap">
+            {% if block.settings.custom_image != blank %}
+              {{
+                block.settings.custom_image
+                | image_url: width: 96
+                | image_tag:
+                  class: 'mobile-bar__custom-image',
+                  widths: '48, 72, 96',
+                  sizes: '(max-width: 749px) var(--mobile-bar-icon-size), 1px',
+                  width: block.settings.custom_image.width,
+                  height: block.settings.custom_image.height,
+                  alt: item_label,
+                  loading: 'eager'
+              }}
+            {% else %}
+              <span class="mobile-bar__icon" aria-hidden="true">
+                {% case block.settings.icon %}
+                  {% when 'account' %}
+                    {{ 'icon-account.svg' | inline_asset_content }}
+                  {% when 'search' %}
+                    {{ 'icon-search.svg' | inline_asset_content }}
+                  {% when 'menu' %}
+                    {{ 'icon-menu.svg' | inline_asset_content }}
+                  {% when 'grid' %}
+                    {{ 'icon-grid-default.svg' | inline_asset_content }}
+                  {% when 'heart' %}
+                    <svg viewBox="0 0 20 20" focusable="false">
+                      {% render 'icon', icon: 'heart' %}
+                    </svg>
+                  {% else %}
+                    {{ 'icon-cart.svg' | inline_asset_content }}
+                {% endcase %}
+              </span>
+            {% endif %}
+
+            <span
+              ref="cartBubble"
+              class="mobile-bar__cart-bubble{% if cart.item_count == 0 %} visually-hidden{% endif %}"
+            >
+              <span ref="cartBubbleText" class="mobile-bar__cart-bubble-text">
+                <span
+                  ref="cartBubbleCount"
+                  class="mobile-bar__cart-bubble-count{% if cart.item_count == 0 %} hidden{% endif %}"
+                  aria-hidden="true"
+                >
+                  {%- if cart.item_count < 100 -%}{{ cart.item_count }}{%- endif -%}
+                </span>
+              </span>
+            </span>
+          </cart-icon>
+          <span class="mobile-bar__label">{{ item_label | escape }}</span>
+        </button>
+      {% else %}
+        <a
+          class="mobile-bar__item{% if is_active %} mobile-bar__item--active{% endif %}"
+          href="{{ block.settings.link | default: routes.root_url }}"
+          {% if is_active %}aria-current="page"{% endif %}
+          aria-label="{{ item_label | escape }}"
+          {{ block.shopify_attributes }}
+        >
+          <span class="mobile-bar__icon-wrap">
+            {% if block.settings.custom_image != blank %}
+              {{
+                block.settings.custom_image
+                | image_url: width: 96
+                | image_tag:
+                  class: 'mobile-bar__custom-image',
+                  widths: '48, 72, 96',
+                  sizes: '(max-width: 749px) var(--mobile-bar-icon-size), 1px',
+                  width: block.settings.custom_image.width,
+                  height: block.settings.custom_image.height,
+                  alt: item_label,
+                  loading: 'eager'
+              }}
+            {% else %}
+              <span class="mobile-bar__icon" aria-hidden="true">
+                {% case block.settings.icon %}
+                  {% when 'account' %}
+                    {{ 'icon-account.svg' | inline_asset_content }}
+                  {% when 'cart' %}
+                    {{ 'icon-cart.svg' | inline_asset_content }}
+                  {% when 'menu' %}
+                    {{ 'icon-menu.svg' | inline_asset_content }}
+                  {% when 'grid' %}
+                    {{ 'icon-grid-default.svg' | inline_asset_content }}
+                  {% when 'heart' %}
+                    <svg viewBox="0 0 20 20" focusable="false">
+                      {% render 'icon', icon: 'heart' %}
+                    </svg>
+                  {% else %}
+                    {{ 'icon-search.svg' | inline_asset_content }}
+                {% endcase %}
+              </span>
+            {% endif %}
+          </span>
+          <span class="mobile-bar__label">{{ item_label | escape }}</span>
+        </a>
+      {% endif %}
+    {% endfor %}
+    <span ref="liveRegion" hidden></span>
+  </header-actions>
+</nav>
+
+{% style %}
+  .mobile-bar {
+    position: fixed;
+    z-index: 40;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100vw;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    overflow: hidden;
+    background: var(--mobile-bar-background);
+    color: var(--mobile-bar-text);
+  }
+
+  .mobile-bar__inner {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    min-height: var(--mobile-bar-height);
+    background: var(--mobile-bar-background);
+  }
+
+  .mobile-bar__inner--bordered {
+    border-top: 1px solid var(--mobile-bar-border);
+  }
+
+  .mobile-bar__item {
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: var(--mobile-bar-height);
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--mobile-bar-item-gap);
+    padding: 8px 4px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--mobile-bar-text);
+    font: inherit;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    appearance: none;
+  }
+
+  .mobile-bar__item--active,
+  body:has(theme-drawer#cart-drawer[open]) .mobile-bar__item--cart {
+    color: var(--mobile-bar-accent);
+  }
+
+  .mobile-bar__item:focus-visible {
+    outline: 2px solid var(--mobile-bar-accent);
+    outline-offset: -3px;
+  }
+
+  .mobile-bar__icon-wrap {
+    position: relative;
+    display: grid;
+    width: var(--mobile-bar-icon-size);
+    height: var(--mobile-bar-icon-size);
+    flex: 0 0 var(--mobile-bar-icon-size);
+    place-items: center;
+  }
+
+  .mobile-bar__icon,
+  .mobile-bar__icon svg,
+  .mobile-bar__custom-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mobile-bar__icon svg {
+    color: currentColor;
+  }
+
+  .mobile-bar__custom-image {
+    object-fit: contain;
+  }
+
+  .mobile-bar__label {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    font-size: var(--mobile-bar-label-size);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0.02em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-bar__cart-bubble {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    display: grid;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border: 2px solid var(--mobile-bar-background);
+    border-radius: 999px;
+    place-items: center;
+    background: var(--mobile-bar-accent);
+    color: var(--mobile-bar-background);
+  }
+
+  .mobile-bar__cart-bubble-text,
+  .mobile-bar__cart-bubble-count {
+    color: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Mobile bar",
+  "tag": "section",
+  "class": "mobile-bar-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#302A27"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Active/accent color",
+      "default": "#8A3426"
+    },
+    {
+      "type": "range",
+      "id": "bar_height",
+      "label": "Bar height",
+      "min": 56,
+      "max": 88,
+      "step": 2,
+      "unit": "px",
+      "default": 68
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 18,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 23
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "label": "Label size",
+      "min": 9,
+      "max": 15,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "item_gap",
+      "label": "Icon and label gap",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_top_border",
+      "label": "Show top border",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#E8E2DC"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "bar_item",
+      "name": "Bar item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Shop"
+        },
+        {
+          "type": "select",
+          "id": "action_type",
+          "label": "Action type",
+          "options": [
+            { "value": "link", "label": "Link" },
+            { "value": "cart", "label": "Cart" }
+          ],
+          "default": "link"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Theme icon",
+          "options": [
+            { "value": "search", "label": "Search" },
+            { "value": "grid", "label": "Grid/collections" },
+            { "value": "account", "label": "Account" },
+            { "value": "cart", "label": "Cart" },
+            { "value": "menu", "label": "Menu" },
+            { "value": "heart", "label": "Heart" }
+          ],
+          "default": "grid"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom image"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Mobile bar",
+      "blocks": [
+        {
+          "type": "bar_item",
+          "settings": { "label": "Shop", "action_type": "link", "icon": "grid" }
+        },
+        {
+          "type": "bar_item",
+          "settings": { "label": "Search", "action_type": "link", "icon": "search" }
+        },
+        {
+          "type": "bar_item",
+          "settings": { "label": "Cart", "action_type": "cart", "icon": "cart" }
+        },
+        {
+          "type": "bar_item",
+          "settings": { "label": "Account", "action_type": "link", "icon": "account" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

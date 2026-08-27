@@ -1549,6 +1549,90 @@
         "default": true
       },
       {
+        "type": "header",
+        "content": "Cart drawer offer 1"
+      },
+      {
+        "type": "text",
+        "id": "cart_offer_1_title",
+        "label": "Offer title"
+      },
+      {
+        "type": "text",
+        "id": "cart_offer_1_condition",
+        "label": "Condition text"
+      },
+      {
+        "type": "range",
+        "id": "cart_offer_1_threshold",
+        "label": "Minimum cart total",
+        "min": 0,
+        "max": 50000,
+        "step": 500,
+        "default": 0
+      },
+      {
+        "type": "text",
+        "id": "cart_offer_1_code",
+        "label": "Discount code"
+      },
+      {
+        "type": "header",
+        "content": "Cart drawer offer 2"
+      },
+      {
+        "type": "text",
+        "id": "cart_offer_2_title",
+        "label": "Offer title"
+      },
+      {
+        "type": "text",
+        "id": "cart_offer_2_condition",
+        "label": "Condition text"
+      },
+      {
+        "type": "range",
+        "id": "cart_offer_2_threshold",
+        "label": "Minimum cart total",
+        "min": 0,
+        "max": 50000,
+        "step": 500,
+        "default": 0
+      },
+      {
+        "type": "text",
+        "id": "cart_offer_2_code",
+        "label": "Discount code"
+      },
+      {
+        "type": "header",
+        "content": "Cart drawer offer 3"
+      },
+      {
+        "type": "text",
+        "id": "cart_offer_3_title",
+        "label": "Offer title"
+      },
+      {
+        "type": "text",
+        "id": "cart_offer_3_condition",
+        "label": "Condition text"
+      },
+      {
+        "type": "range",
+        "id": "cart_offer_3_threshold",
+        "label": "Minimum cart total",
+        "min": 0,
+        "max": 50000,
+        "step": 500,
+        "default": 0
+      },
+      {
+        "type": "text",
+        "id": "cart_offer_3_code",
+        "label": "Discount code"
+      },
+      {
         "type": "checkbox",
         "id": "show_installments",
         "label": "t:settings.installments",

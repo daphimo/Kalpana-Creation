@@ -1,0 +1,234 @@
+{% if section.blocks.size > 0 %}
+  <div
+    class="mobile-premium-marquee"
+    style="
+      --marquee-background: {{ section.settings.background_color }};
+      --marquee-text-color: {{ section.settings.text_color }};
+      --marquee-impact-color: {{ section.settings.impact_color }};
+      --marquee-padding-top: {{ section.settings.padding_top }}px;
+      --marquee-padding-bottom: {{ section.settings.padding_bottom }}px;
+      --marquee-gap: {{ section.settings.item_gap }}px;
+      --marquee-duration: {{ section.settings.speed }}s;
+    "
+  >
+    <div class="mobile-premium-marquee__viewport">
+      <div class="mobile-premium-marquee__track">
+        <div class="mobile-premium-marquee__group">
+          {% for block in section.blocks %}
+            <div class="mobile-premium-marquee__item" {{ block.shopify_attributes }}>
+              {{ block.settings.text }}
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="mobile-premium-marquee__group" aria-hidden="true">
+          {% for block in section.blocks %}
+            <div class="mobile-premium-marquee__item">
+              {{ block.settings.text }}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% style %}
+  .mobile-premium-marquee {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    padding-block: var(--marquee-padding-top) var(--marquee-padding-bottom);
+    background: var(--marquee-background);
+    color: var(--marquee-text-color);
+  }
+
+  .mobile-premium-marquee__viewport {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .mobile-premium-marquee__track {
+    display: flex;
+    width: max-content;
+    gap: var(--marquee-gap);
+    will-change: transform;
+    animation: mobile-premium-marquee-scroll var(--marquee-duration) linear infinite;
+  }
+
+  .mobile-premium-marquee__group {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--marquee-gap);
+  }
+
+  .mobile-premium-marquee__item {
+    flex-shrink: 0;
+    color: var(--marquee-text-color);
+    font-family: inherit;
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 1.35;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .mobile-premium-marquee__item > * {
+    margin: 0;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    white-space: inherit;
+  }
+
+  .mobile-premium-marquee__item strong,
+  .mobile-premium-marquee__item b {
+    color: var(--marquee-impact-color);
+    font-weight: 700;
+  }
+
+  @keyframes mobile-premium-marquee-scroll {
+    to {
+      transform: translate3d(calc(-50% - (var(--marquee-gap) / 2)), 0, 0);
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .mobile-premium-marquee-section,
+    .mobile-premium-marquee {
+      display: none !important;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-premium-marquee__viewport {
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .mobile-premium-marquee__viewport::-webkit-scrollbar {
+      display: none;
+    }
+
+    .mobile-premium-marquee__track {
+      width: auto;
+      animation: none;
+      will-change: auto;
+    }
+
+    .mobile-premium-marquee__group[aria-hidden='true'] {
+      display: none;
+    }
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Mobile premium marquee",
+  "tag": "section",
+  "class": "mobile-premium-marquee-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#F4EFE8"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#2B2520"
+    },
+    {
+      "type": "color",
+      "id": "impact_color",
+      "label": "Impact color",
+      "default": "#8A3426"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Marquee speed",
+      "min": 8,
+      "max": 60,
+      "step": 1,
+      "unit": "s",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "item_gap",
+      "label": "Gap between items",
+      "min": 12,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p><strong>FREE SHIPPING</strong> on orders above ₹999</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Mobile premium marquee",
+      "blocks": [
+        {
+          "type": "text",
+          "settings": {
+            "text": "<p><strong>FREE SHIPPING</strong> on orders above ₹999</p>"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "text": "<p>Premium <strong>handcrafted sarees</strong></p>"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "text": "<p><strong>EASY RETURNS</strong></p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -51,7 +51,7 @@
     min-width: 0;
   }
 
-  .custom-desktop-header__left{
+  .custom-desktop-header__left {
     gap: clamp(12px, 1.5vw, 24px);
   }
 
@@ -181,12 +181,25 @@
     transition: opacity .25s ease, visibility .25s;
   }
 
+  .drawer__header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 5px 20px 0 20px;
+    position: sticky;
+    top: 0;
+    background: white;
+  }
+
+  .custom-desktop-header__drawer-content {
+    padding: 0 20px 20px;
+  }
+
   .custom-desktop-header__drawer {
     position: fixed;
     inset: 0 auto 0 0;
     z-index: 1000;
     width: 520px;
-    padding: clamp(36px, 5vw, 72px);
     background: #fff;
     color: var(--cdh-scrolled-text);
     overflow-y: auto;
@@ -194,6 +207,9 @@
     transform: translateX(-102%);
     visibility: hidden;
     transition: transform .34s cubic-bezier(.22, 1, .36, 1), visibility .34s;
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: none;
   }
 
   .custom-desktop-header.is-drawer-open .custom-desktop-header__overlay {
@@ -207,13 +223,10 @@
   }
 
   .custom-desktop-header__close {
-    position: absolute;
-    top: 24px;
-    right: 28px;
     display: grid;
     place-items: center;
-    width: 44px;
-    height: 44px;
+    width: 22px;
+    height: 22px;
     color: var(--cdh-scrolled-icon);
   }
 
@@ -223,14 +236,14 @@
   }
 
   .custom-desktop-header__group+.custom-desktop-header__group {
-    margin-top: clamp(48px, 6vw, 84px);
+    margin-top: 28px;
   }
 
   .custom-desktop-header__group-title {
-    margin: 0 0 24px;
+    margin: 0 0 14px;
     color: inherit;
     font-family: var(--font-heading--family);
-    font-size: clamp(18px, 1.6vw, 26px);
+    font-size: 1.2rem;
     font-weight: 500;
     letter-spacing: .08em;
   }
@@ -238,7 +251,7 @@
   .custom-desktop-header__grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: clamp(22px, 3vw, 42px) clamp(16px, 2vw, 28px);
+    gap: .5rem;
   }
 
   .custom-desktop-header__card {
@@ -246,11 +259,13 @@
     text-decoration: none;
     font-size: 13px;
     line-height: 1.35;
+    text-align: center;
+    font-weight: 600;
   }
 
   .custom-desktop-header__card-image {
-    margin-bottom: 12px;
-    aspect-ratio: 4 / 5;
+    margin-bottom: 4px;
+    height: 150px;
     overflow: hidden;
     border-radius: var(--style-border-radius-card, 4px);
     background: #f4f1ef;

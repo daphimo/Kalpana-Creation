@@ -61,12 +61,30 @@
     <a class="custom-desktop-header__logo" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
       <div class="custom-desktop-header__logo-wrapper">
         {% if logo_before != blank %}
-          {{ logo_before | image_url: width: 800 | image_tag: class: 'custom-desktop-header__logo-image custom-desktop-header__logo-image--before', widths: '160, 240, 320, 480, 640, 800', loading: 'eager', alt: shop.name }}
+          {{
+            logo_before
+            | image_url: width: 800
+            | image_tag:
+              class: 'custom-desktop-header__logo-image custom-desktop-header__logo-image--before',
+              widths: '160, 240, 320, 480, 640, 800',
+              loading: 'eager',
+              alt: shop.name
+          }}
         {% else %}
-          <span class="custom-desktop-header__logo-text custom-desktop-header__logo-image--before">{{ shop.name }}</span>
+          <span class="custom-desktop-header__logo-text custom-desktop-header__logo-image--before">
+            {{- shop.name -}}
+          </span>
         {% endif %}
         {% if logo_after != blank %}
-          {{ logo_after | image_url: width: 800 | image_tag: class: 'custom-desktop-header__logo-image custom-desktop-header__logo-image--after', widths: '160, 240, 320, 480, 640, 800', loading: 'eager', alt: shop.name }}
+          {{
+            logo_after
+            | image_url: width: 800
+            | image_tag:
+              class: 'custom-desktop-header__logo-image custom-desktop-header__logo-image--after',
+              widths: '160, 240, 320, 480, 640, 800',
+              loading: 'eager',
+              alt: shop.name
+          }}
         {% else %}
           <span class="custom-desktop-header__logo-text custom-desktop-header__logo-image--after">{{ shop.name }}</span>
         {% endif %}
@@ -80,18 +98,29 @@
         aria-label="Wishlist"
         data-with-epi="true"
       >
-        {{ 'custom-header-icon-wishlist.svg' | inline_asset_content }}
+        {% render 'wishlist-header' %}
       </a>
 
       {% if settings.cart_type == 'drawer' and template.name != 'cart' %}
-        <button class="custom-desktop-header__icon-action button-unstyled" type="button" on:click="#cart-drawer/toggle" aria-haspopup="dialog" aria-controls="cart-drawer" aria-label="{{ 'accessibility.cart' | t }}">
+        <button
+          class="custom-desktop-header__icon-action button-unstyled"
+          type="button"
+          on:click="#cart-drawer/toggle"
+          aria-haspopup="dialog"
+          aria-controls="cart-drawer"
+          aria-label="{{ 'accessibility.cart' | t }}"
+        >
           <cart-icon class="custom-desktop-header__cart-icon">
             {{ 'custom-header-icon-cart.svg' | inline_asset_content }}
             {% render 'cart-bubble', limit: 100 %}
           </cart-icon>
         </button>
       {% else %}
-        <a class="custom-desktop-header__icon-action" href="{{ routes.cart_url }}" aria-label="{{ 'accessibility.cart' | t }}">
+        <a
+          class="custom-desktop-header__icon-action"
+          href="{{ routes.cart_url }}"
+          aria-label="{{ 'accessibility.cart' | t }}"
+        >
           <cart-icon class="custom-desktop-header__cart-icon">
             {{ 'custom-header-icon-cart.svg' | inline_asset_content }}
             {% render 'cart-bubble', limit: 100 %}
@@ -99,7 +128,11 @@
         </a>
       {% endif %}
 
-      <a class="custom-desktop-header__icon-action" href="{{ routes.account_url }}" aria-label="{{ 'content.account_title' | t }}">
+      <a
+        class="custom-desktop-header__icon-action"
+        href="{{ routes.account_url }}"
+        aria-label="{{ 'content.account_title' | t }}"
+      >
         {{ 'custom-header-icon-account.svg' | inline_asset_content }}
       </a>
     </div>
@@ -114,14 +147,16 @@
     aria-label="Menu"
     aria-hidden="true"
   >
-    <button class="custom-desktop-header__close button-unstyled" type="button" aria-label="Close menu">
-      {{ 'icon-close.svg' | inline_asset_content }}
-    </button>
+    <div class="drawer__header">
+      <button class="custom-desktop-header__close button-unstyled" type="button" aria-label="Close menu">
+        {{ 'icon-close.svg' | inline_asset_content }}
+      </button>
+    </div>
     <div class="custom-desktop-header__drawer-content">
       {% for block in section.blocks %}
         <section class="custom-desktop-header__group" {{ block.shopify_attributes }}>
           {% if block.settings.title != blank %}
-            <h2 class="custom-desktop-header__group-title">{{ block.settings.title | escape }}</h2>
+            <h3 class="custom-desktop-header__group-title">{{ block.settings.title | escape }}</h3>
           {% endif %}
           {% if block.settings.collections.count > 0 %}
             <div class="custom-desktop-header__grid">
@@ -129,7 +164,11 @@
                 <a class="custom-desktop-header__card" href="{{ collection.url }}">
                   <div class="custom-desktop-header__card-image">
                     {% if collection.featured_image != blank %}
-                      {{ collection.featured_image | image_url: width: 700 | image_tag: widths: '240, 360, 480, 700', loading: 'lazy', alt: collection.title }}
+                      {{
+                        collection.featured_image
+                        | image_url: width: 700
+                        | image_tag: widths: '240, 360, 480, 700', loading: 'lazy', alt: collection.title
+                      }}
                     {% else %}
                       {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
                     {% endif %}
@@ -161,15 +200,60 @@
   "settings": [
     { "type": "image_picker", "id": "logo_before", "label": "Desktop Logo — Before Scroll" },
     { "type": "image_picker", "id": "logo_after", "label": "Desktop Logo — After Scroll" },
-    { "type": "range", "id": "logo_height_desktop", "label": "Desktop Logo Height", "min": 20, "max": 100, "step": 2, "unit": "px", "default": 48 },
-    { "type": "range", "id": "logo_height_mobile", "label": "Mobile Logo Height", "min": 16, "max": 72, "step": 2, "unit": "px", "default": 36 },
-    { "type": "range", "id": "padding_top", "label": "Padding Top", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 16 },
-    { "type": "range", "id": "padding_bottom", "label": "Padding Bottom", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 16 },
+    {
+      "type": "range",
+      "id": "logo_height_desktop",
+      "label": "Desktop Logo Height",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "logo_height_mobile",
+      "label": "Mobile Logo Height",
+      "min": 16,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
     { "type": "color", "id": "initial_text_color", "label": "Initial Header Text Color", "default": "#ffffff" },
     { "type": "color", "id": "initial_icon_color", "label": "Initial Header Icon Color", "default": "#ffffff" },
     { "type": "color", "id": "scrolled_background", "label": "Header Background — After Scroll", "default": "#ffffff" },
     { "type": "color", "id": "alternate_color", "label": "Alternate Text and Icon Color", "default": "#6B1F3A" },
-    { "type": "range", "id": "scroll_threshold", "label": "Switch to Alternate Color After", "min": 0, "max": 500, "step": 10, "unit": "px", "default": 70 },
+    {
+      "type": "range",
+      "id": "scroll_threshold",
+      "label": "Switch to Alternate Color After",
+      "min": 0,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 70
+    },
     { "type": "url", "id": "wishlist_url", "label": "Wishlist URL" }
   ],
   "blocks": [

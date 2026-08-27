@@ -1,0 +1,138 @@
+{{ 'custom-featured-collection.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  assign featured_collection = section.settings.collection
+  assign section_title = section.settings.title | default: featured_collection.title
+%}
+
+<section
+  id="CustomFeaturedCollection-{{ section.id }}"
+  class="custom-featured-collection custom-featured-collection--mobile-{{ section.settings.mobile_layout }}"
+  style="
+    --custom-featured-columns: {{ section.settings.columns_desktop }};
+    --custom-featured-mobile-columns: {{ section.settings.columns_mobile }};
+    --custom-featured-gap: {{ section.settings.grid_gap }}px;
+    --custom-collection-image-ratio: {{ section.settings.image_ratio }}%;
+    --custom-featured-padding-top: {{ section.settings.padding_top }}px;
+    --custom-featured-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="custom-featured-collection__inner">
+    {% if section_title != blank %}
+      <h2 class="custom-featured-collection__title">{{ section_title | escape }}</h2>
+    {% endif %}
+
+    {% if featured_collection != blank and featured_collection.products_count > 0 %}
+      <ul class="custom-featured-collection__products" role="list">
+        {% for product in featured_collection.products %}
+          <li class="custom-featured-collection__item">
+            {% render 'custom-collection-product-card', product: product %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% elsif request.design_mode %}
+      <div class="custom-featured-collection__empty">
+        Select a collection to display its products.
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Custom featured collection",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "info": "Leave blank to use the collection title."
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        {
+          "value": "slide",
+          "label": "Slide"
+        },
+        {
+          "value": "grid",
+          "label": "Grid"
+        }
+      ],
+      "default": "slide"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Desktop columns",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Mobile grid columns",
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "default": 2,
+      "visible_if": "{{ section.settings.mobile_layout == 'grid' }}"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Product gap",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "image_ratio",
+      "label": "Image height ratio",
+      "min": 110,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 130
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom featured collection"
+    }
+  ]
+}
+{% endschema %}

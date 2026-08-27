@@ -1,0 +1,39 @@
+{%- capture row_content -%}
+  {% render 'icon-or-image', icon: block.settings.icon, width: 22, class_name: 'product-icon-text__icon' %}
+  <span>{{ block.settings.text | escape }}</span>
+{%- endcapture -%}
+
+{%- if block.settings.link != blank -%}
+  <a href="{{ block.settings.link }}" class="product-icon-text" {{ block.shopify_attributes }}>{{ row_content }}</a>
+{%- else -%}
+  <div class="product-icon-text" {{ block.shopify_attributes }}>{{ row_content }}</div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Icon with Text",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "truck", "label": "Truck" },
+        { "value": "return", "label": "Return" },
+        { "value": "heart", "label": "Heart" },
+        { "value": "leaf", "label": "Leaf" },
+        { "value": "star", "label": "Star" },
+        { "value": "lock", "label": "Lock" },
+        { "value": "washing", "label": "Washing" },
+        { "value": "ruler", "label": "Ruler" }
+      ],
+      "default": "truck"
+    },
+    { "type": "text", "id": "text", "label": "Text", "default": "Free Shipping" },
+    { "type": "url", "id": "link", "label": "Link" }
+  ],
+  "presets": [{ "name": "Icon with Text" }]
+}
+{% endschema %}

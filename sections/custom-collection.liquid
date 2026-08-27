@@ -1,0 +1,319 @@
+{{ 'custom-collection.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'custom-collection.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+{% render 'theme-drawer-styles' %}
+
+{% liquid
+  assign sort_by = collection.sort_by | default: collection.default_sort_by
+  assign active_filter_count = 0
+  for filter in collection.filters
+    if filter.type == 'price_range'
+      if filter.min_value.value != null or filter.max_value.value != null
+        assign active_filter_count = active_filter_count | plus: 1
+      endif
+    else
+      assign active_filter_count = active_filter_count | plus: filter.active_values.size
+    endif
+  endfor
+%}
+
+<div
+  id="CustomCollection-{{ section.id }}"
+  class="custom-collection"
+  data-custom-collection-root
+  data-section-id="{{ section.id }}"
+  style="
+    --custom-collection-columns: {{ section.settings.columns_desktop }};
+    --custom-collection-columns-mobile: {{ section.settings.columns_mobile }};
+    --custom-collection-image-ratio: {{ section.settings.image_ratio }}%;
+    --custom-collection-gap: {{ section.settings.grid_gap }}px;
+    --custom-collection-sidebar: {{ section.settings.sidebar_width }}px;
+  "
+>
+  <div class="custom-collection__page-width">
+    <nav class="custom-collection__breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ routes.root_url }}">Home</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{{ collection.title | escape }}</span>
+    </nav>
+
+    <header class="custom-collection__header">
+      <h1 class="custom-collection__heading">{{ collection.title | escape }}</h1>
+      {% if section.settings.show_intro and section.settings.show_seo_description == false and collection.description != blank %}
+        <div class="custom-collection__intro rte">
+          {{ collection.description | strip_html | truncatewords: section.settings.intro_words }}
+        </div>
+      {% endif %}
+    </header>
+
+    <div class="custom-collection__ajax-region" data-custom-collection-ajax aria-live="polite">
+      <div class="custom-collection__toolbar">
+        <div class="custom-collection__count" role="status">
+          {{ collection.products_count }} {{ collection.products_count | pluralize: 'product', 'products' }}
+        </div>
+
+        <button
+          type="button"
+          class="custom-collection__mobile-filter-button"
+          on:click="#CustomCollectionFilters-{{ section.id }}/open"
+          aria-haspopup="dialog"
+          aria-controls="CustomCollectionFilters-{{ section.id }}"
+        >
+          {{ 'icon-filter.svg' | inline_asset_content }}
+          <span>Filter{% if active_filter_count > 0 %} ({{ active_filter_count }}){% endif %}</span>
+        </button>
+
+        <label class="custom-collection__sort">
+          <span>Sort by</span>
+          <select data-custom-collection-sort aria-label="Sort products">
+            {% for option in collection.sort_options %}
+              <option value="{{ option.value | escape }}"{% if option.value == sort_by %} selected{% endif %}>
+                {{ option.name | escape }}
+              </option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+
+      {% if active_filter_count > 0 %}
+        <div class="custom-collection__active-filters" aria-label="Active filters">
+          {% for filter in collection.filters %}
+            {% for value in filter.active_values %}
+              <a href="{{ value.url_to_remove }}" data-custom-collection-link>
+                {{ value.label | escape }}
+                <span aria-hidden="true">×</span>
+              </a>
+            {% endfor %}
+            {% if filter.type == 'price_range' %}
+              {% if filter.min_value.value != null or filter.max_value.value != null %}
+                <a href="{{ filter.url_to_remove }}" data-custom-collection-link>
+                  {{ filter.label | escape }}
+                  <span aria-hidden="true">×</span>
+                </a>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          <a class="custom-collection__clear" href="{{ collection.url }}?sort_by={{ sort_by }}" data-custom-collection-link>
+            Clear all
+          </a>
+        </div>
+      {% endif %}
+
+      <div class="custom-collection__layout">
+        {% if section.settings.enable_filtering and collection.filters.size > 0 %}
+          <aside class="custom-collection__sidebar" aria-label="Product filters">
+            <div class="custom-collection__filter-heading">
+              <span>Filters</span>
+              {% if active_filter_count > 0 %}<span>{{ active_filter_count }}</span>{% endif %}
+            </div>
+
+            <form class="custom-collection__desktop-form" action="{{ collection.url }}" data-custom-collection-form="desktop">
+              <input type="hidden" name="sort_by" value="{{ sort_by }}">
+              {% for filter in collection.filters %}
+                <fieldset class="custom-collection__filter-group">
+                  <legend>{{ filter.label | escape }}</legend>
+                  {% case filter.type %}
+                    {% when 'price_range' %}
+                      <div class="custom-collection__price-fields">
+                        <label>
+                          <span>Min</span>
+                          <input
+                            type="text"
+                            inputmode="decimal"
+                            name="{{ filter.min_value.param_name }}"
+                            value="{{ filter.min_value.value | money_without_currency }}"
+                            placeholder="0"
+                          >
+                        </label>
+                        <label>
+                          <span>Max</span>
+                          <input
+                            type="text"
+                            inputmode="decimal"
+                            name="{{ filter.max_value.param_name }}"
+                            value="{{ filter.max_value.value | money_without_currency }}"
+                            placeholder="{{ filter.range_max | money_without_currency }}"
+                          >
+                        </label>
+                      </div>
+                    {% else %}
+                      <ul class="custom-collection__filter-values" role="list">
+                        {% for value in filter.values %}
+                          <li>
+                            <label class="custom-collection__filter-option{% if value.active %} is-selected{% endif %}">
+                              <input
+                                type="checkbox"
+                                name="{{ value.param_name | escape }}"
+                                value="{{ value.value | escape }}"
+                                {% if value.active %}checked{% endif %}
+                                {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                              >
+                              <span>{{ value.label | escape }}</span>
+                              <small>{{ value.count }}</small>
+                            </label>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                  {% endcase %}
+                </fieldset>
+              {% endfor %}
+            </form>
+          </aside>
+        {% endif %}
+
+        <div class="custom-collection__results" data-custom-collection-results>
+          {% paginate collection.products by section.settings.products_per_page %}
+            {% if collection.products_count > 0 %}
+              <ul class="custom-collection__grid" role="list">
+                {% for product in collection.products %}
+                  <li>
+                    {% render 'custom-collection-product-card', product: product %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <div class="custom-collection__empty">
+                <h2>No products found</h2>
+                <p>Try removing some filters to see more products.</p>
+                <a href="{{ collection.url }}" data-custom-collection-link>Clear all filters</a>
+              </div>
+            {% endif %}
+
+            {% if paginate.pages > 1 %}
+              <nav class="custom-collection__pagination" aria-label="Pagination">
+                {% if paginate.previous %}
+                  <a href="{{ paginate.previous.url }}" data-custom-collection-link aria-label="Previous page">
+                    {{ 'icon-chevron-left.svg' | inline_asset_content }}
+                  </a>
+                {% endif %}
+                {% for part in paginate.parts %}
+                  {% if part.is_link %}
+                    <a href="{{ part.url }}" data-custom-collection-link>{{ part.title }}</a>
+                  {% else %}
+                    <span{% if part.title == paginate.current_page %} aria-current="page"{% endif %}>{{ part.title }}</span>
+                  {% endif %}
+                {% endfor %}
+                {% if paginate.next %}
+                  <a href="{{ paginate.next.url }}" data-custom-collection-link aria-label="Next page">
+                    {{ 'icon-chevron-right.svg' | inline_asset_content }}
+                  </a>
+                {% endif %}
+              </nav>
+            {% endif %}
+          {% endpaginate %}
+        </div>
+      </div>
+
+      {% if section.settings.enable_filtering and collection.filters.size > 0 %}
+        <theme-drawer id="CustomCollectionFilters-{{ section.id }}" class="custom-collection__mobile-drawer">
+          <dialog ref="panel" class="theme-drawer__dialog custom-collection__filter-dialog" aria-labelledby="CustomCollectionFilterTitle-{{ section.id }}">
+            <div class="custom-collection__filter-dialog-header">
+              <h2 id="CustomCollectionFilterTitle-{{ section.id }}">Filter</h2>
+              <button type="button" on:click="#CustomCollectionFilters-{{ section.id }}/close" aria-label="Close filters">
+                {{ 'icon-close.svg' | inline_asset_content }}
+              </button>
+            </div>
+
+            <form action="{{ collection.url }}" data-custom-collection-form="mobile" class="custom-collection__mobile-form">
+              <input type="hidden" name="sort_by" value="{{ sort_by }}">
+              <div class="custom-collection__filter-tabs" role="tablist" aria-orientation="vertical">
+                {% for filter in collection.filters %}
+                  <button
+                    type="button"
+                    role="tab"
+                    id="CustomCollectionTab-{{ section.id }}-{{ forloop.index }}"
+                    aria-controls="CustomCollectionPanel-{{ section.id }}-{{ forloop.index }}"
+                    aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                    tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+                    data-filter-tab
+                  >
+                    {{ filter.label | escape }}
+                    {% if filter.active_values.size > 0 %}<span>{{ filter.active_values.size }}</span>{% endif %}
+                  </button>
+                {% endfor %}
+              </div>
+
+              <div class="custom-collection__filter-panels">
+                {% for filter in collection.filters %}
+                  <div
+                    id="CustomCollectionPanel-{{ section.id }}-{{ forloop.index }}"
+                    role="tabpanel"
+                    aria-labelledby="CustomCollectionTab-{{ section.id }}-{{ forloop.index }}"
+                    data-filter-panel
+                    {% unless forloop.first %}hidden{% endunless %}
+                  >
+                    <h3>{{ filter.label | escape }}</h3>
+                    {% case filter.type %}
+                      {% when 'price_range' %}
+                        <div class="custom-collection__price-fields">
+                          <label>
+                            <span>Minimum</span>
+                            <input type="text" inputmode="decimal" name="{{ filter.min_value.param_name }}" value="{{ filter.min_value.value | money_without_currency }}" placeholder="0">
+                          </label>
+                          <label>
+                            <span>Maximum</span>
+                            <input type="text" inputmode="decimal" name="{{ filter.max_value.param_name }}" value="{{ filter.max_value.value | money_without_currency }}" placeholder="{{ filter.range_max | money_without_currency }}">
+                          </label>
+                        </div>
+                      {% else %}
+                        <ul class="custom-collection__filter-values" role="list">
+                          {% for value in filter.values %}
+                            <li>
+                              <label class="custom-collection__filter-option{% if value.active %} is-selected{% endif %}">
+                                <input type="checkbox" name="{{ value.param_name | escape }}" value="{{ value.value | escape }}" {% if value.active %}checked{% endif %} {% if value.count == 0 and value.active == false %}disabled{% endif %}>
+                                <span>{{ value.label | escape }}</span>
+                                <small>{{ value.count }}</small>
+                              </label>
+                            </li>
+                          {% endfor %}
+                        </ul>
+                    {% endcase %}
+                  </div>
+                {% endfor %}
+              </div>
+
+              <div class="custom-collection__mobile-actions">
+                <a href="{{ collection.url }}?sort_by={{ sort_by }}" data-custom-collection-link>Clear all</a>
+                <button type="submit">Apply filters</button>
+              </div>
+            </form>
+          </dialog>
+        </theme-drawer>
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_seo_description and collection.description != blank %}
+      <div class="custom-collection__seo rte">
+        {{ collection.description }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="custom-collection__loading" aria-hidden="true">
+    <span></span>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom collection",
+  "enabled_on": {
+    "templates": ["collection"]
+  },
+  "settings": [
+    { "type": "checkbox", "id": "show_intro", "label": "Show description near heading", "default": false },
+    { "type": "range", "id": "intro_words", "label": "Introduction words", "min": 10, "max": 80, "step": 5, "default": 30 },
+    { "type": "checkbox", "id": "enable_filtering", "label": "Enable filtering", "default": true },
+    { "type": "range", "id": "sidebar_width", "label": "Sidebar width", "min": 200, "max": 340, "step": 10, "unit": "px", "default": 250 },
+    { "type": "range", "id": "columns_desktop", "label": "Desktop columns", "min": 2, "max": 5, "step": 1, "default": 4 },
+    { "type": "range", "id": "columns_mobile", "label": "Mobile columns", "min": 1, "max": 3, "step": 1, "default": 2 },
+    { "type": "range", "id": "grid_gap", "label": "Grid gap", "min": 8, "max": 32, "step": 2, "unit": "px", "default": 16 },
+    { "type": "range", "id": "image_ratio", "label": "Image height ratio", "min": 110, "max": 150, "step": 5, "unit": "%", "default": 130 },
+    { "type": "range", "id": "products_per_page", "label": "Products per page", "min": 12, "max": 36, "step": 4, "default": 24 },
+    { "type": "checkbox", "id": "show_seo_description", "label": "Show full description below products", "default": true }
+  ],
+  "presets": [
+    { "name": "Custom collection" }
+  ]
+}
+{% endschema %}

@@ -8,6 +8,15 @@
 {% render 'text-component-shimmer-styles' %}
 {% render 'cart-typography-styles' %}
 
+{%- liquid
+  assign show_cart_discount = settings.show_add_discount_code
+  if section_id == 'cart-drawer-section'
+    if settings.cart_offer_1_code != blank or settings.cart_offer_2_code != blank or settings.cart_offer_3_code != blank
+      assign show_cart_discount = true
+    endif
+  endif
+-%}
+
 <div class="cart-totals">
   {% # We need to keep this node in place to allow morphing to work properly # %}
   <div class="cart-totals__original-container cart-primary-typography">
@@ -41,7 +50,7 @@
     {%- endif -%}
   </div>
 
-  {% if settings.show_cart_note or settings.show_add_discount_code %}
+  {% if settings.show_cart_note or show_cart_discount %}
     <div class="cart-actions">
       {% if settings.show_cart_note %}
         <script
@@ -92,10 +101,10 @@
           %}
         </cart-note>
       {% endif %}
-      {% if settings.show_cart_note and settings.show_add_discount_code %}
+      {% if settings.show_cart_note and show_cart_discount %}
         <div class="cart-actions__divider"></div>
       {% endif %}
-      {% if settings.show_add_discount_code %}
+      {% if show_cart_discount %}
         {% liquid
           assign discount_codes = cart.cart_level_discount_applications | where: 'type', 'discount_code' | map: 'title'
           for item in cart.items

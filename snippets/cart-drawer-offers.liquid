@@ -1,0 +1,39 @@
+{%- liquid
+  assign cart_total = cart.total_price
+-%}
+
+<div class="cart-drawer-offers" data-cart-offers data-cart-total="{{ cart_total }}">
+  {%- for index in (1..3) -%}
+    {%- liquid
+      assign title_key = 'cart_offer_' | append: index | append: '_title'
+      assign condition_key = 'cart_offer_' | append: index | append: '_condition'
+      assign threshold_key = 'cart_offer_' | append: index | append: '_threshold'
+      assign code_key = 'cart_offer_' | append: index | append: '_code'
+      assign offer_title = settings[title_key]
+      assign offer_condition = settings[condition_key]
+      assign offer_threshold = settings[threshold_key] | times: 100
+      assign offer_code = settings[code_key]
+      assign eligible = false
+      if cart_total >= offer_threshold
+        assign eligible = true
+      endif
+    -%}
+    {%- if offer_title != blank and offer_code != blank -%}
+      <article class="cart-drawer-offer{% if eligible %} is-eligible{% endif %}" data-cart-offer data-threshold="{{ offer_threshold }}">
+        <div class="cart-drawer-offer__copy">
+          <h3>{{ offer_title | escape }}</h3>
+          {%- if offer_condition != blank -%}<p>{{ offer_condition | escape }}</p>{%- endif -%}
+        </div>
+        <button
+          type="button"
+          class="cart-drawer-offer__button"
+          data-cart-offer-apply
+          data-discount-code="{{ offer_code | escape }}"
+          {% unless eligible %}disabled aria-disabled="true"{% endunless %}
+        >
+          {%- if eligible -%}Apply{%- else -%}Locked{%- endif -%}
+        </button>
+      </article>
+    {%- endif -%}
+  {%- endfor -%}
+</div>

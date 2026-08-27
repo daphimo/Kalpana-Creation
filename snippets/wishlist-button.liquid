@@ -1,0 +1,15 @@
+{%- if product.handle != blank -%}
+  <div class="{{ class | default: 'card___wishlist' }}-wrap">
+    <button
+      id="wishlist-btn-{{ product.id }}"
+      type="button"
+      aria-label="Add to wishlist"
+      class="wishlist-button"
+      button-wishlist
+      data-product-title="{{ product.title | escape }}"
+      data-product-handle="{{ product.handle }}"
+    >
+      {%- render 'icon-heart' -%}
+    </button>
+  </div>
+{%- endif -%}
