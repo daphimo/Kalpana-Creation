@@ -233,12 +233,66 @@
         "padding_top": 24,
         "padding_bottom": 24
       }
+    },
+    "responsive_flex_grid_NJGdmw": {
+      "type": "responsive-flex-grid",
+      "blocks": {
+        "image_block_BLQmVp": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Rakhi.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_tMmPLV": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Onam.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_iNWJh9": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Puja.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "image_block_BLQmVp",
+        "image_block_tMmPLV",
+        "image_block_iNWJh9"
+      ],
+      "name": "Responsive flex grid",
+      "settings": {
+        "section_title": "FESTIVE FAVOURITES",
+        "grid_per_desktop": 3,
+        "grid_per_mobile": 3,
+        "mobile_layout": "stack",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "clickable_image_section_HH4iM9": {
+      "type": "clickable-image-section",
+      "name": "Clickable image",
+      "settings": {
+        "desktop_image": "shopify://shop_images/Ready_to_wear_-_Half_Banner.png",
+        "alt_text": "Saree Banner",
+        "link": "shopify://collections/all"
+      }
     }
   },
   "order": [
     "cust_hero_slider_3CVCek",
     "responsive_flex_grid_fctXQK",
     "responsive_flex_grid_mzmCmE",
-    "responsive_flex_grid_DbQiYV"
+    "responsive_flex_grid_DbQiYV",
+    "clickable_image_section_HH4iM9",
+    "responsive_flex_grid_NJGdmw"
   ]
 }
