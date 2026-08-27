@@ -312,6 +312,24 @@
         "padding_top": 24,
         "padding_bottom": 24
       }
+    },
+    "clickable_image_section_8Npbd8": {
+      "type": "clickable-image-section",
+      "name": "Clickable image",
+      "settings": {
+        "desktop_image": "shopify://shop_images/Coming_Soon_-_Early_Access_Unloc.png",
+        "alt_text": "",
+        "link": ""
+      }
+    },
+    "clickable_image_section_M4BKAP": {
+      "type": "clickable-image-section",
+      "name": "Clickable image",
+      "settings": {
+        "desktop_image": "shopify://shop_images/Koskii_Klan_-_Half_Banner_Update.png",
+        "alt_text": "",
+        "link": ""
+      }
     }
   },
   "order": [
@@ -320,6 +338,8 @@
     "responsive_flex_grid_mzmCmE",
     "responsive_flex_grid_DbQiYV",
     "clickable_image_section_HH4iM9",
-    "responsive_flex_grid_NJGdmw"
+    "responsive_flex_grid_NJGdmw",
+    "clickable_image_section_8Npbd8",
+    "clickable_image_section_M4BKAP"
   ]
 }
