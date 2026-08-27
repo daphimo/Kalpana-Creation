@@ -234,13 +234,22 @@
         "padding_bottom": 24
       }
     },
+    "clickable_image_section_HH4iM9": {
+      "type": "clickable-image-section",
+      "name": "Clickable image",
+      "settings": {
+        "desktop_image": "shopify://shop_images/Ready_to_wear_-_Half_Banner.png",
+        "alt_text": "Saree Banner",
+        "link": "shopify://collections/all"
+      }
+    },
     "responsive_flex_grid_NJGdmw": {
       "type": "responsive-flex-grid",
       "blocks": {
         "image_block_BLQmVp": {
           "type": "image_block",
           "settings": {
-            "image": "shopify://shop_images/Rakhi.png",
+            "image": "shopify://shop_images/Raksha_Bandhan.png",
             "title": "",
             "link": "shopify://collections/all"
           }
@@ -248,7 +257,7 @@
         "image_block_tMmPLV": {
           "type": "image_block",
           "settings": {
-            "image": "shopify://shop_images/Onam.png",
+            "image": "shopify://shop_images/Holi.png",
             "title": "",
             "link": "shopify://collections/all"
           }
@@ -256,7 +265,31 @@
         "image_block_iNWJh9": {
           "type": "image_block",
           "settings": {
-            "image": "shopify://shop_images/Puja.png",
+            "image": "shopify://shop_images/Pongal.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_WMPXhx": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Navratri.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_j8dDWK": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/diwali.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_6TxmGi": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Onam_banner.png",
             "title": "",
             "link": "shopify://collections/all"
           }
@@ -265,25 +298,19 @@
       "block_order": [
         "image_block_BLQmVp",
         "image_block_tMmPLV",
-        "image_block_iNWJh9"
+        "image_block_iNWJh9",
+        "image_block_WMPXhx",
+        "image_block_j8dDWK",
+        "image_block_6TxmGi"
       ],
       "name": "Responsive flex grid",
       "settings": {
         "section_title": "FESTIVE FAVOURITES",
-        "grid_per_desktop": 3,
+        "grid_per_desktop": 6,
         "grid_per_mobile": 3,
         "mobile_layout": "stack",
         "padding_top": 24,
         "padding_bottom": 24
-      }
-    },
-    "clickable_image_section_HH4iM9": {
-      "type": "clickable-image-section",
-      "name": "Clickable image",
-      "settings": {
-        "desktop_image": "shopify://shop_images/Ready_to_wear_-_Half_Banner.png",
-        "alt_text": "Saree Banner",
-        "link": "shopify://collections/all"
       }
     }
   },
