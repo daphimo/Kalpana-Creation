@@ -190,11 +190,55 @@
         "padding_top": 24,
         "padding_bottom": 24
       }
+    },
+    "responsive_flex_grid_DbQiYV": {
+      "type": "responsive-flex-grid",
+      "blocks": {
+        "image_block_LfhDi9": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Rakhi.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_CQftQX": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Onam.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_fJywJ7": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Puja.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "image_block_LfhDi9",
+        "image_block_CQftQX",
+        "image_block_fJywJ7"
+      ],
+      "name": "Responsive flex grid",
+      "settings": {
+        "section_title": "FESTIVE FAVOURITES",
+        "grid_per_desktop": 3,
+        "grid_per_mobile": 3,
+        "mobile_layout": "stack",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
     }
   },
   "order": [
     "cust_hero_slider_3CVCek",
     "responsive_flex_grid_fctXQK",
-    "responsive_flex_grid_mzmCmE"
+    "responsive_flex_grid_mzmCmE",
+    "responsive_flex_grid_DbQiYV"
   ]
 }
