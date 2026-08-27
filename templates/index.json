@@ -75,42 +75,64 @@
         "image_block_37fKq7": {
           "type": "image_block",
           "settings": {
-            "title": "New arrivals",
-            "link": ""
+            "image": "shopify://shop_images/01_1_5c226ff9-1f3d-4207-b6f4-ba2.png",
+            "title": "Sale",
+            "link": "shopify://collections/all"
           }
         },
-        "image_block_LzUHAX": {
+        "image_block_8B7T8b": {
           "type": "image_block",
           "settings": {
+            "image": "shopify://shop_images/02_1_5d4dc698-90cc-402b-a017-bc6.png",
             "title": "Sarees",
-            "link": ""
+            "link": "shopify://collections/all"
           }
         },
-        "image_block_8r6KAk": {
+        "image_block_NVyMFc": {
           "type": "image_block",
           "settings": {
-            "title": "Occasion wear",
-            "link": ""
+            "image": "shopify://shop_images/03_1_78be869c-176f-4d30-91aa-3a7.png",
+            "title": "Kurta Sets",
+            "link": "shopify://collections/all"
           }
         },
-        "image_block_iidD4P": {
+        "image_block_GpUELA": {
           "type": "image_block",
           "settings": {
-            "title": "Best sellers",
-            "link": ""
+            "image": "shopify://shop_images/04_1_ce57621e-3ff1-4276-9347-5c5.png",
+            "title": "Dress Materials",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_qGRbGQ": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/05_1_ac5d8b47-ff28-4bed-83b9-e65.png",
+            "title": "Lehengas",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_4VKC6G": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/06_1.png",
+            "title": "Pure Silk Sarees",
+            "link": "shopify://collections/all"
           }
         }
       },
       "block_order": [
         "image_block_37fKq7",
-        "image_block_LzUHAX",
-        "image_block_8r6KAk",
-        "image_block_iidD4P"
+        "image_block_8B7T8b",
+        "image_block_NVyMFc",
+        "image_block_GpUELA",
+        "image_block_qGRbGQ",
+        "image_block_4VKC6G"
       ],
       "name": "Responsive flex grid",
       "settings": {
         "section_title": "",
-        "grid_per_desktop": 4,
+        "grid_per_desktop": 6,
         "grid_per_mobile": 2.5,
         "mobile_layout": "slide",
         "padding_top": 24,
