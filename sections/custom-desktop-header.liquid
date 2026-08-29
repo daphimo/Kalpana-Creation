@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{ 'custom-desktop-header.css' | asset_url }}" media="(min-width: 750px)">
+<link rel="stylesheet" href="{{ 'custom-desktop-header.css' | asset_url }}">
 
 {% style %}
   @media screen and (max-width: 749px) {
@@ -186,11 +186,7 @@
 
 <script type="module" src="{{ 'cart-icon.js' | asset_url }}" fetchpriority="low"></script>
 
-<script>
-  if (window.matchMedia('(min-width: 750px)').matches) {
-    import({{ 'custom-desktop-header.js' | asset_url | json }});
-  }
-</script>
+<script type="module" src="{{ 'custom-desktop-header.js' | asset_url }}"></script>
 
 {% schema %}
 {

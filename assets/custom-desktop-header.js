@@ -24,7 +24,7 @@ class CustomDesktopHeader extends HTMLElement {
   }
 
   connectedCallback() {
-    if (this.initialized || !window.matchMedia(DESKTOP_QUERY).matches) return;
+    if (this.initialized) return;
     this.initialized = true;
     this.trigger = this.querySelector('.custom-desktop-header__menu-trigger');
     this.closeButton = /** @type {HTMLElement | null} */ (this.querySelector('.custom-desktop-header__close'));
@@ -39,9 +39,7 @@ class CustomDesktopHeader extends HTMLElement {
     this.onKeydown = (event) => {
       if (event.key === 'Escape' && this.classList.contains('is-drawer-open')) this.closeDrawer();
     };
-    this.onResize = () => {
-      if (!window.matchMedia(DESKTOP_QUERY).matches) this.teardown();
-    };
+    this.onResize = () => {};
     this.openDrawer = this.openDrawer.bind(this);
     this.closeDrawer = this.closeDrawer.bind(this);
     this.trigger?.addEventListener('click', this.openDrawer);
@@ -88,10 +86,3 @@ class CustomDesktopHeader extends HTMLElement {
 if (!customElements.get('custom-desktop-header')) {
   customElements.define('custom-desktop-header', CustomDesktopHeader);
 }
-
-window.matchMedia(DESKTOP_QUERY).addEventListener('change', (event) => {
-  if (!event.matches) return;
-  document.querySelectorAll('custom-desktop-header').forEach((header) => {
-    if (header instanceof CustomDesktopHeader) header.connectedCallback();
-  });
-});

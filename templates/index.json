@@ -17,8 +17,8 @@
           "settings": {
             "desktop_image": "shopify://shop_images/Banner_Kalpana_Desktop.png",
             "mobile_image": "shopify://shop_images/Banner_Kalpana_Mobile.png",
-            "image_link": "",
-            "image_alt": ""
+            "image_link": "shopify://collections/all",
+            "image_alt": "Home Page Banner"
           }
         },
         "keyword_43V89L": {

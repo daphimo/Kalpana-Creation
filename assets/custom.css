@@ -1,7 +1,6 @@
 /* Custom desktop header is desktop-only. */
 @media screen and (max-width: 749px) {
-  .custom-desktop-header,
-  .custom-desktop-header-section {
+  .custom-desktop-header__bar {
     display: none !important;
   }
 }
@@ -9,7 +8,10 @@
 /* Mobile bottom bar is mobile-only. */
 @media screen and (min-width: 750px) {
   .mobile-bar,
-  .mobile-bar-section {
+  .mobile-bar-section,
+  .mobile-page-header,
+  .mobile-page-header-section,
+  .mobile-page-header__spacer {
     display: none !important;
   }
 }

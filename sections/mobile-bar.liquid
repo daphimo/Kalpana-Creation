@@ -24,7 +24,7 @@
     --mobile-bar-item-gap: {{ section.settings.item_gap }}px;
   "
 >
-  <header-actions class="mobile-bar__inner{% if section.settings.show_top_border %} mobile-bar__inner--bordered{% endif %}">
+  <header-actions class="mobile-bar__inner{% if section.settings.show_top_border %} mobile-bar__inner--bordered{% endif %}{% unless section.settings.show_labels %} mobile-bar__inner--icons-only{% endunless %}">
     {% for block in section.blocks %}
       {% liquid
         assign item_label = block.settings.label | default: 'Navigation item'
@@ -97,7 +97,18 @@
               </span>
             </span>
           </cart-icon>
-          <span class="mobile-bar__label">{{ item_label | escape }}</span>
+          {% if section.settings.show_labels %}<span class="mobile-bar__label">{{ item_label | escape }}</span>{% endif %}
+        </button>
+      {% elsif block.settings.action_type == 'menu' %}
+        <button type="button" class="mobile-bar__item mobile-bar__item--menu" aria-label="{{ item_label | escape }}" aria-haspopup="dialog" data-mobile-bar-menu-trigger {{ block.shopify_attributes }}>
+          <span class="mobile-bar__icon-wrap">
+            {% if block.settings.custom_image != blank %}
+              {{ block.settings.custom_image | image_url: width: 96 | image_tag: class: 'mobile-bar__custom-image', widths: '48, 72, 96', sizes: '(max-width: 749px) var(--mobile-bar-icon-size), 1px', alt: item_label, loading: 'eager' }}
+            {% else %}
+              <span class="mobile-bar__icon" aria-hidden="true">{{ 'icon-menu.svg' | inline_asset_content }}</span>
+            {% endif %}
+          </span>
+          {% if section.settings.show_labels %}<span class="mobile-bar__label">{{ item_label | escape }}</span>{% endif %}
         </button>
       {% else %}
         <a
@@ -136,13 +147,17 @@
                     <svg viewBox="0 0 20 20" focusable="false">
                       {% render 'icon', icon: 'heart' %}
                     </svg>
+                  {% when 'home' %}
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M3 10.8 12 3l9 7.8v9.7a.5.5 0 0 1-.5.5h-5v-7h-7v7h-5a.5.5 0 0 1-.5-.5v-9.7Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                  {% when 'contact' %}
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M7.1 3.5 10 8.4 7.8 10c1.3 2.7 3.5 4.9 6.2 6.2l1.6-2.2 4.9 2.9-.8 3.1c-.2.7-.8 1.1-1.5 1-7.8-1-14.2-7.4-15.2-15.2-.1-.7.3-1.3 1-1.5l3.1-.8Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                   {% else %}
                     {{ 'icon-search.svg' | inline_asset_content }}
                 {% endcase %}
               </span>
             {% endif %}
           </span>
-          <span class="mobile-bar__label">{{ item_label | escape }}</span>
+          {% if section.settings.show_labels %}<span class="mobile-bar__label">{{ item_label | escape }}</span>{% endif %}
         </a>
       {% endif %}
     {% endfor %}
@@ -154,14 +169,12 @@
   .mobile-bar {
     position: fixed;
     z-index: 40;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    max-width: 100vw;
-    padding-bottom: env(safe-area-inset-bottom, 0);
-    overflow: hidden;
-    background: var(--mobile-bar-background);
+    right: clamp(12px, 4vw, 20px);
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    left: clamp(12px, 4vw, 20px);
+    width: auto;
+    max-width: 560px;
+    margin-inline: auto;
     color: var(--mobile-bar-text);
   }
 
@@ -170,11 +183,16 @@
     align-items: stretch;
     width: 100%;
     min-height: var(--mobile-bar-height);
-    background: var(--mobile-bar-background);
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.86);
+    box-shadow: 0 6px 24px rgb(0 0 0 / 0.14);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
   }
 
   .mobile-bar__inner--bordered {
-    border-top: 1px solid var(--mobile-bar-border);
+    border: 1px solid var(--mobile-bar-border);
   }
 
   .mobile-bar__item {
@@ -188,7 +206,7 @@
     gap: var(--mobile-bar-item-gap);
     padding: 8px 4px;
     border: 0;
-    border-radius: 0;
+    border-radius: 999px;
     background: transparent;
     color: var(--mobile-bar-text);
     font: inherit;
@@ -206,6 +224,11 @@
   .mobile-bar__item:focus-visible {
     outline: 2px solid var(--mobile-bar-accent);
     outline-offset: -3px;
+  }
+
+  .mobile-bar__inner--icons-only .mobile-bar__item {
+    min-height: max(52px, var(--mobile-bar-height));
+    padding-block: 10px;
   }
 
   .mobile-bar__icon-wrap {
@@ -269,6 +292,15 @@
   }
 {% endstyle %}
 
+<script>
+  (() => {
+    const bar = document.getElementById('MobileBar-{{ section.id }}');
+    bar?.querySelectorAll('[data-mobile-bar-menu-trigger]').forEach((button) => {
+      button.addEventListener('click', () => document.querySelector('.custom-desktop-header__menu-trigger')?.click());
+    });
+  })();
+</script>
+
 {% schema %}
 {
   "name": "Mobile bar",
@@ -278,6 +310,12 @@
     "groups": ["footer"]
   },
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_labels",
+      "label": "Show icon labels",
+      "default": true
+    },
     {
       "type": "color",
       "id": "background_color",
@@ -366,7 +404,8 @@
           "label": "Action type",
           "options": [
             { "value": "link", "label": "Link" },
-            { "value": "cart", "label": "Cart" }
+            { "value": "cart", "label": "Cart" },
+            { "value": "menu", "label": "Menu" }
           ],
           "default": "link"
         },
@@ -385,7 +424,9 @@
             { "value": "account", "label": "Account" },
             { "value": "cart", "label": "Cart" },
             { "value": "menu", "label": "Menu" },
-            { "value": "heart", "label": "Heart" }
+            { "value": "heart", "label": "Heart" },
+            { "value": "home", "label": "Home" },
+            { "value": "contact", "label": "Contact" }
           ],
           "default": "grid"
         },

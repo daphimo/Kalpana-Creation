@@ -78,7 +78,7 @@
   height: 18px;
   padding: 0 4px;
   border-radius: 999px;
-  background: var(--cart-bubble-background, #e83a3a);
+  background: var(--cart-bubble-background, #713249);
   color: var(--cart-bubble-text, #fff);
   font-weight: 700;
   top: 2px;
@@ -113,7 +113,7 @@
   padding: 4px;
   overflow: hidden;
   background-color: #ffffff00;
-  color: #c56b3e;
+  color: #713249;
   border: 1px solid;
   border-radius: 8px;
   cursor: pointer;
@@ -127,7 +127,7 @@
 }
 
 .wishlist-button.active svg {
-  fill: #c56b3e;
+  fill: #713249;
   transition: var(--transition);
 }
 

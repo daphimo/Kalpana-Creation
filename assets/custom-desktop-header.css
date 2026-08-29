@@ -18,7 +18,7 @@
     z-index: 100;
     color: var(--cdh-initial-text);
     --color-account-icon: var(--cdh-initial-icon);
-    --cdh-count-background: #e83a3a;
+    --cdh-count-background: #713249;
     --cdh-count-text: #fff;
     --cart-bubble-background: var(--cdh-count-background);
     --cart-bubble-text: #fff;
@@ -364,4 +364,22 @@
   .custom-desktop-header * {
     transition-duration: .01ms !important;
   }
+}
+
+@media screen and (max-width: 749px) {
+  .custom-desktop-header__overlay { position: fixed; inset: 0; z-index: 900; background: rgb(0 0 0 / .48); opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility .25s; }
+  .custom-desktop-header__drawer { position: fixed; inset: 0 auto 0 0; z-index: 1000; display: flex; width: min(90vw, 420px); flex-direction: column; overflow-y: auto; overscroll-behavior: contain; background: #fff; color: var(--cdh-scrolled-text); transform: translateX(-102%); visibility: hidden; transition: transform .34s cubic-bezier(.22, 1, .36, 1), visibility .34s; }
+  .custom-desktop-header.is-drawer-open .custom-desktop-header__overlay { opacity: 1; visibility: visible; }
+  .custom-desktop-header.is-drawer-open .custom-desktop-header__drawer { transform: translateX(0); visibility: visible; }
+  .drawer__header { position: sticky; top: 0; z-index: 1; display: flex; justify-content: flex-end; padding: 12px 16px; background: #fff; }
+  .custom-desktop-header__close { display: grid; width: 44px; height: 44px; place-items: center; color: inherit; }
+  .custom-desktop-header__close svg { width: 18px; height: 18px; }
+  .custom-desktop-header__drawer-content { padding: 0 16px 24px; }
+  .custom-desktop-header__group + .custom-desktop-header__group { margin-top: 24px; }
+  .custom-desktop-header__group-title { margin: 0 0 12px; font-family: var(--font-heading--family); font-size: 1.1rem; }
+  .custom-desktop-header__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .custom-desktop-header__card { color: inherit; text-align: center; text-decoration: none; font-size: 13px; font-weight: 600; }
+  .custom-desktop-header__card-image { height: 140px; margin-bottom: 4px; overflow: hidden; border-radius: var(--style-border-radius-card, 4px); background: #f4f1ef; }
+  .custom-desktop-header__card-image :is(img, svg) { width: 100%; height: 100%; object-fit: cover; }
+  html.custom-desktop-header-lock, html.custom-desktop-header-lock body { overflow: hidden; }
 }

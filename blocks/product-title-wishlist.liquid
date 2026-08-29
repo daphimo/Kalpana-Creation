@@ -1,6 +1,6 @@
 <div class="product-title-row" {{ block.shopify_attributes }}>
   <div class="product-title">
-    <h1>{{ closest.product.title | escape }}</h1>
+    <h4>{{ closest.product.title | escape }}</h4>
   </div>
   <div class="product-wishlist">
     {% render 'wishlist-button', product: closest.product, class: 'product-wishlist' %}
