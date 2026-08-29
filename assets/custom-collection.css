@@ -418,8 +418,8 @@
   border-radius: 50%;
   place-items: center;
   color: #6B1F3A;
-  background: #FBF6EE;
-  border: 1px solid #E8D5CC;
+  background: none;
+  border: none;
   backdrop-filter: none;
 }
 
