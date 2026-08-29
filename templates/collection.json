@@ -13,7 +13,7 @@
       "type": "custom-collection",
       "settings": {
         "show_intro": false,
-        "intro_words": 30,
+        "intro_words": 55,
         "enable_filtering": true,
         "sidebar_width": 250,
         "columns_desktop": 5,
