@@ -103,6 +103,7 @@
     "variant_button_radius": 14,
     "variant_button_width": "equal-width-buttons",
     "best_seller_badge_image": "shopify://shop_images/Bestseller.02mkicrcrgcw8.png",
+    "best_seller_badge_width": 100,
     "content_for_index": [],
     "color_palette": {
       "background": "#ffffff",
