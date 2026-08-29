@@ -194,6 +194,17 @@
               },
               "blocks": {}
             },
+            "color_family_products_yU4pRU": {
+              "type": "color-family-products",
+              "name": "Color family products",
+              "settings": {
+                "label": "Available in",
+                "padding_top": 16,
+                "padding_bottom": 16,
+                "products_per_row": 4
+              },
+              "blocks": {}
+            },
             "variant_picker_R3rGDr": {
               "type": "variant-picker",
               "settings": {
@@ -312,6 +323,7 @@
           "block_order": [
             "group_icgrde",
             "divider_VJhene",
+            "color_family_products_yU4pRU",
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
             "product_wishlist_azAazc",
