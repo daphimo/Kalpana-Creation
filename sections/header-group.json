@@ -244,11 +244,21 @@
         "show_top_border": true,
         "border_color": "#e8e2dc"
       }
+    },
+    "mobile_page_header_LFRWEj": {
+      "type": "mobile-page-header",
+      "name": "Mobile page header",
+      "settings": {
+        "padding_top": 8,
+        "padding_bottom": 8,
+        "wishlist_url": "shopify://pages/wishlist"
+      }
     }
   },
   "order": [
     "header_section",
     "custom_desktop_header_HnFCEy",
-    "mobile_bar_k96ftV"
+    "mobile_bar_k96ftV",
+    "mobile_page_header_LFRWEj"
   ]
 }
