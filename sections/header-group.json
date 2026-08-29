@@ -183,26 +183,26 @@
           "settings": {
             "label": "Home",
             "action_type": "link",
-            "link": "",
+            "link": "/",
             "icon": "home"
           }
         },
         "bar_item_fH9eMT": {
           "type": "bar_item",
           "settings": {
-            "label": "Contact",
-            "action_type": "link",
-            "link": "shopify://pages/contact",
-            "icon": "contact"
+            "label": "Shop",
+            "action_type": "menu",
+            "link": "shopify://collections/all",
+            "icon": "grid"
           }
         },
         "bar_item_PCNEaw": {
           "type": "bar_item",
           "settings": {
-            "label": "Menu",
-            "action_type": "menu",
-            "link": "",
-            "icon": "menu"
+            "label": "Swipe",
+            "action_type": "link",
+            "link": "shopify://pages/contact",
+            "icon": "contact"
           }
         },
         "bar_item_QMWGxT": {
@@ -233,6 +233,7 @@
       ],
       "name": "Mobile bar",
       "settings": {
+        "show_labels": false,
         "background_color": "#ffffff",
         "text_color": "#302a27",
         "accent_color": "#8a3426",
@@ -248,7 +249,6 @@
   "order": [
     "header_section",
     "custom_desktop_header_HnFCEy",
-    "mobile_page_header_Kc9nP2",
     "mobile_bar_k96ftV"
   ]
 }
