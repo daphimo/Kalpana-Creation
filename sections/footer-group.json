@@ -300,7 +300,7 @@
               "type": "menu",
               "settings": {
                 "menu": "main-menu",
-                "heading": "Popular searches",
+                "heading": "Festivals",
                 "menu_spacing": 8,
                 "show_as_accordion": true,
                 "accordion_icon": "plus",
@@ -320,7 +320,7 @@
               "type": "menu",
               "settings": {
                 "menu": "main-menu",
-                "heading": "Explore trending articles",
+                "heading": "Saree Types",
                 "menu_spacing": 8,
                 "show_as_accordion": true,
                 "accordion_icon": "plus",
