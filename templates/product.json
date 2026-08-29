@@ -108,30 +108,10 @@
                 "padding-inline-end": 0
               },
               "blocks": {
-                "text_xrnftG": {
-                  "type": "text",
-                  "name": "t:names.product_title",
-                  "settings": {
-                    "text": "<h1>{{ closest.product.title }}</h1>",
-                    "width": "100%",
-                    "max_width": "normal",
-                    "alignment": "left",
-                    "type_preset": "h3",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "pretty",
-                    "text_color": "",
-                    "background": false,
-                    "background_color": "#00000026",
-                    "corner_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
+                "product_title_wishlist_CCiNAE": {
+                  "type": "product-title-wishlist",
+                  "name": "Product title + wishlist",
+                  "settings": {},
                   "blocks": {}
                 },
                 "price_tVjtKg": {
@@ -160,7 +140,7 @@
                 }
               },
               "block_order": [
-                "text_xrnftG",
+                "product_title_wishlist_CCiNAE",
                 "price_tVjtKg"
               ]
             },
@@ -232,7 +212,7 @@
                 "border_width": 1,
                 "border_radius": 0,
                 "padding-block-start": 0,
-                "padding-block-end": 0,
+                "padding-block-end": 22,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
               },
@@ -269,12 +249,6 @@
                 }
               },
               "block_order": []
-            },
-            "product_wishlist_azAazc": {
-              "type": "product-wishlist",
-              "name": "Wishlist",
-              "settings": {},
-              "blocks": {}
             },
             "product_collapsible_NLexCU": {
               "type": "product-collapsible",
@@ -321,7 +295,6 @@
             "color_family_products_yU4pRU",
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
-            "product_wishlist_azAazc",
             "product_collapsible_NLexCU",
             "product_specifications_fWJrT4",
             "product_collapsible_mQga4Y",
