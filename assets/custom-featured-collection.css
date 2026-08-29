@@ -58,8 +58,8 @@
 .custom-featured-collection .custom-collection-card__wishlist-wrap {
   position: absolute;
   z-index: 2;
-  top: 10px;
-  right: 10px;
+  top: 0;
+  right: 0;
   left: auto;
 }
 
@@ -187,8 +187,8 @@
   }
 
   .custom-featured-collection .custom-collection-card__wishlist-wrap {
-    top: 8px;
-    right: 8px;
+    top: 0;
+    right: 0;
     left: auto;
   }
 
