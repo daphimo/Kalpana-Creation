@@ -4,6 +4,27 @@
   width: 100%;
 }
 
+.product-title-row {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.product-title-row .product-title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.product-title-row .product-title h1 { margin: 0; overflow-wrap: anywhere; }
+
+.product-title-row .product-wishlist {
+  width: auto;
+  flex: 0 0 auto;
+}
+
 .product-collapsible__details {
   border-top: 1px solid rgb(var(--color-foreground-rgb) / 18%);
   border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 18%);

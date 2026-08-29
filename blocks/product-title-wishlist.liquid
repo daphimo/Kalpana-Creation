@@ -1,0 +1,18 @@
+<div class="product-title-row" {{ block.shopify_attributes }}>
+  <div class="product-title">
+    <h1>{{ closest.product.title | escape }}</h1>
+  </div>
+  <div class="product-wishlist">
+    {% render 'wishlist-button', product: closest.product, class: 'product-wishlist' %}
+    <span class="visually-hidden">Add to wishlist</span>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product title + wishlist",
+  "tag": null,
+  "settings": [],
+  "presets": [{ "name": "Product title + wishlist" }]
+}
+{% endschema %}

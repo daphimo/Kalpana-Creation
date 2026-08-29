@@ -4,7 +4,7 @@
   {%- endif -%}
 {%- endcapture -%}
 
-{% render 'product-collapsible', label: block.settings.label, content: collapsible_content, block_id: block.id, shopify_attributes: block.shopify_attributes %}
+{% render 'product-collapsible', label: block.settings.label, content: collapsible_content, block_id: block.id, open_initially: block.settings.open_initially, shopify_attributes: block.shopify_attributes %}
 
 {% schema %}
 {
@@ -12,7 +12,8 @@
   "tag": null,
   "settings": [
     { "type": "text", "id": "label", "label": "Label", "default": "More Information" },
-    { "type": "richtext", "id": "content", "label": "Content" }
+    { "type": "richtext", "id": "content", "label": "Content" },
+    { "type": "checkbox", "id": "open_initially", "label": "Open initially", "default": false }
   ],
   "presets": [{ "name": "Collapsible" }]
 }

@@ -39,8 +39,6 @@
 %}
 
 {% if family_items != blank %}
-  {{ 'custom-collection.css' | asset_url | stylesheet_tag }}
-  <script src="{{ 'custom-product-card.js' | asset_url }}" type="module" fetchpriority="low"></script>
   <div
     class="color-family-products"
     style="--color-family-columns: {{ block.settings.products_per_row }}; --color-family-padding-top: {{ block.settings.padding_top }}px; --color-family-padding-bottom: {{ block.settings.padding_bottom }}px;"
@@ -89,9 +87,21 @@
     border-color: var(--color-foreground);
   }
 
-  .color-family-products .custom-collection-card__title,
-  .color-family-products .custom-collection-card__price {
-    font-size: 11px;
+  .color-family-products__link,
+  .color-family-products__image {
+    display: block;
+    width: 100%;
+  }
+
+  .color-family-products__link {
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+  }
+
+  .color-family-products__image {
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
   }
 
   @media screen and (max-width: 749px) {

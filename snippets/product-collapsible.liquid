@@ -5,11 +5,12 @@
   @param {string} content
   @param {string} block_id
   @param {string} shopify_attributes
+  @param {boolean} [open_initially]
 {%- enddoc -%}
 
 {%- capture disclosure -%}
-  <details class="product-collapsible__details" {{ shopify_attributes }}>
-    <summary class="product-collapsible__trigger" aria-expanded="false" aria-controls="ProductCollapsible-{{ block_id }}">
+  <details class="product-collapsible__details"{% if open_initially %} open{% endif %} {{ shopify_attributes }}>
+    <summary class="product-collapsible__trigger" aria-expanded="{% if open_initially %}true{% else %}false{% endif %}" aria-controls="ProductCollapsible-{{ block_id }}">
       <span class="product-collapsible__label">{{ label | escape }}</span>
       <span class="product-collapsible__icon" aria-hidden="true">
         <span class="product-collapsible__plus">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
@@ -22,4 +23,4 @@
   </details>
 {%- endcapture -%}
 
-{% render 'accordion-custom-component', children: disclosure, class: 'product-collapsible' %}
+{% render 'accordion-custom-component', children: disclosure, class: 'product-collapsible', open_by_default_on_desktop: open_initially, open_by_default_on_mobile: open_initially %}

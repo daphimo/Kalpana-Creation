@@ -6,6 +6,15 @@
   assign block_settings = block.settings
   assign product_resource = closest.product
   assign selected_variant = product_resource.selected_or_first_available_variant
+  assign compare_at_price = selected_variant.compare_at_price
+  assign discount_percent = 0
+  if compare_at_price > selected_variant.price
+    assign price_difference = compare_at_price | minus: selected_variant.price
+    assign discount_percent = price_difference | times: 100.0 | divided_by: compare_at_price | round
+  endif
+  assign rating = product_resource.metafields.reviews.rating.value.rating
+  assign rating_max = product_resource.metafields.reviews.rating.value.scale_max
+  assign rating_count = product_resource.metafields.reviews.rating_count.value | default: product_resource.metafields.reviews.rating_count
 -%}
 
 {% liquid
@@ -53,11 +62,28 @@
   "
   {{ block.shopify_attributes }}
 >
-  {% render 'price',
-    show_unit_price: true,
-    product_resource: product_resource,
-    show_sale_price_first: block_settings.show_sale_price_first
-  %}
+  <div class="product-price-block" style="--product-price-size: {{ block_settings.price_size }}px;">
+    <div class="product-price-block__prices">
+      {% render 'price',
+        show_unit_price: true,
+        product_resource: product_resource,
+        show_sale_price_first: block_settings.show_sale_price_first
+      %}
+      {% if discount_percent > 0 %}
+        <span class="product-price-block__discount">{{ discount_percent }}% OFF</span>
+      {% endif %}
+    </div>
+    {% if block_settings.show_rating %}
+      <div class="product-price-block__rating" data-review-rating-container>
+        {% if rating != blank %}
+          <span aria-hidden="true">&#9733;</span>
+          <span>{{ rating | round: 1 }}</span>
+          {% if rating_count != blank %}<small>({{ rating_count }})</small>{% endif %}
+          <span class="visually-hidden">Rating {{ rating | round: 1 }} out of {{ rating_max | default: 5 }}</span>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
 
   {% if block_settings.show_tax_info %}
     <div class="tax-note">
@@ -92,6 +118,36 @@
 
 {% render 'payment-terms-styles' %}
 
+{% stylesheet %}
+  .product-price-block,
+  .product-price-block__prices,
+  .product-price-block__prices [ref='priceContainer'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .product-price-block { gap: 12px 24px; }
+  .product-price-block__prices { gap: 8px 12px; min-width: 0; }
+  .product-price-block__prices [ref='priceContainer'] { gap: 8px 12px; }
+  .product-price-block__prices .price { font-size: var(--product-price-size); font-weight: 700; }
+  .product-price-block__prices .compare-at-price { color: rgb(var(--color-foreground-rgb) / 58%); }
+  .product-price-block__discount { color: #6B1F3A; font-size: 0.82rem; font-weight: 700; white-space: nowrap; }
+  .product-price-block__rating:not(:empty) {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 9px;
+    border: 1px solid #C6A15B;
+    border-radius: 4px;
+    background: #FBF6EE;
+    color: #2B1B1B;
+    line-height: 1;
+  }
+  .product-price-block__rating > span:first-child { color: #C6A15B; }
+  .product-price-block__rating small { opacity: 0.7; }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.product_price",
@@ -121,6 +177,23 @@
       "type": "checkbox",
       "id": "show_tax_info",
       "label": "t:settings.show_tax_info",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "price_size",
+      "label": "Price size",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show rating",
+      "info": "Rating is generated through the review app.",
       "default": false
     },
     {

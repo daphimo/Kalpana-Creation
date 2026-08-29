@@ -1,5 +1,17 @@
 {% if family_product != blank %}
   <li class="color-family-products__item{% if family_product.id == current_product.id %} is-current{% endif %}">
-    {% render 'custom-collection-product-card', product: family_product %}
+    <a
+      class="color-family-products__link"
+      href="{{ family_product.url }}"
+      aria-label="{{ family_product.title | escape }}{% if family_product.id == current_product.id %}, current product{% endif %}"
+      {% if family_product.id == current_product.id %}aria-current="page"{% endif %}
+    >
+      {% assign family_image = family_product.featured_media.preview_image | default: family_product.featured_image %}
+      {% if family_image != blank %}
+        {{ family_image | image_url: width: 360 | image_tag: class: 'color-family-products__image', widths: '120, 180, 240, 360', sizes: '(max-width: 749px) 22vw, 120px', loading: 'lazy', alt: family_image.alt }}
+      {% else %}
+        {{ 'product-1' | placeholder_svg_tag: 'color-family-products__image color-family-products__placeholder' }}
+      {% endif %}
+    </a>
   </li>
 {% endif %}
