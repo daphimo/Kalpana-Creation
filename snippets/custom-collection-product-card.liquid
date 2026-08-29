@@ -52,7 +52,7 @@
 
     {% render 'wishlist-button', product: product, class: 'custom-collection-card__wishlist' %}
 
-    {% if settings.best_seller_badge_image != blank %}
+    {% if settings.best_seller_badge_image != blank and product.tags contains 'bestseller' %}
       <div
         class="custom-collection-card__best-seller"
         style="--best-seller-badge-width: {{ settings.best_seller_badge_width }}px; --best-seller-badge-fit: {{ settings.best_seller_badge_image_fit }};"
