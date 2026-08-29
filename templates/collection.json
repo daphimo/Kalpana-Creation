@@ -21,7 +21,7 @@
         "grid_gap": 16,
         "image_ratio": 130,
         "products_per_page": 24,
-        "show_seo_description": true
+        "show_seo_description": false
       }
     }
   },
