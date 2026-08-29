@@ -293,29 +293,38 @@
               "settings": {},
               "blocks": {}
             },
-            "text_aEtTtq": {
-              "type": "text",
-              "name": "t:names.product_description",
+            "product_collapsible_NLexCU": {
+              "type": "product-collapsible",
+              "name": "Collapsible",
               "settings": {
-                "text": "{{ closest.product.description }}",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
+                "label": "DETAILS",
+                "content": "{{ closest.product.description }}"
+              },
+              "blocks": {}
+            },
+            "product_specifications_fWJrT4": {
+              "type": "product-specifications",
+              "name": "Specifications",
+              "settings": {
+                "label": "SPECIFICATIONS"
+              },
+              "blocks": {}
+            },
+            "product_collapsible_mQga4Y": {
+              "type": "product-collapsible",
+              "name": "Collapsible",
+              "settings": {
+                "label": "RETURN POLICY",
+                "content": ""
+              },
+              "blocks": {}
+            },
+            "product_collapsible_dRyhgV": {
+              "type": "product-collapsible",
+              "name": "Collapsible",
+              "settings": {
+                "label": "SUPPORT",
+                "content": ""
               },
               "blocks": {}
             }
@@ -327,7 +336,10 @@
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
             "product_wishlist_azAazc",
-            "text_aEtTtq"
+            "product_collapsible_NLexCU",
+            "product_specifications_fWJrT4",
+            "product_collapsible_mQga4Y",
+            "product_collapsible_dRyhgV"
           ]
         }
       },
