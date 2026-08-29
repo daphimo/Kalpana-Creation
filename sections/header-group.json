@@ -175,15 +175,6 @@
         "wishlist_url": "shopify://pages/wishlist"
       }
     },
-    "mobile_page_header_Kc9nP2": {
-      "type": "mobile-page-header",
-      "name": "Mobile page header",
-      "settings": {
-        "padding_top": 8,
-        "padding_bottom": 8,
-        "wishlist_url": "shopify://pages/wishlist"
-      }
-    },
     "mobile_bar_k96ftV": {
       "type": "mobile-bar",
       "blocks": {
@@ -242,7 +233,6 @@
       ],
       "name": "Mobile bar",
       "settings": {
-        "show_labels": true,
         "background_color": "#ffffff",
         "text_color": "#302a27",
         "accent_color": "#8a3426",
