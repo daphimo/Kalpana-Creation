@@ -299,7 +299,7 @@
             "menu_QD9xXU": {
               "type": "menu",
               "settings": {
-                "menu": "main-menu",
+                "menu": "festivals",
                 "heading": "Festivals",
                 "menu_spacing": 8,
                 "show_as_accordion": true,
@@ -319,7 +319,7 @@
             "menu_89tmHd": {
               "type": "menu",
               "settings": {
-                "menu": "main-menu",
+                "menu": "saree-types",
                 "heading": "Saree Types",
                 "menu_spacing": 8,
                 "show_as_accordion": true,
