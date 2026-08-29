@@ -120,7 +120,7 @@
                     "show_sale_price_first": true,
                     "show_installments": false,
                     "show_tax_info": false,
-                    "price_size": 24,
+                    "price_size": 18,
                     "show_rating": false,
                     "type_preset": "paragraph",
                     "width": "100%",
@@ -235,7 +235,7 @@
                   "static": true,
                   "settings": {
                     "style_class": "button-custom",
-                    "custom_button_background": "#53634A",
+                    "custom_button_background": "#53634a",
                     "custom_button_text": "{{ settings.color_palette.background }}",
                     "custom_button_border": "{{ settings.color_palette.background }}"
                   },
