@@ -427,13 +427,13 @@
   width: 26px;
 }
 
-.custom-collection-card__wishlist-wrap .wishlist-button:hover,
+/* .custom-collection-card__wishlist-wrap .wishlist-button:hover,
 .custom-collection-card__wishlist-wrap .wishlist-button:focus-visible {
   border-color: #C6A15B;
   color: #6B1F3A;
   outline: 2px solid #C6A15B;
   outline-offset: 2px;
-}
+} */
 
 .custom-collection-card__wishlist-wrap .wishlist-button.active {
   background: #E8D5CC;
