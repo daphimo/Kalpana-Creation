@@ -1,0 +1,28 @@
+{% liquid
+  assign range_max = filter.range_max | divided_by: 100.0
+  assign min_value = filter.min_value.value | divided_by: 100.0 | default: 0
+  assign max_value = filter.max_value.value | divided_by: 100.0 | default: range_max
+  assign currency_symbol = localization.country.currency.symbol | default: cart.currency.symbol
+%}
+<div
+  class="custom-collection__price-range"
+  data-price-range
+  data-range-max="{{ range_max }}"
+  style="--price-min-position: 0%; --price-max-position: 100%;"
+>
+  <div class="custom-collection__price-track" aria-hidden="true"><span></span></div>
+  <div class="custom-collection__price-sliders">
+    <input type="range" min="0" max="{{ range_max }}" step="0.01" value="{{ min_value }}" data-price-range-min aria-label="Minimum price">
+    <input type="range" min="0" max="{{ range_max }}" step="0.01" value="{{ max_value }}" data-price-range-max aria-label="Maximum price">
+  </div>
+  <div class="custom-collection__price-fields">
+    <label>
+      <span>Minimum</span>
+      <span class="custom-collection__price-input"><span aria-hidden="true">{{ currency_symbol }}</span><input type="number" inputmode="decimal" min="0" max="{{ range_max }}" step="0.01" name="{{ filter.min_value.param_name }}" value="{% if filter.min_value.value != null %}{{ min_value }}{% endif %}" placeholder="0" data-price-input-min></span>
+    </label>
+    <label>
+      <span>Maximum</span>
+      <span class="custom-collection__price-input"><span aria-hidden="true">{{ currency_symbol }}</span><input type="number" inputmode="decimal" min="0" max="{{ range_max }}" step="0.01" name="{{ filter.max_value.param_name }}" value="{% if filter.max_value.value != null %}{{ max_value }}{% endif %}" placeholder="{{ range_max }}" data-price-input-max></span>
+    </label>
+  </div>
+</div>

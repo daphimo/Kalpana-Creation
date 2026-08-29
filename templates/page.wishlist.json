@@ -14,7 +14,6 @@
       "type": "wishlist-template",
       "settings": {
         "title": "Wishlist",
-        "align": "center",
         "titlesize": 30,
         "loading_bg": "#dee8ff",
         "loading_mn": "#f5f5f5",

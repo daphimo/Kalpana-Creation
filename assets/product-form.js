@@ -744,12 +744,12 @@ class ProductFormComponent extends Component {
    */
   #setLiveRegionText(text) {
     const liveRegion = this.refs.liveRegion;
-    liveRegion.textContent = text;
+    if (liveRegion) liveRegion.textContent = text;
   }
 
   #clearLiveRegionText() {
     const liveRegion = this.refs.liveRegion;
-    liveRegion.textContent = '';
+    if (liveRegion) liveRegion.textContent = '';
   }
 
   /**

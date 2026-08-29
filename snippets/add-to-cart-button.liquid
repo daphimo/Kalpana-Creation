@@ -5,6 +5,7 @@
   @param {string} add_to_cart_text - The text to display on the button.
   @param {object} product - The product object to be added to the cart.
   @param {boolean} show_icon - Whether to render the cart icon.
+  @param {boolean} [icon_only] - Visually hides the button label while retaining accessible text.
   @param {string} [class] - Additional CSS classes to apply to the button.
   @param {string} [id] - The ID attribute for the button.
   @param {string} [data_testid] - The data-testid attribute for testing.
@@ -32,6 +33,9 @@
     ref="addToCartButton"
     on:click="/handleClick"
     class="button {{ class }}"
+    {% if icon_only %}
+      aria-label="{{ add_to_cart_text | default: default_add_to_cart_text | escape }}"
+    {% endif %}
     {% if data_testid %}
       data-testid="{{ data_testid }}"
     {% endif %}
@@ -47,7 +51,9 @@
         {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
       </span>
     {% endif %}
-    {{- add_to_cart_text | default: default_add_to_cart_text -}}
+    {% if icon_only %}<span class="visually-hidden">{% endif %}
+      {{- add_to_cart_text | default: default_add_to_cart_text -}}
+    {% if icon_only %}</span>{% endif %}
     {% comment %} checkmark burst markup {% endcomment %}
     <span class="add-to-cart__added">
       <span class="svg-wrapper add-to-cart__added-icon">

@@ -17,16 +17,16 @@
 %}
 
 <custom-desktop-header
-  class="custom-desktop-header"
+  class="custom-desktop-header{% unless template.name == 'index' %} custom-desktop-header--static is-scrolled{% endunless %}"
   data-section-id="{{ section.id }}"
-  data-scroll-threshold="{{ section.settings.scroll_threshold }}"
+  data-scroll-threshold="{% if template.name == 'index' %}{{ section.settings.scroll_threshold }}{% else %}-1{% endif %}"
   style="
     --cdh-padding-top: {{ section.settings.padding_top }}px;
     --cdh-padding-bottom: {{ section.settings.padding_bottom }}px;
     --cdh-logo-height-desktop: {{ section.settings.logo_height_desktop }}px;
     --cdh-logo-height-mobile: {{ section.settings.logo_height_mobile }}px;
-    --cdh-initial-text: {{ section.settings.initial_text_color }};
-    --cdh-initial-icon: {{ section.settings.initial_icon_color }};
+    --cdh-initial-text: {% if template.name == 'index' %}{{ section.settings.initial_text_color }}{% else %}{{ alternate_color }}{% endif %};
+    --cdh-initial-icon: {% if template.name == 'index' %}{{ section.settings.initial_icon_color }}{% else %}{{ alternate_color }}{% endif %};
     --cdh-scrolled-bg: {{ section.settings.scrolled_background }};
     --cdh-scrolled-text: {{ alternate_color }};
     --cdh-scrolled-icon: {{ alternate_color }};

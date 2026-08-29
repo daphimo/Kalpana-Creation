@@ -1,0 +1,5 @@
+{% if family_product != blank %}
+  <li class="color-family-products__item{% if family_product.id == current_product.id %} is-current{% endif %}">
+    {% render 'custom-collection-product-card', product: family_product %}
+  </li>
+{% endif %}

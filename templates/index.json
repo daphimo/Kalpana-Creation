@@ -69,7 +69,269 @@
         "autoplay_duration": 5
       }
     },
-    "product_list_fa6P9H": {
+    "responsive_flex_grid_fctXQK": {
+      "type": "responsive-flex-grid",
+      "blocks": {
+        "image_block_37fKq7": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/01_1_5c226ff9-1f3d-4207-b6f4-ba2.png",
+            "title": "Sale",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_8B7T8b": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/02_1_5d4dc698-90cc-402b-a017-bc6.png",
+            "title": "Sarees",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_NVyMFc": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/03_1_78be869c-176f-4d30-91aa-3a7.png",
+            "title": "Kurta Sets",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_GpUELA": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/04_1_ce57621e-3ff1-4276-9347-5c5.png",
+            "title": "Dress Materials",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_qGRbGQ": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/05_1_ac5d8b47-ff28-4bed-83b9-e65.png",
+            "title": "Lehengas",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_4VKC6G": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/06_1.png",
+            "title": "Pure Silk Sarees",
+            "link": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "image_block_37fKq7",
+        "image_block_8B7T8b",
+        "image_block_NVyMFc",
+        "image_block_GpUELA",
+        "image_block_qGRbGQ",
+        "image_block_4VKC6G"
+      ],
+      "name": "Responsive flex grid",
+      "settings": {
+        "section_title": "",
+        "grid_per_desktop": 6,
+        "grid_per_mobile": 3.5,
+        "mobile_layout": "slide",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "responsive_flex_grid_mzmCmE": {
+      "type": "responsive-flex-grid",
+      "blocks": {
+        "image_block_kBDJBT": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/DM_01.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_JhbEWW": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Pure_Silk_Sarees_10.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_cwWCwX": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Sarees_-_Tile_Banner.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_6gcJrA": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Kurta_Sets_5.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "image_block_kBDJBT",
+        "image_block_JhbEWW",
+        "image_block_cwWCwX",
+        "image_block_6gcJrA"
+      ],
+      "name": "Responsive flex grid",
+      "settings": {
+        "section_title": "THE SAVINGS EDIT",
+        "grid_per_desktop": 4,
+        "grid_per_mobile": 2,
+        "mobile_layout": "stack",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "responsive_flex_grid_DbQiYV": {
+      "type": "responsive-flex-grid",
+      "blocks": {
+        "image_block_LfhDi9": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Rakhi.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_CQftQX": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Onam.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_fJywJ7": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Puja.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "image_block_LfhDi9",
+        "image_block_CQftQX",
+        "image_block_fJywJ7"
+      ],
+      "name": "Responsive flex grid",
+      "settings": {
+        "section_title": "FESTIVE FAVOURITES",
+        "grid_per_desktop": 3,
+        "grid_per_mobile": 3,
+        "mobile_layout": "stack",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "clickable_image_section_HH4iM9": {
+      "type": "clickable-image-section",
+      "name": "Clickable image",
+      "settings": {
+        "desktop_image": "shopify://shop_images/Ready_to_wear_-_Half_Banner.png",
+        "alt_text": "Saree Banner",
+        "link": "shopify://collections/all"
+      }
+    },
+    "responsive_flex_grid_NJGdmw": {
+      "type": "responsive-flex-grid",
+      "blocks": {
+        "image_block_BLQmVp": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Raksha_Bandhan.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_tMmPLV": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Holi.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_iNWJh9": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Pongal.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_WMPXhx": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Navratri.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_j8dDWK": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/diwali.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "image_block_6TxmGi": {
+          "type": "image_block",
+          "settings": {
+            "image": "shopify://shop_images/Onam_banner.png",
+            "title": "",
+            "link": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "image_block_BLQmVp",
+        "image_block_tMmPLV",
+        "image_block_iNWJh9",
+        "image_block_WMPXhx",
+        "image_block_j8dDWK",
+        "image_block_6TxmGi"
+      ],
+      "name": "Responsive flex grid",
+      "settings": {
+        "section_title": "FESTIVE FAVOURITES",
+        "grid_per_desktop": 6,
+        "grid_per_mobile": 3,
+        "mobile_layout": "stack",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "clickable_image_section_8Npbd8": {
+      "type": "clickable-image-section",
+      "name": "Clickable image",
+      "settings": {
+        "desktop_image": "shopify://shop_images/Coming_Soon_-_Early_Access_Unloc.png",
+        "alt_text": "",
+        "link": ""
+      }
+    },
+    "clickable_image_section_M4BKAP": {
+      "type": "clickable-image-section",
+      "name": "Clickable image",
+      "settings": {
+        "desktop_image": "shopify://shop_images/Koskii_Klan_-_Half_Banner_Update.png",
+        "alt_text": "",
+        "link": ""
+      }
+    },
+    "product_list_QHwVR8": {
       "type": "product-list",
       "blocks": {
         "static-header": {
@@ -106,7 +368,7 @@
             "padding-inline-end": 0
           },
           "blocks": {
-            "product_list_text_YFtzcL": {
+            "product_list_text_UmfPwN": {
               "type": "_product-list-text",
               "name": "t:names.collection_title",
               "settings": {
@@ -114,9 +376,9 @@
                 "width": "fit-content",
                 "max_width": "normal",
                 "alignment": "left",
-                "type_preset": "h4",
+                "type_preset": "rte",
                 "font": "var(--font-body--family)",
-                "font_size": "1rem",
+                "font_size": "",
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
@@ -132,13 +394,13 @@
               },
               "blocks": {}
             },
-            "product_list_button_MWeP9V": {
+            "product_list_button_jCHhDj": {
               "type": "_product-list-button",
               "name": "t:names.product_list_button",
               "settings": {
                 "label": "View all",
                 "open_in_new_tab": false,
-                "style_class": "link",
+                "style_class": "button-unstyled",
                 "custom_button_background": "{{ settings.color_palette.foreground }}",
                 "custom_button_text": "{{ settings.color_palette.background }}",
                 "custom_button_border": "{{ settings.color_palette.background }}",
@@ -152,8 +414,8 @@
             }
           },
           "block_order": [
-            "product_list_text_YFtzcL",
-            "product_list_button_MWeP9V"
+            "product_list_text_UmfPwN",
+            "product_list_button_jCHhDj"
           ]
         },
         "static-product-card": {
@@ -174,7 +436,7 @@
             "padding-inline-end": 0
           },
           "blocks": {
-            "product_card_gallery_677WP3": {
+            "product_card_gallery_icmVzX": {
               "type": "_product-card-gallery",
               "name": "t:names.product_card_media",
               "settings": {
@@ -191,14 +453,14 @@
               },
               "blocks": {}
             },
-            "product_title_YXxMTj": {
+            "product_title_7GEthr": {
               "type": "product-title",
               "name": "t:names.product_title",
               "settings": {
-                "width": "100%",
+                "width": "fit-content",
                 "max_width": "normal",
                 "alignment": "left",
-                "type_preset": "rte",
+                "type_preset": "paragraph",
                 "font": "var(--font-body--family)",
                 "font_size": "1rem",
                 "line_height": "normal",
@@ -216,7 +478,7 @@
               },
               "blocks": {}
             },
-            "price_JQzVV4": {
+            "price_FHriLe": {
               "type": "price",
               "name": "t:names.product_price",
               "settings": {
@@ -241,15 +503,15 @@
             }
           },
           "block_order": [
-            "product_card_gallery_677WP3",
-            "product_title_YXxMTj",
-            "price_JQzVV4"
+            "product_card_gallery_icmVzX",
+            "product_title_7GEthr",
+            "price_FHriLe"
           ]
         }
       },
-      "name": "t:names.product_list",
+      "name": "t:names.products_grid",
       "settings": {
-        "collection": "all",
+        "collection": "",
         "layout_type": "grid",
         "carousel_on_mobile": false,
         "max_products": 8,
@@ -263,7 +525,7 @@
         "section_width": "page-width",
         "horizontal_alignment": "flex-start",
         "gap": 28,
-        "background_color": "{{ settings.color_palette.background }}",
+        "background_color": "",
         "padding-block-start": 48,
         "padding-block-end": 48
       }
@@ -271,6 +533,13 @@
   },
   "order": [
     "cust_hero_slider_3CVCek",
-    "product_list_fa6P9H"
+    "responsive_flex_grid_fctXQK",
+    "responsive_flex_grid_mzmCmE",
+    "responsive_flex_grid_DbQiYV",
+    "clickable_image_section_HH4iM9",
+    "responsive_flex_grid_NJGdmw",
+    "clickable_image_section_8Npbd8",
+    "clickable_image_section_M4BKAP",
+    "product_list_QHwVR8"
   ]
 }

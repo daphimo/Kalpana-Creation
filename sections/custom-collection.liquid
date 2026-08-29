@@ -1,5 +1,6 @@
 {{ 'custom-collection.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'custom-collection.js' | asset_url }}" type="module" fetchpriority="low"></script>
+<script src="{{ 'custom-product-card.js' | asset_url }}" type="module" fetchpriority="low"></script>
 
 {% render 'theme-drawer-styles' %}
 
@@ -31,15 +32,16 @@
   "
 >
   <div class="custom-collection__page-width">
-    <nav class="custom-collection__breadcrumb" aria-label="Breadcrumb">
-      <a href="{{ routes.root_url }}">Home</a>
-      <span aria-hidden="true">/</span>
-      <span aria-current="page">{{ collection.title | escape }}</span>
-    </nav>
-
-    <header class="custom-collection__header">
-      <h1 class="custom-collection__heading">{{ collection.title | escape }}</h1>
-      {% if section.settings.show_intro and section.settings.show_seo_description == false and collection.description != blank %}
+    <header class="custom-collection__masthead">
+      <div class="custom-collection__masthead-left">
+        <nav class="custom-collection__breadcrumb" aria-label="Breadcrumb">
+          <a href="{{ routes.root_url }}">Home</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{{ collection.title | escape }}</span>
+        </nav>
+        <h1 class="custom-collection__heading">{{ collection.title | escape }}</h1>
+      </div>
+      {% if collection.description != blank %}
         <div class="custom-collection__intro rte">
           {{ collection.description | strip_html | truncatewords: section.settings.intro_words }}
         </div>
@@ -110,52 +112,47 @@
             <form class="custom-collection__desktop-form" action="{{ collection.url }}" data-custom-collection-form="desktop">
               <input type="hidden" name="sort_by" value="{{ sort_by }}">
               {% for filter in collection.filters %}
-                <fieldset class="custom-collection__filter-group">
-                  <legend>{{ filter.label | escape }}</legend>
-                  {% case filter.type %}
-                    {% when 'price_range' %}
-                      <div class="custom-collection__price-fields">
-                        <label>
-                          <span>Min</span>
-                          <input
-                            type="text"
-                            inputmode="decimal"
-                            name="{{ filter.min_value.param_name }}"
-                            value="{{ filter.min_value.value | money_without_currency }}"
-                            placeholder="0"
-                          >
-                        </label>
-                        <label>
-                          <span>Max</span>
-                          <input
-                            type="text"
-                            inputmode="decimal"
-                            name="{{ filter.max_value.param_name }}"
-                            value="{{ filter.max_value.value | money_without_currency }}"
-                            placeholder="{{ filter.range_max | money_without_currency }}"
-                          >
-                        </label>
-                      </div>
-                    {% else %}
-                      <ul class="custom-collection__filter-values" role="list">
-                        {% for value in filter.values %}
-                          <li>
-                            <label class="custom-collection__filter-option{% if value.active %} is-selected{% endif %}">
-                              <input
-                                type="checkbox"
-                                name="{{ value.param_name | escape }}"
-                                value="{{ value.value | escape }}"
-                                {% if value.active %}checked{% endif %}
-                                {% if value.count == 0 and value.active == false %}disabled{% endif %}
-                              >
-                              <span>{{ value.label | escape }}</span>
-                              <small>{{ value.count }}</small>
-                            </label>
-                          </li>
-                        {% endfor %}
-                      </ul>
-                  {% endcase %}
-                </fieldset>
+                {% liquid
+                  assign filter_is_active = false
+                  if filter.active_values.size > 0
+                    assign filter_is_active = true
+                  elsif filter.type == 'price_range'
+                    if filter.min_value.value != null or filter.max_value.value != null
+                      assign filter_is_active = true
+                    endif
+                  endif
+                %}
+                <details class="custom-collection__filter-group" {% if filter_is_active or forloop.first %}open{% endif %}>
+                  <summary>
+                    <span>{{ filter.label | escape }}</span>
+                    {% if filter.active_values.size > 0 %}<small>{{ filter.active_values.size }}</small>{% elsif filter_is_active %}<small>1</small>{% endif %}
+                    <svg viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.25 6 6.25l5-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </summary>
+                  <div class="custom-collection__filter-group-content">
+                    {% case filter.type %}
+                      {% when 'price_range' %}
+                        {% render 'custom-price-range-filter', filter: filter %}
+                      {% else %}
+                        <ul class="custom-collection__filter-values" role="list">
+                          {% for value in filter.values %}
+                            <li>
+                              <label class="custom-collection__filter-option{% if value.active %} is-selected{% endif %}">
+                                <input
+                                  type="checkbox"
+                                  name="{{ value.param_name | escape }}"
+                                  value="{{ value.value | escape }}"
+                                  {% if value.active %}checked{% endif %}
+                                  {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                                >
+                                <span>{{ value.label | escape }}</span>
+                                <small>{{ value.count }}</small>
+                              </label>
+                            </li>
+                          {% endfor %}
+                        </ul>
+                    {% endcase %}
+                  </div>
+                </details>
               {% endfor %}
             </form>
           </aside>
@@ -245,16 +242,7 @@
                     <h3>{{ filter.label | escape }}</h3>
                     {% case filter.type %}
                       {% when 'price_range' %}
-                        <div class="custom-collection__price-fields">
-                          <label>
-                            <span>Minimum</span>
-                            <input type="text" inputmode="decimal" name="{{ filter.min_value.param_name }}" value="{{ filter.min_value.value | money_without_currency }}" placeholder="0">
-                          </label>
-                          <label>
-                            <span>Maximum</span>
-                            <input type="text" inputmode="decimal" name="{{ filter.max_value.param_name }}" value="{{ filter.max_value.value | money_without_currency }}" placeholder="{{ filter.range_max | money_without_currency }}">
-                          </label>
-                        </div>
+                        {% render 'custom-price-range-filter', filter: filter %}
                       {% else %}
                         <ul class="custom-collection__filter-values" role="list">
                           {% for value in filter.values %}

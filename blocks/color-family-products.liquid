@@ -1,0 +1,119 @@
+{% liquid
+  assign current_product = closest.product
+  assign color_family = current_product.metafields.custom.color_family
+  capture family_items
+    case color_family.type
+      when 'list.product_reference'
+        for family_product in color_family.value
+          render 'color-family-product-item', family_product: family_product, current_product: current_product
+        endfor
+      when 'product_reference'
+        assign family_product = color_family.value
+        render 'color-family-product-item', family_product: family_product, current_product: current_product
+      when 'list.metaobject_reference'
+        for family_entry in color_family.value
+          assign entry_products = family_entry.products.value | default: family_entry.products
+          if entry_products != blank
+            for family_product in entry_products
+              render 'color-family-product-item', family_product: family_product, current_product: current_product
+            endfor
+          else
+            assign family_product = family_entry.product.value | default: family_entry.product
+            render 'color-family-product-item', family_product: family_product, current_product: current_product
+          endif
+        endfor
+      when 'metaobject_reference'
+        assign family_entry = color_family.value
+        assign entry_products = family_entry.products.value | default: family_entry.products
+        if entry_products != blank
+          for family_product in entry_products
+            render 'color-family-product-item', family_product: family_product, current_product: current_product
+          endfor
+        else
+          assign family_product = family_entry.product.value | default: family_entry.product
+          render 'color-family-product-item', family_product: family_product, current_product: current_product
+        endif
+    endcase
+  endcapture
+  assign family_items = family_items | strip
+%}
+
+{% if family_items != blank %}
+  {{ 'custom-collection.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'custom-product-card.js' | asset_url }}" type="module" fetchpriority="low"></script>
+  <div
+    class="color-family-products"
+    style="--color-family-columns: {{ block.settings.products_per_row }}; --color-family-padding-top: {{ block.settings.padding_top }}px; --color-family-padding-bottom: {{ block.settings.padding_bottom }}px;"
+    {{ block.shopify_attributes }}
+  >
+    {% if block.settings.label != blank %}<h3>{{ block.settings.label | escape }}</h3>{% endif %}
+    <ul role="list">{{ family_items }}</ul>
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .color-family-products {
+    width: 100%;
+    padding-block: var(--color-family-padding-top) var(--color-family-padding-bottom);
+  }
+
+  .color-family-products h3 {
+    margin: 0 0 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .color-family-products > ul {
+    display: grid;
+    grid-template-columns: repeat(var(--color-family-columns), minmax(0, 1fr));
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .color-family-products__item {
+    min-width: 0;
+    padding: 3px;
+    border: 1px solid transparent;
+    transition: border-color 160ms ease;
+  }
+
+  .color-family-products__item:not(.is-current):hover {
+    border-color: rgb(var(--color-foreground-rgb) / 0.34);
+  }
+
+  .color-family-products__item.is-current,
+  .color-family-products__item.is-current:hover {
+    border-color: var(--color-foreground);
+  }
+
+  .color-family-products .custom-collection-card__title,
+  .color-family-products .custom-collection-card__price {
+    font-size: 11px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .color-family-products > ul {
+      grid-template-columns: repeat(var(--color-family-columns), minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .color-family-products__item { padding: 2px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Color family products",
+  "tag": null,
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label", "default": "Available in" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 16 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 16 },
+    { "type": "range", "id": "products_per_row", "label": "Products per row", "min": 2, "max": 6, "step": 1, "default": 4 }
+  ],
+  "presets": [{ "name": "Color family products" }]
+}
+{% endschema %}

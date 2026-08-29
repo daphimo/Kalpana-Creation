@@ -1549,90 +1549,6 @@
         "default": true
       },
       {
-        "type": "header",
-        "content": "Cart drawer offer 1"
-      },
-      {
-        "type": "text",
-        "id": "cart_offer_1_title",
-        "label": "Offer title"
-      },
-      {
-        "type": "text",
-        "id": "cart_offer_1_condition",
-        "label": "Condition text"
-      },
-      {
-        "type": "range",
-        "id": "cart_offer_1_threshold",
-        "label": "Minimum cart total",
-        "min": 0,
-        "max": 50000,
-        "step": 500,
-        "default": 0
-      },
-      {
-        "type": "text",
-        "id": "cart_offer_1_code",
-        "label": "Discount code"
-      },
-      {
-        "type": "header",
-        "content": "Cart drawer offer 2"
-      },
-      {
-        "type": "text",
-        "id": "cart_offer_2_title",
-        "label": "Offer title"
-      },
-      {
-        "type": "text",
-        "id": "cart_offer_2_condition",
-        "label": "Condition text"
-      },
-      {
-        "type": "range",
-        "id": "cart_offer_2_threshold",
-        "label": "Minimum cart total",
-        "min": 0,
-        "max": 50000,
-        "step": 500,
-        "default": 0
-      },
-      {
-        "type": "text",
-        "id": "cart_offer_2_code",
-        "label": "Discount code"
-      },
-      {
-        "type": "header",
-        "content": "Cart drawer offer 3"
-      },
-      {
-        "type": "text",
-        "id": "cart_offer_3_title",
-        "label": "Offer title"
-      },
-      {
-        "type": "text",
-        "id": "cart_offer_3_condition",
-        "label": "Condition text"
-      },
-      {
-        "type": "range",
-        "id": "cart_offer_3_threshold",
-        "label": "Minimum cart total",
-        "min": 0,
-        "max": 50000,
-        "step": 500,
-        "default": 0
-      },
-      {
-        "type": "text",
-        "id": "cart_offer_3_code",
-        "label": "Discount code"
-      },
-      {
         "type": "checkbox",
         "id": "show_installments",
         "label": "t:settings.installments",
@@ -2198,6 +2114,36 @@
           }
         ],
         "default": "equal-width-buttons"
+      }
+    ]
+  },
+  {
+    "name": "Custom product cards",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "best_seller_badge_image",
+        "label": "Best seller badge"
+      },
+      {
+        "type": "range",
+        "id": "best_seller_badge_width",
+        "label": "Best seller badge width",
+        "min": 20,
+        "max": 160,
+        "step": 5,
+        "unit": "px",
+        "default": 70
+      },
+      {
+        "type": "select",
+        "id": "best_seller_badge_image_fit",
+        "label": "Best seller badge image fit",
+        "options": [
+          { "value": "contain", "label": "Contain" },
+          { "value": "scale-down", "label": "Scale down" }
+        ],
+        "default": "contain"
       }
     ]
   }

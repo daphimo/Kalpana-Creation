@@ -7,6 +7,42 @@ function rootFor(element) {
   return element?.closest?.(ROOT_SELECTOR);
 }
 
+function syncPriceRange(container, source) {
+  const maxAvailable = Number(container.dataset.rangeMax) || 0;
+  const minRange = container.querySelector('[data-price-range-min]');
+  const maxRange = container.querySelector('[data-price-range-max]');
+  const minInput = container.querySelector('[data-price-input-min]');
+  const maxInput = container.querySelector('[data-price-input-max]');
+  if (!minRange || !maxRange || !minInput || !maxInput) return;
+
+  let minimum = source === minInput ? Number(minInput.value || 0) : Number(minRange.value || 0);
+  let maximum = source === maxInput ? Number(maxInput.value || maxAvailable) : Number(maxRange.value || maxAvailable);
+  minimum = Math.max(0, Math.min(minimum, maxAvailable));
+  maximum = Math.max(0, Math.min(maximum, maxAvailable));
+  if (source === minRange || source === minInput) minimum = Math.min(minimum, maximum);
+  if (source === maxRange || source === maxInput) maximum = Math.max(maximum, minimum);
+
+  minRange.value = String(minimum);
+  maxRange.value = String(maximum);
+  if (source !== minInput || minInput.value !== '') minInput.value = minimum === 0 ? '' : String(minimum);
+  if (source !== maxInput || maxInput.value !== '') maxInput.value = maximum === maxAvailable ? '' : String(maximum);
+  container.style.setProperty('--price-min-position', `${maxAvailable ? minimum / maxAvailable * 100 : 0}%`);
+  container.style.setProperty('--price-max-position', `${maxAvailable ? maximum / maxAvailable * 100 : 100}%`);
+}
+
+function initializePriceRanges(root = document) {
+  root.querySelectorAll('[data-price-range]').forEach((container) => syncPriceRange(container));
+}
+
+initializePriceRanges();
+
+document.addEventListener('input', (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLInputElement)) return;
+  const container = target.closest('[data-price-range]');
+  if (container) syncPriceRange(container, target);
+});
+
 function createUrlFromForm(form) {
   const url = new URL(form.action, window.location.origin);
   const parameters = new URLSearchParams(new FormData(form));
@@ -46,6 +82,7 @@ async function updateCollection(root, requestedUrl, pushState = true) {
     if (!nextRegion || !currentRegion) throw new Error('Collection response did not contain the results region.');
 
     currentRegion.replaceWith(nextRegion);
+    initializePriceRanges(root);
     if (pushState) history.pushState({ customCollection: true }, '', storefrontUrl);
 
     document.dispatchEvent(new CustomEvent('shopify:section:load', { detail: { sectionId } }));

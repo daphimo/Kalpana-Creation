@@ -174,10 +174,80 @@
         "scroll_threshold": 70,
         "wishlist_url": ""
       }
+    },
+    "mobile_bar_k96ftV": {
+      "type": "mobile-bar",
+      "blocks": {
+        "bar_item_MNmqmb": {
+          "type": "bar_item",
+          "settings": {
+            "label": "Home",
+            "action_type": "link",
+            "link": "",
+            "icon": "search"
+          }
+        },
+        "bar_item_fH9eMT": {
+          "type": "bar_item",
+          "settings": {
+            "label": "Shop",
+            "action_type": "link",
+            "link": "shopify://collections/all",
+            "icon": "grid"
+          }
+        },
+        "bar_item_PCNEaw": {
+          "type": "bar_item",
+          "settings": {
+            "label": "Swipe",
+            "action_type": "link",
+            "link": "",
+            "icon": "search"
+          }
+        },
+        "bar_item_QMWGxT": {
+          "type": "bar_item",
+          "settings": {
+            "label": "Cart",
+            "action_type": "cart",
+            "link": "",
+            "icon": "cart"
+          }
+        },
+        "bar_item_8EHWE8": {
+          "type": "bar_item",
+          "settings": {
+            "label": "Account",
+            "action_type": "link",
+            "link": "/account/register",
+            "icon": "account"
+          }
+        }
+      },
+      "block_order": [
+        "bar_item_MNmqmb",
+        "bar_item_fH9eMT",
+        "bar_item_PCNEaw",
+        "bar_item_QMWGxT",
+        "bar_item_8EHWE8"
+      ],
+      "name": "Mobile bar",
+      "settings": {
+        "background_color": "#FFFFFF",
+        "text_color": "#302A27",
+        "accent_color": "#8A3426",
+        "bar_height": 68,
+        "icon_size": 23,
+        "label_size": 11,
+        "item_gap": 5,
+        "show_top_border": true,
+        "border_color": "#E8E2DC"
+      }
     }
   },
   "order": [
     "header_section",
-    "custom_desktop_header_HnFCEy"
+    "custom_desktop_header_HnFCEy",
+    "mobile_bar_k96ftV"
   ]
 }

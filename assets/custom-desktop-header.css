@@ -18,9 +18,12 @@
     z-index: 100;
     color: var(--cdh-initial-text);
     --color-account-icon: var(--cdh-initial-icon);
-    --cart-bubble-background: var(--cdh-initial-icon);
+    --cdh-count-background: #e83a3a;
+    --cdh-count-text: #fff;
+    --cart-bubble-background: var(--cdh-count-background);
     --cart-bubble-text: #fff;
     background: linear-gradient(to bottom, rgb(22 11 14 / .72) 0%, rgb(22 11 14 / .36) 54%, transparent 100%);
+    pointer-events: none;
   }
 
   .custom-desktop-header__bar {
@@ -31,12 +34,23 @@
     padding: var(--cdh-padding-top) clamp(24px, 3vw, 56px) var(--cdh-padding-bottom);
     background: transparent;
     transition: background-color .3s ease, color .3s ease;
+    pointer-events: none;
+  }
+
+  .custom-desktop-header__bar :is(a, button, input, select, textarea, [role='button']) {
+    pointer-events: auto;
+  }
+
+  .custom-desktop-header__overlay,
+  .custom-desktop-header__drawer {
+    pointer-events: auto;
   }
 
   .custom-desktop-header.is-scrolled {
     color: var(--cdh-scrolled-text);
     --color-account-icon: var(--cdh-scrolled-icon);
-    --cart-bubble-background: var(--cdh-scrolled-icon);
+    --cart-bubble-background: var(--cdh-count-background);
+    --cart-bubble-text: var(--cdh-count-text);
   }
 
   .custom-desktop-header.is-scrolled .custom-desktop-header__bar {
@@ -158,6 +172,48 @@
     height: 21px;
   }
 
+  .custom-desktop-header--static {
+    background: var(--cdh-scrolled-bg);
+  }
+
+  .custom-desktop-header--static .custom-desktop-header__bar {
+    background: var(--cdh-scrolled-bg);
+  }
+
+  .custom-desktop-header__wishlist .wishlist-icon-container > svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+    overflow: visible;
+    color: inherit;
+  }
+
+  .custom-desktop-header__wishlist .wishlist-icon-container > svg path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .custom-desktop-header__wishlist .wishlist-count-bubble {
+    top: 2px;
+    right: -7px;
+    bottom: auto;
+    display: none;
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: var(--cdh-count-background);
+    color: var(--cdh-count-text);
+    font-size: 10px !important;
+    font-weight: 700;
+    line-height: 1;
+  }
+
   .custom-desktop-header__cart-icon {
     position: relative;
     display: grid;
@@ -167,8 +223,24 @@
   .custom-desktop-header__cart-icon .cart-bubble {
     position: absolute;
     width: 18px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0;
     top: -9px;
     right: -11px;
+    background: var(--cdh-count-background);
+    color: var(--cdh-count-text);
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .custom-desktop-header__cart-icon .cart-bubble__background {
+    border-radius: 999px;
+    background: var(--cdh-count-background);
+  }
+
+  .custom-desktop-header__cart-icon .cart-bubble__text {
+    color: var(--cdh-count-text);
   }
 
   .custom-desktop-header__overlay {

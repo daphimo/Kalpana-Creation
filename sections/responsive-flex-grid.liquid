@@ -1,12 +1,11 @@
 <section
   id="ResponsiveFlexGrid-{{ section.id }}"
-  class="responsive-flex-grid responsive-flex-grid--{{ section.settings.mobile_layout }}"
+  class="section section--page-width spacing-style responsive-flex-grid responsive-flex-grid--{{ section.settings.mobile_layout }}"
   style="
     --grid-columns-desktop: {{ section.settings.grid_per_desktop }};
     --grid-columns-mobile: {{ section.settings.grid_per_mobile }};
-    --section-padding-top: {{ section.settings.padding_top }}px;
-    --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     --grid-gap: 12px;
+    {% render 'spacing-style', settings: section.settings %}
   "
 >
   {% if section.settings.section_title != blank %}
@@ -86,8 +85,6 @@
 {% style %}
   #ResponsiveFlexGrid-{{ section.id }} {
     width: 100%;
-    max-width: 100%;
-    padding-block: var(--section-padding-top) var(--section-padding-bottom);
     overflow: hidden;
   }
 
@@ -129,7 +126,6 @@
     width: 100%;
     aspect-ratio: 4 / 5;
     overflow: hidden;
-    background: rgba(0, 0, 0, 0.04);
   }
 
   #ResponsiveFlexGrid-{{ section.id }} .responsive-flex-grid__image,
@@ -237,7 +233,7 @@
     },
     {
       "type": "range",
-      "id": "padding_top",
+      "id": "padding-block-start",
       "label": "Padding top",
       "min": 0,
       "max": 100,
@@ -247,7 +243,7 @@
     },
     {
       "type": "range",
-      "id": "padding_bottom",
+      "id": "padding-block-end",
       "label": "Padding bottom",
       "min": 0,
       "max": 100,
