@@ -436,9 +436,7 @@
 } */
 
 .custom-collection-card__wishlist-wrap .wishlist-button.active {
-  background: #E8D5CC;
   color: #6B1F3A;
-  border-color: #6B1F3A;
 }
 
 .custom-collection-card__wishlist-wrap .wishlist-button.active svg { fill: #6B1F3A; }
