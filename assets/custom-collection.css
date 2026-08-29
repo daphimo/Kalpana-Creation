@@ -448,6 +448,8 @@
   z-index: 2;
   bottom: 0;
   left: 0;
+  bottom: 0;
+  left: 0;
   width: min(var(--best-seller-badge-width), calc(50% - 12px));
   line-height: 0;
   pointer-events: none;
