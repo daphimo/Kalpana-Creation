@@ -603,10 +603,6 @@
   color: #fff;
 }
 
-.custom-collection-card__wishlist-wrap .wishlist-button:hover {
-  background: rgb(255 255 255 / 0.84);
-  color: #713249;
-}
 
 html.custom-product-card-dialog-open,
 html.custom-product-card-dialog-open body {
