@@ -262,7 +262,7 @@
         "accessibility_label": "Chat with us on WhatsApp",
         "position": "right",
         "icon_size": 60,
-        "bottom_offset": 24,
+        "bottom_offset": 90,
         "side_offset": 24,
         "background_color": "#25D366",
         "icon_color": "#FFFFFF"
