@@ -146,13 +146,21 @@
               "casual-everyday"
             ]
           }
+        },
+        "collection_group_UEJaF3": {
+          "type": "collection_group",
+          "settings": {
+            "title": "SAREES",
+            "collections": []
+          }
         }
       },
       "block_order": [
         "collection_group_9xWjLh",
         "collection_group_ee3AUD",
         "collection_group_X3Xzn4",
-        "collection_group_peXFhx"
+        "collection_group_peXFhx",
+        "collection_group_UEJaF3"
       ],
       "name": "Custom desktop header",
       "settings": {
