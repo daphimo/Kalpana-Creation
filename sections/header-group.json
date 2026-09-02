@@ -201,7 +201,7 @@
           "settings": {
             "label": "Swipe",
             "action_type": "link",
-            "link": "shopify://pages/contact",
+            "link": "shopify://pages/swipe",
             "icon": "contact"
           }
         },
@@ -231,7 +231,6 @@
         "bar_item_QMWGxT",
         "bar_item_8EHWE8"
       ],
-      "disabled": true,
       "name": "Mobile bar",
       "settings": {
         "show_labels": false,
