@@ -21,6 +21,15 @@
             "image_alt": "Home Page Banner"
           }
         },
+        "slide_fQbQHY": {
+          "type": "slide",
+          "settings": {
+            "desktop_image": "shopify://shop_images/Banner_Kalpana_Desktop.png",
+            "mobile_image": "shopify://shop_images/Banner_Kalpana_Mobile.png",
+            "image_link": "shopify://collections/all",
+            "image_alt": "Home Page Banner"
+          }
+        },
         "keyword_43V89L": {
           "type": "keyword",
           "settings": {
@@ -54,6 +63,7 @@
       },
       "block_order": [
         "slide_mAe8B6",
+        "slide_fQbQHY",
         "keyword_43V89L",
         "keyword_xFzMQn",
         "keyword_yciULd",
@@ -66,7 +76,8 @@
         "show_navigation": true,
         "show_pagination": true,
         "enable_autoplay": true,
-        "autoplay_duration": 5
+        "autoplay_duration": 5,
+        "mobile_logo_height": 60
       }
     },
     "responsive_flex_grid_fctXQK": {
