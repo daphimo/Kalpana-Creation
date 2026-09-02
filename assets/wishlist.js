@@ -88,6 +88,27 @@ const updateWishlist = (handle) => {
   return setWishlist(wishlist);
 };
 
+/**
+ * Set one product's wishlist state without duplicating wishlist storage logic in
+ * components such as product swipe.
+ * @param {string} handle
+ * @param {boolean} shouldInclude
+ */
+const setWishlistItem = (handle, shouldInclude) => {
+  const wishlist = getWishlist();
+  const indexInWishlist = wishlist.indexOf(handle);
+  const isIncluded = indexInWishlist !== -1;
+
+  if (shouldInclude === isIncluded) {
+    return { wishlist, changed: false };
+  }
+
+  if (shouldInclude) wishlist.push(handle);
+  else wishlist.splice(indexInWishlist, 1);
+
+  return { wishlist: setWishlist(wishlist), changed: true };
+};
+
 const updateWishlistCountBubble = () => {
   const countBubbles = document.querySelectorAll(selectors.wishlistCountBubble);
   if (!countBubbles.length) return;
@@ -164,11 +185,34 @@ document.addEventListener("click", (event) => {
 
   const productTitle = button.dataset.productTitle || "Product";
   const isAdded = wishlist.includes(productHandle);
-  showTooltip(
-    isAdded
-      ? `${productTitle} added to wishlist`
-      : `${productTitle} removed from wishlist`
-  );
+  if (button.dataset.wishlistSilent !== "true") {
+    showTooltip(
+      isAdded
+        ? `${productTitle} added to wishlist`
+        : `${productTitle} removed from wishlist`
+    );
+  }
+});
+
+// Components can request an add/remove while keeping this module as the single
+// source of truth. The mutable detail reports whether this request changed data.
+document.addEventListener("shopify-wishlist:set-item", (event) => {
+  const detail = event.detail;
+  if (!detail?.handle || typeof detail.shouldInclude !== "boolean") return;
+
+  const result = setWishlistItem(detail.handle, detail.shouldInclude);
+  detail.changed = result.changed;
+  detail.wishlist = result.wishlist;
+  setupButtons(document.querySelectorAll(selectors.button));
+
+  if (!detail.silent && result.changed) {
+    const productTitle = detail.title || "Product";
+    showTooltip(
+      detail.shouldInclude
+        ? `${productTitle} added to wishlist`
+        : `${productTitle} removed from wishlist`
+    );
+  }
 });
 
 const initButtons = () => {

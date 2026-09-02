@@ -250,13 +250,60 @@
               },
               "block_order": []
             },
+            "product_pincode_checker_AdiknV": {
+              "type": "product-pincode-checker",
+              "name": "Pincode checker",
+              "settings": {
+                "heading": "Check delivery availability",
+                "placeholder": "Enter 6-digit pincode",
+                "button_label": "Check",
+                "fast_pincodes": "394210",
+                "fast_message": "Fast delivery is available for your pincode.",
+                "medium_pincodes": "",
+                "medium_message": "Standard delivery is available for your pincode.",
+                "delayed_pincodes": "",
+                "delayed_message": "Delivery is available, but it may take a little longer.",
+                "unmatched_message": "Sorry, delivery is not currently available for this pincode."
+              },
+              "blocks": {}
+            },
+            "product_icon_with_text_YWGdHB": {
+              "type": "product-icon-with-text",
+              "name": "Icon with Text",
+              "settings": {
+                "icon": "truck",
+                "text": "COD for orders under ₹11,000",
+                "link": ""
+              },
+              "blocks": {}
+            },
+            "product_you_may_like_4AQgHE": {
+              "type": "product-you-may-like",
+              "name": "You may also like",
+              "settings": {
+                "title": "You may also like",
+                "title_alignment": "center",
+                "products": [
+                  "kalpna-creation-digital-print-bhagalpuri-linen-saree-multicolor-1",
+                  "kalpna-creation-digital-print-bhagalpuri-linen-saree-multicolor-2",
+                  "kalpna-creation-printed-bollywood-linen-saree-multicolor",
+                  "kalpna-creation-solid-plain-bollywood-georgette-saree-multicolor",
+                  "supalee-tex-solid-bollywood-georgette-saree-with-unstitched-blouse-multicolor"
+                ],
+                "cards_desktop": "4",
+                "cards_mobile": "2",
+                "padding_top": 24,
+                "padding_bottom": 24
+              },
+              "blocks": {}
+            },
             "product_collapsible_NLexCU": {
               "type": "product-collapsible",
               "name": "Collapsible",
               "settings": {
                 "label": "DETAILS",
                 "content": "{{ closest.product.description }}",
-                "open_initially": false
+                "open_initially": true
               },
               "blocks": {}
             },
@@ -295,6 +342,9 @@
             "color_family_products_yU4pRU",
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
+            "product_pincode_checker_AdiknV",
+            "product_icon_with_text_YWGdHB",
+            "product_you_may_like_4AQgHE",
             "product_collapsible_NLexCU",
             "product_specifications_fWJrT4",
             "product_collapsible_mQga4Y",
@@ -344,11 +394,57 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "178835477967645a1d": {
+      "type": "_blocks",
+      "blocks": {
+        "judge_me_reviews_review_widget_h9YVi9": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "sample_data",
+            "max_width": 1200,
+            "show_shop_reviews": false,
+            "empty_state": "empty_widget"
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_review_widget_h9YVi9"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
     }
   },
   "order": [
     "main",
     "custom_you_may_also_like_8pwdtM",
-    "custom_recently_viewed_7WMaWz"
+    "custom_recently_viewed_7WMaWz",
+    "178835477967645a1d"
   ]
 }

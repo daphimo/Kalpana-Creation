@@ -1,0 +1,134 @@
+.email-offer-popup {
+  position: fixed;
+  z-index: calc(var(--layer-temporary, 20) + 1);
+  inset: 0;
+  display: flex;
+  box-sizing: border-box;
+  padding: clamp(12px, 3vw, 32px);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.email-offer-popup[hidden] { display: none; }
+html.email-offer-popup-open,
+html.email-offer-popup-open body { overflow: hidden; }
+.email-offer-popup.is-open { visibility: visible; pointer-events: auto; }
+.email-offer-popup--center { align-items: center; justify-content: center; }
+.email-offer-popup--bottom-left { align-items: flex-end; justify-content: flex-start; }
+.email-offer-popup--bottom-right { align-items: flex-end; justify-content: flex-end; }
+
+.email-offer-popup__overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: rgb(var(--color-foreground-rgb) / var(--eop-overlay-opacity));
+  opacity: 0;
+  cursor: default;
+  transition: opacity var(--eop-duration) ease;
+}
+
+.email-offer-popup[data-overlay-enabled='false'] .email-offer-popup__overlay { display: none; }
+.email-offer-popup.is-open .email-offer-popup__overlay { opacity: 1; }
+
+.email-offer-popup__dialog {
+  position: relative;
+  display: grid;
+  width: min(100%, var(--eop-width));
+  max-height: calc(100dvh - clamp(24px, 6vw, 64px));
+  overflow: auto;
+  border-radius: var(--eop-radius);
+  background: var(--color-background);
+  color: var(--color-foreground);
+  opacity: 0;
+  transform: translateY(0) scale(1);
+  transition: opacity var(--eop-duration) ease, transform var(--eop-duration) cubic-bezier(.22, 1, .36, 1);
+  isolation: isolate;
+}
+
+.email-offer-popup__dialog--border-subtle { border: var(--eop-border-width) solid rgb(var(--color-foreground-rgb) / .16); }
+.email-offer-popup__dialog--border-strong { border: var(--eop-border-width) solid var(--color-foreground); }
+.email-offer-popup__dialog--shadow-subtle { box-shadow: 0 10px 30px rgb(var(--color-foreground-rgb) / .12); }
+.email-offer-popup__dialog--shadow-medium { box-shadow: 0 18px 55px rgb(var(--color-foreground-rgb) / .22); }
+.email-offer-popup__dialog--shadow-strong { box-shadow: 0 24px 80px rgb(var(--color-foreground-rgb) / .34); }
+.email-offer-popup--has-image:not(.email-offer-popup--image-top) .email-offer-popup__dialog { grid-template-columns: var(--eop-image-width) minmax(0, 1fr); }
+.email-offer-popup--has-image.email-offer-popup--image-right .email-offer-popup__dialog { grid-template-columns: minmax(0, calc(100% - var(--eop-image-width))) var(--eop-image-width); }
+.email-offer-popup--image-right .email-offer-popup__media { order: 2; }
+.email-offer-popup--image-top .email-offer-popup__media { aspect-ratio: 3 / 1; }
+.email-offer-popup--image-top .email-offer-popup__dialog { grid-template-columns: 1fr; }
+
+.email-offer-popup__media {
+  position: relative;
+  min-height: 100%;
+  overflow: hidden;
+  aspect-ratio: var(--eop-image-ratio);
+  background: rgb(var(--color-foreground-rgb) / .04);
+}
+
+.email-offer-popup__media::after { position: absolute; inset: 0; content: ''; background: rgb(var(--color-foreground-rgb) / var(--eop-image-overlay)); pointer-events: none; }
+.email-offer-popup__image { display: block; width: 100%; height: 100%; object-fit: var(--eop-image-fit); object-position: var(--eop-image-position); }
+.email-offer-popup__content { display: grid; align-content: center; min-width: 0; padding: var(--eop-padding); }
+.email-offer-popup__form { margin: 0; }
+.email-offer-popup__state { animation: email-offer-state-in 220ms ease both; }
+.email-offer-popup__state[hidden] { display: none; }
+.email-offer-popup__eyebrow { margin: 0 0 10px; color: rgb(var(--color-foreground-rgb) / .66); font-size: 11px; font-weight: 650; letter-spacing: .18em; text-transform: uppercase; }
+.email-offer-popup__heading { margin: 0; font-family: var(--font-heading--family); font-size: clamp(24px, 3.2vw, 40px); font-weight: var(--font-heading--weight); line-height: 1.05; letter-spacing: -.025em; }
+.email-offer-popup__description { margin-top: 16px; color: rgb(var(--color-foreground-rgb) / .72); font-size: 14px; line-height: 1.55; }
+.email-offer-popup__description > :first-child, .email-offer-popup__disclaimer > :first-child { margin-top: 0; }
+.email-offer-popup__description > :last-child, .email-offer-popup__disclaimer > :last-child { margin-bottom: 0; }
+.email-offer-popup__logo { display: flex; margin-block: 0 18px; }
+.email-offer-popup__logo--center { justify-content: center; }
+.email-offer-popup__logo--right { justify-content: flex-end; }
+.email-offer-popup__logo img { display: block; width: min(100%, var(--eop-logo-width)); height: auto; }
+
+.email-offer-popup__fields { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.email-offer-popup__fields input { flex: 1 1 190px; min-width: 0; min-height: 48px; padding: 12px 14px; border: 1px solid rgb(var(--color-foreground-rgb) / .25); border-radius: var(--eop-input-radius); background: transparent; color: inherit; font: inherit; font-size: 16px; text-align: left; outline: 0; }
+.email-offer-popup__fields--align-center input { text-align: center; }
+.email-offer-popup__fields--underline input { padding-inline: 0; border-width: 0 0 1px; border-radius: 0; }
+.email-offer-popup__fields--filled input { border-color: transparent; background: rgb(var(--color-foreground-rgb) / .06); }
+.email-offer-popup__fields input:focus { border-color: var(--color-foreground); box-shadow: 0 0 0 1px var(--color-foreground); }
+
+.email-offer-popup__submit { position: relative; min-height: 48px; padding: 12px 22px; border: 1px solid var(--color-primary-button-border); border-radius: var(--eop-button-radius); color: var(--color-primary-button-text); background: var(--color-primary-button-background); font: inherit; font-size: 12px; font-weight: 700; letter-spacing: .09em; cursor: pointer; text-transform: uppercase; }
+.email-offer-popup__button--full { flex-basis: 100%; width: 100%; }
+.email-offer-popup__button--outline { color: var(--color-foreground); background: transparent; border-color: var(--color-foreground); }
+.email-offer-popup__button--text { min-height: auto; color: var(--color-foreground); background: transparent; border-color: transparent; text-decoration: underline; text-underline-offset: 4px; }
+.email-offer-popup__button--align-left { text-align: left; }.email-offer-popup__button--align-right { text-align: right; }
+.email-offer-popup__submit:focus-visible, .email-offer-popup__close:focus-visible, .email-offer-popup__code button:focus-visible, .email-offer-popup__no-thanks:focus-visible { outline: 2px solid var(--color-primary-button-focus-outline, currentColor); outline-offset: 3px; }
+.email-offer-popup__submit:disabled { cursor: wait; opacity: .72; }
+.email-offer-popup__loader { display: none; width: 16px; height: 16px; margin: auto; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: email-offer-spin 650ms linear infinite; }
+.email-offer-popup__submit.is-loading [data-eop-submit-text] { display: none; }.email-offer-popup__submit.is-loading .email-offer-popup__loader { display: block; }
+.email-offer-popup__message { min-height: 18px; margin-top: 8px; color: var(--color-foreground); font-size: 12px; }
+.email-offer-popup__disclaimer { margin-top: 14px; color: rgb(var(--color-foreground-rgb) / .55); font-size: 10px; line-height: 1.45; }
+.email-offer-popup__no-thanks { display: block; margin: 14px auto 0; padding: 6px; border: 0; background: transparent; color: rgb(var(--color-foreground-rgb) / .65); font: inherit; font-size: 11px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.email-offer-popup__close { position: absolute; z-index: 2; top: 8px; right: 8px; display: grid; width: 44px; height: 44px; padding: 13px; border: 0; border-radius: 50%; place-items: center; background: var(--color-background); color: var(--color-foreground); cursor: pointer; }
+.email-offer-popup__close svg { width: 18px; height: 18px; }
+
+.email-offer-popup__coupon { margin-top: 22px; }.email-offer-popup__coupon > p { margin: 0 0 8px; font-size: 10px; font-weight: 650; letter-spacing: .15em; }
+.email-offer-popup__code { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 1px dashed rgb(var(--color-foreground-rgb) / .45); }
+.email-offer-popup__code strong { overflow-wrap: anywhere; font-size: 17px; letter-spacing: .12em; }.email-offer-popup__code button { flex: 0 0 auto; padding: 6px; border: 0; background: transparent; color: inherit; font: inherit; font-size: 10px; font-weight: 700; cursor: pointer; }
+.email-offer-popup__coupon small { display: block; margin-top: 8px; color: rgb(var(--color-foreground-rgb) / .62); font-size: 11px; }
+
+.email-offer-popup--animation-fade-scale .email-offer-popup__dialog { transform: scale(.96); }.email-offer-popup--animation-scale .email-offer-popup__dialog { transform: scale(.9); }
+.email-offer-popup--animation-slide-up .email-offer-popup__dialog { transform: translateY(28px); }.email-offer-popup--animation-slide-down .email-offer-popup__dialog { transform: translateY(-28px); }
+.email-offer-popup--animation-slide-left .email-offer-popup__dialog { transform: translateX(28px); }.email-offer-popup--animation-slide-right .email-offer-popup__dialog { transform: translateX(-28px); }
+.email-offer-popup.is-open .email-offer-popup__dialog { opacity: 1; transform: none; }
+
+@keyframes email-offer-spin { to { transform: rotate(360deg); } }
+@keyframes email-offer-state-in { from { opacity: 0; transform: translateY(6px); } }
+
+@media screen and (max-width: 749px) {
+  .email-offer-popup { align-items: flex-end; justify-content: center; padding: 12px; }
+  .email-offer-popup[data-mobile='false'] { display: none !important; }
+  .email-offer-popup__dialog, .email-offer-popup--has-image:not(.email-offer-popup--image-top) .email-offer-popup__dialog { grid-template-columns: 1fr; width: 100%; }
+  .email-offer-popup__media { order: -1 !important; min-height: 0; max-height: 30dvh; aspect-ratio: 16 / 7; }
+  .email-offer-popup__media--mobile-hidden { display: none; }
+  .email-offer-popup__content { padding: max(22px, calc(var(--eop-padding) * .72)); }
+  .email-offer-popup__heading { font-size: clamp(24px, 8vw, 32px); }
+  .email-offer-popup__fields { display: grid; }
+  .email-offer-popup__submit { width: 100%; }
+}
+
+@media screen and (min-width: 750px) { .email-offer-popup[data-desktop='false'] { display: none !important; } }
+@media (prefers-reduced-motion: reduce) { .email-offer-popup__dialog, .email-offer-popup__overlay, .email-offer-popup__state { transition: none; animation: none; } }

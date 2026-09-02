@@ -369,7 +369,8 @@
 .custom-collection__grid {
   display: grid;
   grid-template-columns: repeat(var(--custom-collection-columns), minmax(0, 1fr));
-  gap: 18px min(var(--custom-collection-gap), 8px);
+  column-gap: var(--product-card-column-gap, 10px);
+  row-gap: var(--product-card-row-gap, 22px);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1140,7 +1141,8 @@ html.custom-product-card-dialog-open body {
 
   .custom-collection__grid {
     grid-template-columns: repeat(var(--custom-collection-columns-mobile), minmax(0, 1fr));
-    gap: 22px 10px;
+    column-gap: var(--product-card-column-gap, 10px);
+    row-gap: var(--product-card-row-gap, 22px);
   }
 
   .custom-collection-card__title {

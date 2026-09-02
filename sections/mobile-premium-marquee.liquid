@@ -1,6 +1,6 @@
 {% if section.blocks.size > 0 %}
   <div
-    class="mobile-premium-marquee"
+    class="mobile-premium-marquee mobile-premium-marquee--{{ section.settings.device_visibility }}"
     style="
       --marquee-background: {{ section.settings.background_color }};
       --marquee-text-color: {{ section.settings.text_color }};
@@ -94,9 +94,14 @@
     }
   }
 
+  @media screen and (max-width: 749px) {
+    .mobile-premium-marquee--desktop {
+      display: none !important;
+    }
+  }
+
   @media screen and (min-width: 750px) {
-    .mobile-premium-marquee-section,
-    .mobile-premium-marquee {
+    .mobile-premium-marquee--mobile {
       display: none !important;
     }
   }
@@ -125,13 +130,24 @@
 
 {% schema %}
 {
-  "name": "Mobile premium marquee",
+  "name": "Premium Marqee",
   "tag": "section",
   "class": "mobile-premium-marquee-section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
   "settings": [
+    {
+      "type": "select",
+      "id": "device_visibility",
+      "label": "Show on",
+      "options": [
+        { "value": "mobile", "label": "Mobile" },
+        { "value": "desktop", "label": "Desktop" },
+        { "value": "both", "label": "Both" }
+      ],
+      "default": "mobile"
+    },
     {
       "type": "color",
       "id": "background_color",
@@ -207,7 +223,7 @@
   ],
   "presets": [
     {
-      "name": "Mobile premium marquee",
+      "name": "Premium Marqee",
       "blocks": [
         {
           "type": "text",

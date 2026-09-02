@@ -4,7 +4,8 @@
   style="
     --grid-columns-desktop: {{ section.settings.grid_per_desktop }};
     --grid-columns-mobile: {{ section.settings.grid_per_mobile }};
-    --grid-gap: 12px;
+    --grid-column-gap: {{ settings.product_card_column_gap }}px;
+    --grid-row-gap: {{ settings.product_card_row_gap }}px;
     {% render 'spacing-style', settings: section.settings %}
   "
 >
@@ -91,7 +92,8 @@
   #ResponsiveFlexGrid-{{ section.id }} .responsive-flex-grid__container {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--grid-gap);
+    column-gap: var(--grid-column-gap);
+    row-gap: var(--grid-row-gap);
     width: 100%;
   }
 
@@ -108,7 +110,7 @@
   #ResponsiveFlexGrid-{{ section.id }} .responsive-flex-grid__item {
     display: flex;
     flex: 0 0 calc(
-      (100% - (var(--grid-gap) * (var(--grid-columns-desktop) - 1))) / var(--grid-columns-desktop)
+      (100% - (var(--grid-column-gap) * (var(--grid-columns-desktop) - 1))) / var(--grid-columns-desktop)
     );
     min-width: 0;
     flex-direction: column;
@@ -168,7 +170,7 @@
 
     #ResponsiveFlexGrid-{{ section.id }} .responsive-flex-grid__item {
       flex-basis: calc(
-        (100% - (var(--grid-gap) * (var(--grid-columns-mobile) - 1))) / var(--grid-columns-mobile)
+        (100% - (var(--grid-column-gap) * (var(--grid-columns-mobile) - 1))) / var(--grid-columns-mobile)
       );
       flex-shrink: 0;
     }

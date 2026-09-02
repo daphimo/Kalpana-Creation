@@ -1,0 +1,246 @@
+{% render 'brand-colors' %}
+{{ 'email-offer-popup.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'email-offer-popup.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+{% liquid
+  assign show_on_page = false
+  case section.settings.page_target
+    when 'all'
+      assign show_on_page = true
+    when 'home'
+      if request.page_type == 'index'
+        assign show_on_page = true
+      endif
+    when 'product'
+      if request.page_type == 'product'
+        assign show_on_page = true
+      endif
+    when 'collection'
+      if request.page_type == 'collection'
+        assign show_on_page = true
+      endif
+    when 'cart'
+      if request.page_type == 'cart'
+        assign show_on_page = true
+      endif
+    when 'selected'
+      assign target_handles = section.settings.selected_page_handles | remove: ' ' | split: ','
+      if request.page_type == 'page' and target_handles contains page.handle
+        assign show_on_page = true
+      endif
+  endcase
+  assign form_id = 'EmailOfferPopupForm-' | append: section.id
+  assign has_image = false
+  if section.settings.enable_image and section.settings.image != blank and section.settings.image_position != 'hidden'
+    assign has_image = true
+  endif
+%}
+
+{% if show_on_page or request.design_mode %}
+  <div
+    id="EmailOfferPopup-{{ section.id }}"
+    class="email-offer-popup email-offer-popup--{{ section.settings.position }} email-offer-popup--image-{{ section.settings.image_position }} email-offer-popup--animation-{{ section.settings.animation }}{% if has_image %} email-offer-popup--has-image{% endif %}"
+    data-email-offer-popup
+    data-section-id="{{ section.id }}"
+    data-offer-presentation="{{ section.settings.offer_presentation }}"
+    data-trigger="{{ section.settings.trigger }}"
+    data-delay="{{ section.settings.delay }}"
+    data-scroll="{{ section.settings.scroll_percentage }}"
+    data-frequency="{{ section.settings.frequency }}"
+    data-success-repeat="{{ section.settings.success_repeat }}"
+    data-overlay-close="{{ section.settings.overlay_close }}"
+    data-overlay-enabled="{{ section.settings.enable_overlay }}"
+    data-escape-close="{{ section.settings.escape_close }}"
+    data-error-message="{{ section.settings.error_message | escape }}"
+    data-auto-copy="{{ section.settings.auto_copy }}"
+    data-coupon="{{ section.settings.coupon_code | escape }}"
+    data-design-mode="{{ request.design_mode }}"
+    data-desktop="{{ section.settings.show_desktop }}"
+    data-mobile="{{ section.settings.show_mobile }}"
+    hidden
+    style="
+      --eop-width: {{ section.settings.popup_width }}px;
+      --eop-image-width: {{ section.settings.image_width }}%;
+      --eop-image-ratio: {{ section.settings.image_ratio }};
+      --eop-image-position: {{ section.settings.image_focal }};
+      --eop-image-fit: {{ section.settings.image_fit }};
+      --eop-image-overlay: {{ section.settings.image_overlay | divided_by: 100.0 }};
+      --eop-radius: {{ section.settings.popup_radius }}px;
+      --eop-border-width: {{ section.settings.border_width }}px;
+      --eop-padding: {{ section.settings.inner_padding }}px;
+      --eop-input-radius: {{ section.settings.input_radius }}px;
+      --eop-button-radius: {{ section.settings.button_radius }}px;
+      --eop-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+      --eop-duration: {{ section.settings.animation_duration }}ms;
+      --eop-logo-width: {{ section.settings.logo_width }}px;
+    "
+  >
+    <button class="email-offer-popup__overlay" type="button" data-eop-overlay tabindex="-1" aria-label="Close offer"></button>
+    <div
+      class="email-offer-popup__dialog email-offer-popup__dialog--border-{{ section.settings.border_style }} email-offer-popup__dialog--shadow-{{ section.settings.shadow }}"
+      role="dialog"
+      aria-modal="{% if section.settings.position == 'center' and section.settings.enable_overlay %}true{% else %}false{% endif %}"
+      aria-labelledby="EmailOfferPopupHeading-{{ section.id }}"
+      tabindex="-1"
+    >
+      {% if section.settings.show_close %}
+        <button class="email-offer-popup__close" type="button" data-eop-close aria-label="Close offer">
+          {{ 'icon-close.svg' | inline_asset_content }}
+        </button>
+      {% endif %}
+
+      {% if has_image %}
+        <div class="email-offer-popup__media{% if section.settings.mobile_image == 'hide' %} email-offer-popup__media--mobile-hidden{% endif %}">
+          {{ section.settings.image | image_url: width: 1200 | image_tag: class: 'email-offer-popup__image', widths: '320, 480, 720, 960, 1200', loading: 'lazy', alt: section.settings.image.alt }}
+        </div>
+      {% endif %}
+
+      <div class="email-offer-popup__content">
+        {% form 'customer', id: form_id, class: 'email-offer-popup__form' %}
+          <input type="hidden" name="contact[tags]" value="newsletter,email-offer-popup">
+          <div class="email-offer-popup__state email-offer-popup__state--form" data-eop-form-state {% if form.posted_successfully? %}hidden{% endif %}>
+            {% if section.settings.enable_logo and section.settings.logo != blank and section.settings.logo_position == 'above_eyebrow' %}
+              <div class="email-offer-popup__logo email-offer-popup__logo--{{ section.settings.logo_alignment }}">{{ section.settings.logo | image_url: width: 600 | image_tag: loading: 'lazy', alt: shop.name }}</div>
+            {% endif %}
+            {% if section.settings.eyebrow != blank %}<p class="email-offer-popup__eyebrow">{{ section.settings.eyebrow | escape }}</p>{% endif %}
+            {% if section.settings.enable_logo and section.settings.logo != blank and section.settings.logo_position == 'before_heading' %}
+              <div class="email-offer-popup__logo email-offer-popup__logo--{{ section.settings.logo_alignment }}">{{ section.settings.logo | image_url: width: 600 | image_tag: loading: 'lazy', alt: shop.name }}</div>
+            {% endif %}
+            <h2 id="EmailOfferPopupHeading-{{ section.id }}" class="email-offer-popup__heading">{{ section.settings.heading | escape }}</h2>
+            {% if section.settings.enable_logo and section.settings.logo != blank and section.settings.logo_position == 'after_heading' %}
+              <div class="email-offer-popup__logo email-offer-popup__logo--{{ section.settings.logo_alignment }}">{{ section.settings.logo | image_url: width: 600 | image_tag: loading: 'lazy', alt: shop.name }}</div>
+            {% endif %}
+            {% if section.settings.description != blank %}<div class="email-offer-popup__description rte">{{ section.settings.description }}</div>{% endif %}
+
+            {% if section.settings.enable_coupon and section.settings.coupon_display == 'immediate' %}
+              <div class="email-offer-popup__coupon" data-eop-coupon>
+                <p>{{ section.settings.coupon_title | escape }}</p>
+                <div class="email-offer-popup__code"><strong>{{ section.settings.coupon_code | escape }}</strong><button type="button" data-eop-copy data-copy-text="{{ section.settings.copy_text | escape }}" data-copied-text="{{ section.settings.copied_text | escape }}">{{ section.settings.copy_text | escape }}</button></div>
+                {% if section.settings.coupon_description != blank %}<small>{{ section.settings.coupon_description | escape }}</small>{% endif %}
+              </div>
+            {% endif %}
+
+            <div class="email-offer-popup__fields email-offer-popup__fields--{{ section.settings.input_style }} email-offer-popup__fields--align-{{ section.settings.input_alignment }}">
+              <label class="visually-hidden" for="EmailOfferPopupInput-{{ section.id }}">Email address</label>
+              <input id="EmailOfferPopupInput-{{ section.id }}" type="email" name="contact[email]" value="{% if form.email %}{{ form.email | escape }}{% endif %}" placeholder="{{ section.settings.input_placeholder | escape }}" autocomplete="email" autocapitalize="off" autocorrect="off" required {% if form.errors %}aria-invalid="true"{% endif %}>
+              <button class="email-offer-popup__submit email-offer-popup__button--{{ section.settings.button_style }} email-offer-popup__button--{{ section.settings.button_width }} email-offer-popup__button--align-{{ section.settings.button_alignment }}" type="submit"><span data-eop-submit-text>{{ section.settings.button_text | escape }}</span><span class="email-offer-popup__loader" aria-hidden="true"></span></button>
+            </div>
+            <div class="email-offer-popup__message" data-eop-message aria-live="polite">
+              {% if form.errors %}<span data-email-offer-server-error>{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</span>{% endif %}
+            </div>
+            {% if section.settings.disclaimer != blank %}<div class="email-offer-popup__disclaimer rte">{{ section.settings.disclaimer }}</div>{% endif %}
+            {% if section.settings.show_no_thanks %}<button class="email-offer-popup__no-thanks" type="button" data-eop-close>{{ section.settings.no_thanks_text | escape }}</button>{% endif %}
+          </div>
+
+          <div class="email-offer-popup__state email-offer-popup__state--success" data-eop-success-state {% unless form.posted_successfully? %}hidden{% endunless %} {% if form.posted_successfully? %}data-email-offer-server-success="true"{% endif %}>
+            {% if section.settings.success_eyebrow != blank %}<p class="email-offer-popup__eyebrow">{{ section.settings.success_eyebrow | escape }}</p>{% endif %}
+            <h2 class="email-offer-popup__heading">{{ section.settings.success_heading | escape }}</h2>
+            {% if section.settings.success_description != blank %}<div class="email-offer-popup__description rte">{{ section.settings.success_description }}</div>{% endif %}
+            {% if section.settings.enable_coupon %}
+              <div class="email-offer-popup__coupon" data-eop-coupon>
+                <p>{{ section.settings.success_coupon_title | escape }}</p>
+                <div class="email-offer-popup__code"><strong>{{ section.settings.coupon_code | escape }}</strong><button type="button" data-eop-copy data-copy-text="{{ section.settings.copy_text | escape }}" data-copied-text="{{ section.settings.copied_text | escape }}">{{ section.settings.copy_text | escape }}</button></div>
+                {% if section.settings.success_secondary != blank %}<small>{{ section.settings.success_secondary | escape }}</small>{% endif %}
+              </div>
+            {% endif %}
+            {% if section.settings.show_continue %}<button class="email-offer-popup__submit email-offer-popup__button--solid email-offer-popup__button--full" type="button" data-eop-cta data-eop-close>{{ section.settings.continue_text | escape }}</button>{% endif %}
+            <span class="visually-hidden" data-eop-copy-status aria-live="polite"></span>
+          </div>
+        {% endform %}
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Email & coupon popup",
+  "tag": "section",
+  "class": "email-offer-popup-section",
+  "settings": [
+    { "type": "header", "content": "Popup" },
+    { "type": "select", "id": "position", "label": "Popup position", "options": [{"value":"center","label":"Center"},{"value":"bottom-left","label":"Bottom left"},{"value":"bottom-right","label":"Bottom right"}], "default": "center" },
+    { "type": "select", "id": "offer_presentation", "label": "Offer presentation", "options": [{"value":"percentage","label":"Discount percentage"},{"value":"amount","label":"Discount amount"},{"value":"shipping","label":"Free shipping"},{"value":"custom","label":"Custom offer"}], "default": "percentage" },
+    { "type": "header", "content": "Trigger and frequency" },
+    { "type": "select", "id": "trigger", "label": "Popup trigger", "options": [{"value":"immediate","label":"Immediately"},{"value":"delay","label":"After delay"},{"value":"scroll","label":"On scroll"},{"value":"exit","label":"On exit intent"},{"value":"manual","label":"Manual / theme controlled"}], "default": "delay" },
+    { "type": "range", "id": "delay", "label": "Delay", "min": 1, "max": 60, "step": 1, "unit": "s", "default": 5 },
+    { "type": "range", "id": "scroll_percentage", "label": "Scroll percentage", "min": 10, "max": 90, "step": 5, "unit": "%", "default": 40 },
+    { "type": "select", "id": "frequency", "label": "Display frequency", "options": [{"value":"visit","label":"Every visit"},{"value":"session","label":"Once per session"},{"value":"day","label":"Once per day"},{"value":"7days","label":"Once per 7 days"},{"value":"30days","label":"Once per 30 days"}], "default": "7days" },
+    { "type": "select", "id": "success_repeat", "label": "Show again after signup", "options": [{"value":"never","label":"Never"},{"value":"frequency","label":"After selected frequency"}], "default": "never" },
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "EXCLUSIVE OFFER" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Get 10% Off Your First Order" },
+    { "type": "richtext", "id": "description", "label": "Description", "default": "<p>Join our private list for new arrivals, considered edits and 10% off your first purchase.</p>" },
+    { "type": "text", "id": "button_text", "label": "Button text", "default": "GET MY 10% OFF" },
+    { "type": "richtext", "id": "disclaimer", "label": "Disclaimer", "default": "<p>By subscribing, you agree to receive marketing emails. Unsubscribe at any time.</p>" },
+    { "type": "header", "content": "Logo" },
+    { "type": "checkbox", "id": "enable_logo", "label": "Enable logo", "default": false },
+    { "type": "image_picker", "id": "logo", "label": "Logo" },
+    { "type": "range", "id": "logo_width", "label": "Logo width", "min": 60, "max": 260, "step": 10, "unit": "px", "default": 120 },
+    { "type": "select", "id": "logo_alignment", "label": "Logo alignment", "options": [{"value":"left","label":"Left"},{"value":"center","label":"Center"},{"value":"right","label":"Right"}], "default": "center" },
+    { "type": "select", "id": "logo_position", "label": "Logo position", "options": [{"value":"before_heading","label":"Before heading"},{"value":"above_eyebrow","label":"Above eyebrow"},{"value":"after_heading","label":"After heading"}], "default": "above_eyebrow" },
+    { "type": "header", "content": "Image" },
+    { "type": "checkbox", "id": "enable_image", "label": "Enable image", "default": true },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "select", "id": "image_position", "label": "Image position", "options": [{"value":"left","label":"Left"},{"value":"right","label":"Right"},{"value":"top","label":"Top"},{"value":"hidden","label":"Hidden"}], "default": "left" },
+    { "type": "range", "id": "image_width", "label": "Image width", "min": 30, "max": 60, "step": 5, "unit": "%", "default": 45 },
+    { "type": "select", "id": "image_ratio", "label": "Image aspect ratio", "options": [{"value":"1 / 1","label":"Square"},{"value":"4 / 5","label":"Portrait"},{"value":"3 / 2","label":"Landscape"}], "default": "4 / 5" },
+    { "type": "select", "id": "image_fit", "label": "Image fit", "options": [{"value":"cover","label":"Cover"},{"value":"contain","label":"Contain"}], "default": "cover" },
+    { "type": "select", "id": "image_focal", "label": "Image focal position", "options": [{"value":"center","label":"Center"},{"value":"top","label":"Top"},{"value":"bottom","label":"Bottom"},{"value":"left","label":"Left"},{"value":"right","label":"Right"}], "default": "center" },
+    { "type": "range", "id": "image_overlay", "label": "Image overlay", "min": 0, "max": 60, "step": 5, "unit": "%", "default": 0 },
+    { "type": "select", "id": "mobile_image", "label": "Mobile image", "options": [{"value":"show","label":"Show"},{"value":"hide","label":"Hide"}], "default": "show" },
+    { "type": "header", "content": "Coupon offer" },
+    { "type": "checkbox", "id": "enable_coupon", "label": "Enable coupon offer", "default": true },
+    { "type": "text", "id": "coupon_code", "label": "Coupon code", "default": "WELCOME10" },
+    { "type": "select", "id": "coupon_display", "label": "Coupon display", "options": [{"value":"immediate","label":"Show code immediately"},{"value":"after","label":"Show after email submission"}], "default": "after" },
+    { "type": "text", "id": "coupon_title", "label": "Coupon title", "default": "YOUR EXCLUSIVE CODE" },
+    { "type": "text", "id": "coupon_description", "label": "Coupon description", "default": "Use this code at checkout to save 10%." },
+    { "type": "text", "id": "copy_text", "label": "Copy button text", "default": "COPY CODE" },
+    { "type": "text", "id": "copied_text", "label": "Copied button text", "default": "COPIED" },
+    { "type": "checkbox", "id": "auto_copy", "label": "Auto-copy coupon on success", "default": false },
+    { "type": "header", "content": "Form" },
+    { "type": "text", "id": "input_placeholder", "label": "Input placeholder", "default": "Enter your email address" },
+    { "type": "select", "id": "input_style", "label": "Input style", "options": [{"value":"underline","label":"Underline"},{"value":"bordered","label":"Bordered"},{"value":"filled","label":"Filled"}], "default": "underline" },
+    { "type": "range", "id": "input_radius", "label": "Input radius", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 0 },
+    { "type": "select", "id": "input_alignment", "label": "Input alignment", "options": [{"value":"left","label":"Left"},{"value":"center","label":"Center"}], "default": "left" },
+    { "type": "text", "id": "error_message", "label": "Submission error message", "default": "Something went wrong. Please try again." },
+    { "type": "header", "content": "Button" },
+    { "type": "select", "id": "button_style", "label": "Button style", "options": [{"value":"solid","label":"Solid"},{"value":"outline","label":"Outline"},{"value":"text","label":"Text"}], "default": "solid" },
+    { "type": "select", "id": "button_width", "label": "Button width", "options": [{"value":"auto","label":"Auto"},{"value":"full","label":"Full width"}], "default": "full" },
+    { "type": "range", "id": "button_radius", "label": "Button radius", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 0 },
+    { "type": "select", "id": "button_alignment", "label": "Button text alignment", "options": [{"value":"left","label":"Left"},{"value":"center","label":"Center"},{"value":"right","label":"Right"}], "default": "center" },
+    { "type": "header", "content": "Success state" },
+    { "type": "text", "id": "success_eyebrow", "label": "Success eyebrow", "default": "WELCOME TO THE CLUB" },
+    { "type": "text", "id": "success_heading", "label": "Success heading", "default": "You're In!" },
+    { "type": "richtext", "id": "success_description", "label": "Success description", "default": "<p>Your exclusive discount is ready to use.</p>" },
+    { "type": "text", "id": "success_coupon_title", "label": "Success coupon title", "default": "YOUR CODE" },
+    { "type": "text", "id": "success_secondary", "label": "Success secondary message", "default": "Copy your code and use it at checkout." },
+    { "type": "checkbox", "id": "show_continue", "label": "Show continue button", "default": true },
+    { "type": "text", "id": "continue_text", "label": "Continue button text", "default": "CONTINUE SHOPPING" },
+    { "type": "header", "content": "Appearance" },
+    { "type": "range", "id": "popup_width", "label": "Popup maximum width", "min": 320, "max": 720, "step": 20, "unit": "px", "default": 640 },
+    { "type": "select", "id": "border_style", "label": "Popup border", "options": [{"value":"none","label":"None"},{"value":"subtle","label":"Subtle"},{"value":"strong","label":"Strong"}], "default": "subtle" },
+    { "type": "range", "id": "border_width", "label": "Border width", "min": 0, "max": 4, "step": 1, "unit": "px", "default": 1 },
+    { "type": "range", "id": "popup_radius", "label": "Border radius", "min": 0, "max": 32, "step": 2, "unit": "px", "default": 2 },
+    { "type": "select", "id": "shadow", "label": "Shadow", "options": [{"value":"none","label":"None"},{"value":"subtle","label":"Subtle"},{"value":"medium","label":"Medium"},{"value":"strong","label":"Strong"}], "default": "medium" },
+    { "type": "range", "id": "inner_padding", "label": "Inner padding", "min": 16, "max": 64, "step": 4, "unit": "px", "default": 36 },
+    { "type": "header", "content": "Overlay and close" },
+    { "type": "checkbox", "id": "enable_overlay", "label": "Enable overlay", "default": true },
+    { "type": "range", "id": "overlay_opacity", "label": "Overlay opacity", "min": 0, "max": 90, "step": 5, "unit": "%", "default": 45 },
+    { "type": "checkbox", "id": "overlay_close", "label": "Close when clicking overlay", "default": true },
+    { "type": "checkbox", "id": "escape_close", "label": "Allow Escape to close", "default": true },
+    { "type": "checkbox", "id": "show_close", "label": "Show close button", "default": true },
+    { "type": "checkbox", "id": "show_no_thanks", "label": "Show No thanks", "default": true },
+    { "type": "text", "id": "no_thanks_text", "label": "No thanks text", "default": "No, thanks" },
+    { "type": "header", "content": "Animation and responsive" },
+    { "type": "select", "id": "animation", "label": "Entrance animation", "options": [{"value":"none","label":"None"},{"value":"fade-scale","label":"Fade + scale"},{"value":"slide-up","label":"Slide up"},{"value":"slide-down","label":"Slide down"},{"value":"slide-left","label":"Slide left"},{"value":"slide-right","label":"Slide right"},{"value":"scale","label":"Scale"}], "default": "fade-scale" },
+    { "type": "range", "id": "animation_duration", "label": "Animation duration", "min": 150, "max": 600, "step": 50, "unit": "ms", "default": 300 },
+    { "type": "checkbox", "id": "show_desktop", "label": "Show on desktop", "default": true },
+    { "type": "checkbox", "id": "show_mobile", "label": "Show on mobile", "default": true },
+    { "type": "header", "content": "Page targeting" },
+    { "type": "select", "id": "page_target", "label": "Show popup on", "options": [{"value":"all","label":"All pages"},{"value":"home","label":"Homepage only"},{"value":"product","label":"Product pages"},{"value":"collection","label":"Collection pages"},{"value":"cart","label":"Cart page"},{"value":"selected","label":"Selected pages"}], "default": "all" },
+    { "type": "text", "id": "selected_page_handles", "label": "Selected page handles", "info": "Comma-separated page handles, for example: about-us,contact" }
+  ],
+  "presets": [{ "name": "Email & coupon popup" }]
+}
+{% endschema %}

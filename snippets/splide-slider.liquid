@@ -1,0 +1,19 @@
+{% comment %}
+  Reusable Splide structure. The caller supplies complete slide <li> markup.
+
+  Required: slider_id, slides_markup, splide_options
+  Optional: class, aria_label, data_attribute
+{% endcomment %}
+<div
+  id="{{ slider_id }}"
+  class="splide {{ class }}"
+  data-splide='{{ splide_options }}'
+  {% if data_attribute != blank %}{{ data_attribute }}{% endif %}
+  aria-label="{{ aria_label | default: 'Carousel' | escape }}"
+>
+  <div class="splide__track">
+    <ul class="splide__list" role="list">
+      {{ slides_markup }}
+    </ul>
+  </div>
+</div>

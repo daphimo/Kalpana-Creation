@@ -2118,6 +2118,31 @@
     ]
   },
   {
+    "name": "Product Card Spacing",
+    "settings": [
+      {
+        "type": "range",
+        "id": "product_card_column_gap",
+        "label": "Column gap",
+        "min": 0,
+        "max": 40,
+        "step": 1,
+        "unit": "px",
+        "default": 10
+      },
+      {
+        "type": "range",
+        "id": "product_card_row_gap",
+        "label": "Row gap",
+        "min": 0,
+        "max": 60,
+        "step": 2,
+        "unit": "px",
+        "default": 22
+      }
+    ]
+  },
+  {
     "name": "Custom product cards",
     "settings": [
       {

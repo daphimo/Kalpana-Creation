@@ -2,8 +2,21 @@
   assign product_count = 0
   assign batch_count = 0
   for block in section.blocks
-    if block.settings.products.count > 0
-      assign product_count = product_count | plus: block.settings.products.count
+    assign batch_product_count = 0
+    for product in block.settings.collection.products
+      assign product_has_inventory = false
+      for variant in product.variants
+        if variant.inventory_quantity >= 1
+          assign product_has_inventory = true
+          break
+        endif
+      endfor
+      if product_has_inventory
+        assign product_count = product_count | plus: 1
+        assign batch_product_count = batch_product_count | plus: 1
+      endif
+    endfor
+    if batch_product_count > 0
       assign batch_count = batch_count | plus: 1
     endif
   endfor
@@ -66,17 +79,41 @@
           assign visible_batch_index = 0
         %}
         {% for block in section.blocks %}
-          {% if block.settings.products.count > 0 %}
-            {% for product in block.settings.products %}
+          {% liquid
+            assign batch_product_count = 0
+            for product in block.settings.collection.products
+              for variant in product.variants
+                if variant.inventory_quantity >= 1
+                  assign batch_product_count = batch_product_count | plus: 1
+                  break
+                endif
+              endfor
+            endfor
+          %}
+          {% if batch_product_count > 0 %}
+            {% assign batch_first_rendered = true %}
+            {% for product in block.settings.collection.products %}
+              {% liquid
+                assign product_has_inventory = false
+                for variant in product.variants
+                  if variant.inventory_quantity >= 1
+                    assign product_has_inventory = true
+                    break
+                  endif
+                endfor
+              %}
+              {% if product_has_inventory %}
               <article
                 class="product-swipe__card{% if card_index == 0 %} is-active{% elsif card_index == 1 and section.settings.enable_stack %} is-next{% endif %}"
                 data-swipe-card
                 data-index="{{ card_index }}"
                 data-batch="{{ visible_batch_index }}"
                 data-block-id="{{ block.id }}"
+                data-product-handle="{{ product.handle | escape }}"
+                data-product-title="{{ product.title | escape }}"
                 aria-hidden="{% if card_index == 0 %}false{% else %}true{% endif %}"
                 {% unless card_index == 0 %}inert{% endunless %}
-                {% if forloop.first %}{{ block.shopify_attributes }}{% endif %}
+                {% if batch_first_rendered %}{{ block.shopify_attributes }}{% endif %}
               >
                 <div class="product-swipe__image">
                   {% if product.featured_image != blank %}
@@ -102,6 +139,8 @@
                 <span class="product-swipe__stamp product-swipe__stamp--like" data-like-stamp aria-hidden="true">Like</span>
               </article>
               {% assign card_index = card_index | plus: 1 %}
+              {% assign batch_first_rendered = false %}
+              {% endif %}
             {% endfor %}
             {% assign visible_batch_index = visible_batch_index | plus: 1 %}
           {% endif %}
@@ -115,6 +154,7 @@
         <h3 data-completion-title>You've seen 0 styles</h3>
         <p>{{ section.settings.batch_message | escape }}</p>
         <button class="product-swipe__more" type="button" data-swipe-more>Swipe more</button>
+        <a class="product-swipe__wishlist-link" href="{{ routes.root_url }}pages/wishlist">View your wishlist</a>
         {% if section.settings.stock_link != blank %}
           <a class="product-swipe__stock-link" href="{{ section.settings.stock_link }}">{{ section.settings.stock_link_label | escape }}</a>
         {% endif %}
@@ -166,7 +206,17 @@
       [
         {% assign json_index = 0 %}
         {% for block in section.blocks %}
-          {% for product in block.settings.products %}
+          {% for product in block.settings.collection.products %}
+            {% liquid
+              assign product_has_inventory = false
+              for variant in product.variants
+                if variant.inventory_quantity >= 1
+                  assign product_has_inventory = true
+                  break
+                endif
+              endfor
+            %}
+            {% if product_has_inventory %}
             {% assign json_index = json_index | plus: 1 %}
             {
               "id": {{ product.id | json }},
@@ -174,6 +224,7 @@
               "price": {{ product.price | money | json }},
               "featured_image": {% if product.featured_image %}{{ product.featured_image | image_url: width: 720 | json }}{% else %}null{% endif %}
             }{% unless json_index == product_count %},{% endunless %}
+            {% endif %}
           {% endfor %}
         {% endfor %}
       ]
@@ -445,7 +496,7 @@
     stroke-linejoin: round;
   }
 
-  #ProductSwipe-{{ section.id }} :is(.product-swipe__more, .product-swipe__stock-link, .product-swipe__restart) {
+  #ProductSwipe-{{ section.id }} :is(.product-swipe__more, .product-swipe__wishlist-link, .product-swipe__stock-link, .product-swipe__restart) {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -613,6 +664,7 @@
         const card = this.activeCard;
         const outgoingIndex = this.index;
         const sign = direction === 'like' ? 1 : -1;
+        const wishlistAdded = direction === 'like' ? this.setWishlistCard(card, true) : false;
         this.updateFeedback(sign, 1);
         card.style.transition = this.reducedMotion.matches ? 'opacity 1ms linear' : 'transform 360ms cubic-bezier(.32, .72, 0, 1), opacity 300ms ease';
         requestAnimationFrame(() => {
@@ -620,7 +672,7 @@
           card.style.opacity = '0';
         });
         this.animationTimer = setTimeout(() => {
-          this.history.push({ index: outgoingIndex, direction });
+          this.history.push({ index: outgoingIndex, direction, wishlistAdded });
           this.index = outgoingIndex + 1;
           this.announce(`${card.querySelector('.product-swipe__title')?.textContent.trim()} ${direction === 'like' ? 'liked' : 'rejected'}.`);
           card.style.cssText = '';
@@ -633,6 +685,9 @@
       undo() {
         if (this.animating || !this.history.length) return;
         const previous = this.history.pop();
+        if (previous.direction === 'like' && previous.wishlistAdded) {
+          this.setWishlistCard(this.cards[previous.index], false);
+        }
         this.index = previous.index;
         this.batchIndex = Number(this.cards[this.index].dataset.batch);
         this.render();
@@ -648,6 +703,20 @@
           card.style.opacity = '1';
         }));
         this.announce(`${card.querySelector('.product-swipe__title')?.textContent.trim()} restored.`);
+      }
+
+      setWishlistCard(card, shouldInclude) {
+        const handle = card?.dataset.productHandle;
+        if (!handle) return false;
+        const detail = {
+          handle,
+          title: card.dataset.productTitle,
+          shouldInclude,
+          silent: true,
+          changed: false
+        };
+        document.dispatchEvent(new CustomEvent('shopify-wishlist:set-item', { detail }));
+        return detail.changed;
       }
 
       restart() {
@@ -761,7 +830,7 @@
       "type": "product_batch",
       "name": "Product batch",
       "settings": [
-        { "type": "product_list", "id": "products", "label": "Products", "limit": 50 }
+        { "type": "collection", "id": "collection", "label": "Collection" }
       ]
     }
   ],

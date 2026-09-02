@@ -1,11 +1,15 @@
 {{ 'custom-collection.css' | asset_url | stylesheet_tag }}
 {{ 'custom-featured-collection.css' | asset_url | stylesheet_tag }}
+{{ 'custom-infinite-collection.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'custom-product-card.js' | asset_url }}" type="module" fetchpriority="low"></script>
+<script src="{{ 'custom-infinite-collection.js' | asset_url }}" type="module" fetchpriority="low"></script>
 
 <div class="section-background"></div>
 <section
-  id="CustomFeaturedCollection-{{ section.id }}"
-  class="section section--page-width spacing-style custom-featured-collection custom-featured-collection--mobile-{{ section.settings.mobile_layout }}"
+  id="CustomInfiniteCollection-{{ section.id }}"
+  class="section section--page-width spacing-style custom-featured-collection custom-featured-collection--mobile-grid custom-infinite-collection"
+  data-custom-infinite-collection
+  data-section-id="{{ section.id }}"
   style="
     --custom-featured-columns: {{ section.settings.columns_desktop }};
     --custom-featured-mobile-columns: {{ section.settings.columns_mobile }};
@@ -21,13 +25,29 @@
     {% endif %}
 
     {% if section.settings.collection != blank and section.settings.collection.products_count > 0 %}
-      <ul class="custom-featured-collection__products" role="list">
-        {% for product in section.settings.collection.products limit: section.settings.products_to_show %}
-          <li class="custom-featured-collection__item">
-            {% render 'custom-collection-product-card', product: product %}
-          </li>
-        {% endfor %}
-      </ul>
+      {% paginate section.settings.collection.products by section.settings.products_per_page %}
+        <ul class="custom-featured-collection__products" role="list" data-infinite-product-grid>
+          {% for product in section.settings.collection.products %}
+            <li class="custom-featured-collection__item">
+              {% render 'custom-collection-product-card', product: product %}
+            </li>
+          {% endfor %}
+        </ul>
+
+        <div
+          class="custom-infinite-collection__status"
+          data-infinite-status
+          data-current-page="{{ paginate.current_page }}"
+          data-total-pages="{{ paginate.pages }}"
+          aria-live="polite"
+        >
+          {% if paginate.next %}
+            <span class="custom-infinite-collection__spinner" aria-hidden="true"></span>
+            <span class="visually-hidden" data-infinite-status-text>Load more products</span>
+            <noscript><a href="{{ paginate.next.url }}">Load more products</a></noscript>
+          {% endif %}
+        </div>
+      {% endpaginate %}
     {% else %}
       <div class="custom-featured-collection__empty">
         <p>Select a collection to show its products.</p>
@@ -38,19 +58,18 @@
 
 {% schema %}
 {
-  "name": "Custom featured",
+  "name": "Infinite collection",
   "disabled_on": { "groups": ["header", "footer"] },
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading", "default": "Featured collection" },
     { "type": "collection", "id": "collection", "label": "Collection" },
-    { "type": "range", "id": "products_to_show", "label": "Products to show", "min": 2, "max": 16, "step": 1, "default": 4 },
+    { "type": "range", "id": "products_per_page", "label": "Products per load", "min": 2, "max": 48, "step": 1, "default": 8, "info": "The first batch and every batch loaded on scroll use this number." },
     { "type": "range", "id": "columns_desktop", "label": "Desktop columns", "min": 2, "max": 6, "step": 1, "default": 4 },
-    { "type": "select", "id": "columns_mobile", "label": "Mobile columns", "options": [{ "value": "1", "label": "1" }, { "value": "2", "label": "2" }], "default": "2", "visible_if": "{{ section.settings.mobile_layout == 'grid' }}" },
-    { "type": "select", "id": "mobile_layout", "label": "Mobile layout", "options": [{ "value": "grid", "label": "Grid" }, { "value": "slide", "label": "Swipe" }], "default": "grid" },
+    { "type": "select", "id": "columns_mobile", "label": "Mobile columns", "options": [{ "value": "1", "label": "1" }, { "value": "2", "label": "2" }], "default": "2" },
     { "type": "range", "id": "image_ratio", "label": "Image height ratio", "min": 110, "max": 150, "step": 5, "unit": "%", "default": 135 },
     { "type": "range", "id": "padding-block-start", "label": "Padding top", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 48 },
     { "type": "range", "id": "padding-block-end", "label": "Padding bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 48 }
   ],
-  "presets": [{ "name": "Custom featured" }]
+  "presets": [{ "name": "Infinite collection" }]
 }
 {% endschema %}

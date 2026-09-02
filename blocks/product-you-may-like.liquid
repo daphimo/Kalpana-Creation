@@ -12,7 +12,7 @@
 
 <div
   class="product-you-may-like product-you-may-like--{{ block.id }}"
-  style="--product-you-may-like-padding-top: {{ block.settings.padding_top }}px; --product-you-may-like-padding-bottom: {{ block.settings.padding_bottom }}px; --product-you-may-like-title-align: {{ block.settings.title_alignment }};"
+  style="--product-you-may-like-padding-top: {{ block.settings.padding_top }}px; --product-you-may-like-padding-bottom: {{ block.settings.padding_bottom }}px; --product-you-may-like-title-align: {{ block.settings.title_alignment }}; --product-card-column-gap: {{ settings.product_card_column_gap }}px; --product-card-row-gap: {{ settings.product_card_row_gap }}px;"
   {{ block.shopify_attributes }}
 >
   {% if block.settings.title != blank %}
@@ -24,7 +24,7 @@
       id="ProductYouMayLikeSlider-{{ block.id }}"
       class="product-you-may-like__slider splide"
       data-product-you-may-like
-      data-splide='{"type":"slide","perPage":{{ desktop_per_page }},"perMove":1,"gap":"10px","arrows":false,"pagination":false,"drag":true,"snap":true,"rewind":false,"keyboard":"focused","breakpoints":{"749":{"perPage":{{ mobile_per_page }},"gap":"8px"}}}'
+      data-splide='{"type":"slide","perPage":{{ desktop_per_page }},"perMove":1,"gap":"{{ settings.product_card_column_gap }}px","arrows":false,"pagination":false,"drag":true,"snap":true,"rewind":false,"keyboard":"focused","breakpoints":{"749":{"perPage":{{ mobile_per_page }},"gap":"{{ settings.product_card_column_gap }}px"}}}'
       aria-label="{{ block.settings.title | default: 'You may also like' | escape }}"
     >
       <div class="splide__track">
@@ -68,7 +68,10 @@
   }
 
   .product-you-may-like__slider:active { cursor: grabbing; }
-  .product-you-may-like__slide { min-width: 0; }
+  .product-you-may-like__slide {
+    min-width: 0;
+    margin-bottom: var(--product-card-row-gap, 22px);
+  }
 
   .product-you-may-like .custom-collection-card {
     width: 100%;

@@ -1,0 +1,150 @@
+<div
+  class="social-png-icons social-png-icons--{{ block.id }}"
+  style="--social-png-size: {{ block.settings.icon_size }}px; --social-png-gap: {{ block.settings.icon_gap }}px;"
+  {{ block.shopify_attributes }}
+>
+  {% liquid
+    assign social_links = 'facebook_url,instagram_url,whatsapp_url,youtube_url,tiktok_url,twitter_url,threads_url,linkedin_url,bluesky_url,snapchat_url,pinterest_url,tumblr_url,vimeo_url' | split: ','
+  %}
+
+  {% for link_key in social_links %}
+    {% liquid
+      assign link_url = block.settings[link_key]
+      assign platform = link_key | remove: '_url'
+      assign icon_key = platform | append: '_icon'
+      assign icon_image = block.settings[icon_key]
+      assign url_parts = link_url | split: '//' | last | split: '/'
+      assign has_profile = false
+      if url_parts.size > 1 and url_parts[1] != ''
+        assign has_profile = true
+      endif
+    %}
+
+    {% if link_url != blank and icon_image != blank %}
+      {% if request.design_mode or has_profile %}
+        <a
+          class="social-png-icons__link{% unless has_profile %} social-png-icons__link--disabled{% endunless %}"
+          href="{{ link_url }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="{{ platform | capitalize }}"
+          {% unless has_profile %}
+            {% if request.design_mode %}onclick="return false;" aria-disabled="true"{% endif %}
+          {% endunless %}
+        >
+          <span
+            class="social-png-icons__icon"
+            style="--social-png-image: url('{{ icon_image | image_url: width: 128 }}');"
+            aria-hidden="true"
+          ></span>
+        </a>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+</div>
+
+{% stylesheet %}
+  .social-png-icons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--social-png-gap);
+    color: var(--color-utilities, var(--color-foreground));
+  }
+
+  .social-png-icons__link {
+    display: grid;
+    width: max(44px, var(--social-png-size));
+    height: max(44px, var(--social-png-size));
+    place-items: center;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .social-png-icons__icon {
+    display: block;
+    width: var(--social-png-size);
+    height: var(--social-png-size);
+    background: currentColor;
+    -webkit-mask: var(--social-png-image) center / contain no-repeat;
+    mask: var(--social-png-image) center / contain no-repeat;
+  }
+
+  .social-png-icons__link:hover .social-png-icons__icon {
+    opacity: 0.72;
+  }
+
+  .social-png-icons__link:focus-visible {
+    border-radius: 2px;
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .shopify-design-mode .social-png-icons__link--disabled {
+    opacity: var(--disabled-opacity, 0.5);
+    pointer-events: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .social-png-icons { justify-content: flex-start; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Social media links (PNG)",
+  "tag": null,
+  "settings": [
+    { "type": "header", "content": "Appearance" },
+    { "type": "range", "id": "icon_size", "label": "Icon size", "min": 16, "max": 48, "step": 2, "unit": "px", "default": 24 },
+    { "type": "range", "id": "icon_gap", "label": "Icon gap", "min": 0, "max": 32, "step": 2, "unit": "px", "default": 8 },
+    { "type": "paragraph", "content": "Upload transparent PNG icons. Their shapes inherit the footer's theme color automatically." },
+    { "type": "header", "content": "Facebook" },
+    { "type": "image_picker", "id": "facebook_icon", "label": "Facebook PNG" },
+    { "type": "url", "id": "facebook_url", "label": "Facebook URL" },
+    { "type": "header", "content": "Instagram" },
+    { "type": "image_picker", "id": "instagram_icon", "label": "Instagram PNG" },
+    { "type": "url", "id": "instagram_url", "label": "Instagram URL" },
+    { "type": "header", "content": "WhatsApp" },
+    { "type": "image_picker", "id": "whatsapp_icon", "label": "WhatsApp PNG" },
+    { "type": "url", "id": "whatsapp_url", "label": "WhatsApp URL" },
+    { "type": "header", "content": "YouTube" },
+    { "type": "image_picker", "id": "youtube_icon", "label": "YouTube PNG" },
+    { "type": "url", "id": "youtube_url", "label": "YouTube URL" },
+    { "type": "header", "content": "TikTok" },
+    { "type": "image_picker", "id": "tiktok_icon", "label": "TikTok PNG" },
+    { "type": "url", "id": "tiktok_url", "label": "TikTok URL" },
+    { "type": "header", "content": "X / Twitter" },
+    { "type": "image_picker", "id": "twitter_icon", "label": "X / Twitter PNG" },
+    { "type": "url", "id": "twitter_url", "label": "X / Twitter URL" },
+    { "type": "header", "content": "Threads" },
+    { "type": "image_picker", "id": "threads_icon", "label": "Threads PNG" },
+    { "type": "url", "id": "threads_url", "label": "Threads URL" },
+    { "type": "header", "content": "LinkedIn" },
+    { "type": "image_picker", "id": "linkedin_icon", "label": "LinkedIn PNG" },
+    { "type": "url", "id": "linkedin_url", "label": "LinkedIn URL" },
+    { "type": "header", "content": "Bluesky" },
+    { "type": "image_picker", "id": "bluesky_icon", "label": "Bluesky PNG" },
+    { "type": "url", "id": "bluesky_url", "label": "Bluesky URL" },
+    { "type": "header", "content": "Snapchat" },
+    { "type": "image_picker", "id": "snapchat_icon", "label": "Snapchat PNG" },
+    { "type": "url", "id": "snapchat_url", "label": "Snapchat URL" },
+    { "type": "header", "content": "Pinterest" },
+    { "type": "image_picker", "id": "pinterest_icon", "label": "Pinterest PNG" },
+    { "type": "url", "id": "pinterest_url", "label": "Pinterest URL" },
+    { "type": "header", "content": "Tumblr" },
+    { "type": "image_picker", "id": "tumblr_icon", "label": "Tumblr PNG" },
+    { "type": "url", "id": "tumblr_url", "label": "Tumblr URL" },
+    { "type": "header", "content": "Vimeo" },
+    { "type": "image_picker", "id": "vimeo_icon", "label": "Vimeo PNG" },
+    { "type": "url", "id": "vimeo_url", "label": "Vimeo URL" }
+  ],
+  "presets": [
+    {
+      "name": "Social media links (PNG)",
+      "category": "Footer"
+    }
+  ]
+}
+{% endschema %}

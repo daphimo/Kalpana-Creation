@@ -1,0 +1,28 @@
+.custom-infinite-collection__status {
+  display: grid;
+  min-height: 52px;
+  margin-top: 22px;
+  place-items: center;
+}
+
+.custom-infinite-collection__spinner {
+  display: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgb(var(--color-foreground-rgb) / 0.18);
+  border-top-color: currentcolor;
+  border-radius: 50%;
+  animation: custom-infinite-collection-spin 700ms linear infinite;
+}
+
+.custom-infinite-collection__status.is-loading .custom-infinite-collection__spinner {
+  display: block;
+}
+
+@keyframes custom-infinite-collection-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .custom-infinite-collection__spinner { animation-duration: 1.5s; }
+}

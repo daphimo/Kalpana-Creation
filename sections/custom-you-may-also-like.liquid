@@ -22,7 +22,8 @@
   style="
     --custom-featured-columns: {{ section.settings.columns_desktop }};
     --custom-featured-mobile-columns: {{ section.settings.columns_mobile }};
-    --custom-featured-gap: {{ section.settings.grid_gap }}px;
+    --product-card-column-gap: {{ settings.product_card_column_gap }}px;
+    --product-card-row-gap: {{ settings.product_card_row_gap }}px;
     --custom-collection-image-ratio: {{ section.settings.image_ratio }}%;
     {% render 'spacing-style', settings: section.settings %}
   "
@@ -54,7 +55,6 @@
     { "type": "range", "id": "columns_desktop", "label": "Desktop columns", "min": 2, "max": 6, "step": 1, "default": 4 },
     { "type": "select", "id": "columns_mobile", "label": "Mobile columns", "options": [{ "value": "1", "label": "1" }, { "value": "2", "label": "2" }], "default": "2", "visible_if": "{{ section.settings.mobile_layout == 'grid' }}" },
     { "type": "select", "id": "mobile_layout", "label": "Mobile layout", "options": [{ "value": "grid", "label": "Grid" }, { "value": "slide", "label": "Swipe" }], "default": "slide" },
-    { "type": "range", "id": "grid_gap", "label": "Grid gap", "min": 4, "max": 32, "step": 2, "unit": "px", "default": 12 },
     { "type": "range", "id": "image_ratio", "label": "Image height ratio", "min": 110, "max": 150, "step": 5, "unit": "%", "default": 135 },
     { "type": "range", "id": "padding-block-start", "label": "Padding top", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 48 },
     { "type": "range", "id": "padding-block-end", "label": "Padding bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 48 }
