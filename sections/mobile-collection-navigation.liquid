@@ -1,0 +1,454 @@
+{% if section.blocks.size > 0 %}
+  <mobile-collection-navigation
+    id="MobileCollectionNavigation-{{ section.id }}"
+    class="mobile-collection-navigation"
+    data-section-id="{{ section.id }}"
+  >
+    <div class="mobile-collection-navigation__layout">
+      <div
+        class="mobile-collection-navigation__tabs"
+        role="tablist"
+        aria-label="Collection categories"
+        aria-orientation="vertical"
+      >
+        {% for block in section.blocks %}
+          {% liquid
+            assign block_label = block.settings.label | strip
+            if block_label == blank
+              assign block_label = 'Category ' | append: forloop.index
+            endif
+            assign panel_id = 'mobile-category-group-' | append: section.id | append: '-' | append: block.id
+          %}
+          <button
+            class="mobile-collection-navigation__tab{% if forloop.first %} is-active{% endif %}"
+            type="button"
+            role="tab"
+            id="MobileCategoryTab-{{ section.id }}-{{ block.id }}"
+            aria-controls="{{ panel_id }}"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+            data-target="{{ panel_id }}"
+          >
+            {{ block_label | escape }}
+          </button>
+        {% endfor %}
+      </div>
+
+      <div class="mobile-collection-navigation__content" data-mobile-category-content>
+        {% for block in section.blocks %}
+          {% liquid
+            assign block_label = block.settings.label | strip
+            if block_label == blank
+              assign block_label = 'Category ' | append: forloop.index
+            endif
+            assign panel_id = 'mobile-category-group-' | append: section.id | append: '-' | append: block.id
+          %}
+          <section
+            id="{{ panel_id }}"
+            class="mobile-collection-navigation__group"
+            role="tabpanel"
+            aria-labelledby="MobileCategoryTab-{{ section.id }}-{{ block.id }}"
+            tabindex="-1"
+            data-category-panel
+            data-block-id="{{ block.id }}"
+            {{ block.shopify_attributes }}
+          >
+            <div class="mobile-collection-navigation__group-header">
+              <h2 class="mobile-collection-navigation__heading">{{ block_label | escape }}</h2>
+              {% if block.settings.link != blank %}
+                <a
+                  class="mobile-collection-navigation__view-all"
+                  href="{{ block.settings.link }}"
+                  aria-label="View all {{ block_label | escape }} collections"
+                >
+                  <span>View all</span><span aria-hidden="true">&rarr;</span>
+                </a>
+              {% endif %}
+            </div>
+
+            {% if block.settings.collections.count > 0 %}
+              <div class="mobile-collection-navigation__collections">
+                {% for collection in block.settings.collections %}
+                  <a class="mobile-collection-navigation__card" href="{{ collection.url }}">
+                    <div class="mobile-collection-navigation__image">
+                      {% if collection.featured_image != blank %}
+                        {{
+                          collection.featured_image
+                          | image_url: width: 360
+                          | image_tag:
+                            widths: '120, 180, 240, 360',
+                            sizes: '72px',
+                            loading: 'lazy',
+                            alt: collection.title
+                        }}
+                      {% else %}
+                        {{ 'collection-1' | placeholder_svg_tag: 'mobile-collection-navigation__placeholder' }}
+                      {% endif %}
+                    </div>
+                    <span class="mobile-collection-navigation__card-title">{{ collection.title | escape }}</span>
+                  </a>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </section>
+        {% endfor %}
+      </div>
+    </div>
+  </mobile-collection-navigation>
+
+  {% style %}
+    #MobileCollectionNavigation-{{ section.id }} {
+      --mobile-category-accent: #6b1f3a;
+      --mobile-category-divider: rgb(var(--color-foreground-rgb, 31 31 31) / 0.12);
+      --mobile-category-card-width: 72px;
+      display: block;
+      width: 100%;
+      height: var(--mobile-category-navigation-height, 100%);
+      min-height: 0;
+      max-height: 100dvh;
+      overflow: hidden;
+      background: var(--color-background, #fff);
+      color: var(--color-foreground, #1f1f1f);
+      font-family: var(--font-paragraph--family, inherit);
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__layout {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__tabs {
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex: 0 0 28%;
+      flex-direction: column;
+      align-self: flex-start;
+      height: 100%;
+      min-width: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      border-inline-end: 1px solid var(--mobile-category-divider);
+      background: rgb(var(--color-foreground-rgb, 31 31 31) / 0.035);
+      scrollbar-width: none;
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__tab {
+      position: relative;
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 48px;
+      padding: var(--padding-md, 12px) var(--padding-2xs, 6px);
+      border: 0;
+      border-block-end: 1px solid var(--mobile-category-divider);
+      border-radius: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-size: clamp(0.9rem, 2.7vw, 1.1rem);
+      font-weight: 500;
+      line-height: 1.25;
+      letter-spacing: 0.08em;
+      text-align: center;
+      text-transform: uppercase;
+      overflow-wrap: anywhere;
+      cursor: pointer;
+      transition: color 180ms ease, background-color 180ms ease, font-weight 180ms ease;
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__tab::after {
+      content: '';
+      position: absolute;
+      inset: 0 -1px 0 auto;
+      width: 2px;
+      background: var(--mobile-category-accent);
+      opacity: 0;
+      transform: scaleY(0.45);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__tab.is-active {
+      background: var(--color-background, #fff);
+      color: var(--mobile-category-accent);
+      font-weight: 700;
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__tab.is-active::after {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__tab:focus-visible,
+    #MobileCollectionNavigation-{{ section.id }} :is(.mobile-collection-navigation__view-all, .mobile-collection-navigation__card):focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: -3px;
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__content {
+      flex: 1 1 auto;
+      min-width: 0;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      scroll-padding-top: var(--padding-lg, 16px);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__group {
+      padding: var(--padding-lg, 16px) var(--padding-md, 12px) var(--padding-xl, 20px);
+      scroll-margin-top: var(--padding-lg, 16px);
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__group + .mobile-collection-navigation__group {
+      border-block-start: 1px solid var(--mobile-category-divider);
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--gap-sm, 8px);
+      margin-block-end: var(--padding-md, 12px);
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__heading {
+      min-width: 0;
+      margin: 0;
+      color: inherit;
+      font-family: var(--font-heading--family, inherit);
+      font-size: clamp(1rem, 3vw, 1.2rem);
+      font-weight: 600;
+      line-height: 1.25;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__view-all {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 0.3em;
+      min-height: 40px;
+      color: inherit;
+      font-size: clamp(0.82rem, 2.45vw, 1rem);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-decoration: none;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__collections {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--gap-sm, 8px);
+      width: 100%;
+      min-width: 0;
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__card {
+      display: flex;
+      flex: 0 0 var(--mobile-category-card-width);
+      flex-direction: column;
+      min-width: 0;
+      width: var(--mobile-category-card-width);
+      max-width: var(--mobile-category-card-width);
+      color: inherit;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__image {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      border-radius: var(--style-border-radius-card, 4px);
+      background: rgb(var(--color-foreground-rgb, 31 31 31) / 0.06);
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__image :is(img, svg) {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__placeholder {
+      padding: 12%;
+      color: rgb(var(--color-foreground-rgb, 31 31 31) / 0.28);
+    }
+
+    #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__card-title {
+      display: -webkit-box;
+      margin-block-start: var(--padding-3xs, 4px);
+      overflow: hidden;
+      font-size: clamp(0.84rem, 2.5vw, 1.05rem);
+      font-weight: 600;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #MobileCollectionNavigation-{{ section.id }} *,
+      #MobileCollectionNavigation-{{ section.id }} .mobile-collection-navigation__content {
+        scroll-behavior: auto;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  {% endstyle %}
+
+  <script>
+    (() => {
+      if (customElements.get('mobile-collection-navigation')) return;
+
+      class MobileCollectionNavigation extends HTMLElement {
+        connectedCallback() {
+          if (this.isInitialized) return;
+          this.isInitialized = true;
+          this.content = this.querySelector('[data-mobile-category-content]');
+          this.tabList = this.querySelector('[role="tablist"]');
+          this.tabs = [...this.querySelectorAll('[role="tab"]')];
+          this.panels = [...this.querySelectorAll('[data-category-panel]')];
+          if (!this.content || !this.tabs.length || !this.panels.length) return;
+
+          this.onClick = (event) => {
+            const tab = event.target.closest('[role="tab"]');
+            if (!tab || !this.contains(tab)) return;
+            this.activate(tab, true);
+          };
+
+          this.onKeydown = (event) => {
+            const index = this.tabs.indexOf(event.target);
+            if (index < 0 || !['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+            event.preventDefault();
+            let nextIndex = event.key === 'Home' ? 0 : event.key === 'End' ? this.tabs.length - 1 : index;
+            if (event.key === 'ArrowDown') nextIndex = (index + 1) % this.tabs.length;
+            if (event.key === 'ArrowUp') nextIndex = (index - 1 + this.tabs.length) % this.tabs.length;
+            this.tabs[nextIndex].focus();
+            this.activate(this.tabs[nextIndex], true);
+          };
+
+          this.addEventListener('click', this.onClick);
+          this.addEventListener('keydown', this.onKeydown);
+          this.setupObserver();
+
+          this.onBlockSelect = (event) => {
+            const panel = this.querySelector(`[data-block-id="${CSS.escape(event.detail.blockId)}"]`);
+            const tab = panel && this.querySelector(`[aria-controls="${CSS.escape(panel.id)}"]`);
+            if (tab) this.activate(tab, true);
+          };
+          document.addEventListener('shopify:block:select', this.onBlockSelect);
+        }
+
+        disconnectedCallback() {
+          this.removeEventListener('click', this.onClick);
+          this.removeEventListener('keydown', this.onKeydown);
+          document.removeEventListener('shopify:block:select', this.onBlockSelect);
+          this.observer?.disconnect();
+          this.isInitialized = false;
+        }
+
+        activate(tab, shouldScroll = false) {
+          const target = this.querySelector(`#${CSS.escape(tab.dataset.target)}`);
+          if (!target) return;
+          this.tabs.forEach((item) => {
+            const isActive = item === tab;
+            item.classList.toggle('is-active', isActive);
+            item.setAttribute('aria-selected', String(isActive));
+            item.tabIndex = isActive ? 0 : -1;
+          });
+          if (this.tabList) {
+            const tabTop = tab.getBoundingClientRect().top - this.tabList.getBoundingClientRect().top + this.tabList.scrollTop;
+            const centeredTop = tabTop - (this.tabList.clientHeight - tab.offsetHeight) / 2;
+            this.tabList.scrollTo({
+              top: centeredTop,
+              behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+            });
+          }
+          if (shouldScroll) {
+            const top = target.getBoundingClientRect().top - this.content.getBoundingClientRect().top + this.content.scrollTop;
+            this.content.scrollTo({ top, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+          }
+        }
+
+        setupObserver() {
+          if (!('IntersectionObserver' in window)) return;
+          this.visibility = new Map();
+          this.observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => this.visibility.set(entry.target.id, entry.intersectionRatio));
+            const visible = this.panels
+              .filter((panel) => (this.visibility.get(panel.id) || 0) > 0)
+              .sort((a, b) => {
+                const ratioDifference = (this.visibility.get(b.id) || 0) - (this.visibility.get(a.id) || 0);
+                if (Math.abs(ratioDifference) > 0.08) return ratioDifference;
+                return Math.abs(a.getBoundingClientRect().top - this.content.getBoundingClientRect().top) - Math.abs(b.getBoundingClientRect().top - this.content.getBoundingClientRect().top);
+              })[0];
+            const tab = visible && this.querySelector(`[aria-controls="${CSS.escape(visible.id)}"]`);
+            if (tab) this.activate(tab, false);
+          }, { root: this.content, threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] });
+          this.panels.forEach((panel) => this.observer.observe(panel));
+        }
+      }
+
+      customElements.define('mobile-collection-navigation', MobileCollectionNavigation);
+    })();
+  </script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Mobile category nav",
+  "class": "mobile-collection-navigation-section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "category_group",
+      "name": "Category group",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Sarees"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "View all link"
+        },
+        {
+          "type": "collection_list",
+          "id": "collections",
+          "label": "Collections",
+          "limit": 16
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Mobile category nav",
+      "blocks": [
+        { "type": "category_group" },
+        { "type": "category_group" },
+        { "type": "category_group" }
+      ]
+    }
+  ]
+}
+{% endschema %}

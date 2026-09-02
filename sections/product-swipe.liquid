@@ -1,0 +1,775 @@
+{% liquid
+  assign product_count = 0
+  assign batch_count = 0
+  for block in section.blocks
+    if block.settings.products.count > 0
+      assign product_count = product_count | plus: block.settings.products.count
+      assign batch_count = batch_count | plus: 1
+    endif
+  endfor
+
+  case section.settings.image_ratio
+    when 'square'
+      assign image_ratio = '1 / 1'
+    when 'landscape'
+      assign image_ratio = '4 / 3'
+    else
+      assign image_ratio = '3 / 4'
+  endcase
+
+  case section.settings.card_shadow
+    when 'none'
+      assign card_shadow = 'none'
+    when 'strong'
+      assign card_shadow = '0 16px 38px rgb(47 25 31 / 0.2)'
+    else
+      assign card_shadow = '0 10px 28px rgb(47 25 31 / 0.13)'
+  endcase
+%}
+
+<product-swipe
+  id="ProductSwipe-{{ section.id }}"
+  class="product-swipe"
+  data-section-id="{{ section.id }}"
+  data-total="{{ product_count }}"
+  data-batch-total="{{ batch_count }}"
+  data-threshold="{{ section.settings.swipe_threshold }}"
+  data-stack-enabled="{{ section.settings.enable_stack }}"
+  style="
+    --ps-card-width: {{ section.settings.card_width }}px;
+    --ps-image-ratio: {{ image_ratio }};
+    --ps-card-radius: {{ section.settings.card_radius }}px;
+    --ps-card-shadow: {{ card_shadow }};
+    --ps-padding-top: {{ section.settings.padding_top }}px;
+    --ps-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --ps-neutral: {{ section.settings.neutral_background }};
+    --ps-like-bg: {{ section.settings.like_background }};
+    --ps-nope-bg: {{ section.settings.nope_background }};
+    --ps-like-color: {{ section.settings.like_label_color }};
+    --ps-nope-color: {{ section.settings.nope_label_color }};
+    --ps-button-border: {{ section.settings.button_border_color }};
+    --ps-button-color: {{ section.settings.button_icon_color }};
+  "
+>
+  <div class="product-swipe__background product-swipe__background--like" aria-hidden="true"></div>
+  <div class="product-swipe__background product-swipe__background--nope" aria-hidden="true"></div>
+
+  <div class="product-swipe__inner">
+    {% if section.settings.heading != blank %}
+      <h2 class="product-swipe__heading">{{ section.settings.heading | escape }}</h2>
+    {% endif %}
+
+    {% if product_count > 0 %}
+      <div class="product-swipe__stage" data-swipe-stage aria-label="Product discovery cards">
+        {% liquid
+          assign card_index = 0
+          assign visible_batch_index = 0
+        %}
+        {% for block in section.blocks %}
+          {% if block.settings.products.count > 0 %}
+            {% for product in block.settings.products %}
+              <article
+                class="product-swipe__card{% if card_index == 0 %} is-active{% elsif card_index == 1 and section.settings.enable_stack %} is-next{% endif %}"
+                data-swipe-card
+                data-index="{{ card_index }}"
+                data-batch="{{ visible_batch_index }}"
+                data-block-id="{{ block.id }}"
+                aria-hidden="{% if card_index == 0 %}false{% else %}true{% endif %}"
+                {% unless card_index == 0 %}inert{% endunless %}
+                {% if forloop.first %}{{ block.shopify_attributes }}{% endif %}
+              >
+                <div class="product-swipe__image">
+                  {% if product.featured_image != blank %}
+                    {{
+                      product.featured_image
+                      | image_url: width: 720
+                      | image_tag:
+                        widths: '240, 360, 480, 600, 720',
+                        sizes: '(max-width: 749px) calc(100vw - 48px), 360px',
+                        loading: 'lazy',
+                        draggable: false,
+                        alt: product.title
+                    }}
+                  {% else %}
+                    {{ 'product-1' | placeholder_svg_tag: 'product-swipe__placeholder' }}
+                  {% endif %}
+                </div>
+                <div class="product-swipe__details">
+                  <h3 class="product-swipe__title">{{ product.title | escape }}</h3>
+                  <p class="product-swipe__price">{{ product.price | money }}</p>
+                </div>
+                <span class="product-swipe__stamp product-swipe__stamp--nope" data-nope-stamp aria-hidden="true">Nope</span>
+                <span class="product-swipe__stamp product-swipe__stamp--like" data-like-stamp aria-hidden="true">Like</span>
+              </article>
+              {% assign card_index = card_index | plus: 1 %}
+            {% endfor %}
+            {% assign visible_batch_index = visible_batch_index | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="product-swipe__completion" data-completion hidden>
+        <svg class="product-swipe__completion-icon" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M16 3l1.8 5.2L23 10l-5.2 1.8L16 17l-1.8-5.2L9 10l5.2-1.8L16 3Zm-7 11 1.4 4.1 4.1 1.4-4.1 1.4L9 25l-1.4-4.1-4.1-1.4 4.1-1.4L9 14Zm14 5 1.1 3.4 3.4 1.1-3.4 1.1L23 28l-1.1-3.4-3.4-1.1 3.4-1.1L23 19Z"/>
+        </svg>
+        <h3 data-completion-title>You've seen 0 styles</h3>
+        <p>{{ section.settings.batch_message | escape }}</p>
+        <button class="product-swipe__more" type="button" data-swipe-more>Swipe more</button>
+        {% if section.settings.stock_link != blank %}
+          <a class="product-swipe__stock-link" href="{{ section.settings.stock_link }}">{{ section.settings.stock_link_label | escape }}</a>
+        {% endif %}
+        {% if section.settings.enable_restart %}
+          <button class="product-swipe__restart" type="button" data-restart hidden>Start Again</button>
+        {% endif %}
+      </div>
+
+      <div class="product-swipe__footer" data-swipe-footer>
+        <div
+          class="product-swipe__progress"
+          role="progressbar"
+          aria-label="Products reviewed"
+          aria-valuemin="0"
+          aria-valuemax="{{ product_count }}"
+          aria-valuenow="0"
+        >
+          <span data-progress-bar></span>
+        </div>
+
+        <div class="product-swipe__controls">
+          <button class="product-swipe__control product-swipe__control--nope" type="button" data-action="nope" aria-label="Nope">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+          <button class="product-swipe__control product-swipe__control--undo" type="button" data-action="undo" aria-label="Undo previous swipe" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7L5 11l4 4M6 11h7a5 5 0 0 1 5 5v1"/></svg>
+          </button>
+          <button class="product-swipe__control product-swipe__control--like" type="button" data-action="like" aria-label="Like">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 5.8a5.4 5.4 0 0 0-7.6 0L12 7l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 22l8.8-8.6a5.4 5.4 0 0 0 0-7.6Z"/></svg>
+          </button>
+        </div>
+      </div>
+    {% else %}
+      <div class="product-swipe__empty">
+        {% if request.design_mode %}
+          Add a product batch block and select products to use the swipe experience.
+        {% else %}
+          There are no products to discover right now.
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <p class="visually-hidden" aria-live="polite" aria-atomic="true" data-swipe-status></p>
+    <noscript><p class="product-swipe__noscript">Swipe controls require JavaScript. The first product is shown above.</p></noscript>
+  </div>
+
+  {% if product_count > 0 %}
+    <script type="application/json" data-product-swipe-json>
+      [
+        {% assign json_index = 0 %}
+        {% for block in section.blocks %}
+          {% for product in block.settings.products %}
+            {% assign json_index = json_index | plus: 1 %}
+            {
+              "id": {{ product.id | json }},
+              "title": {{ product.title | json }},
+              "price": {{ product.price | money | json }},
+              "featured_image": {% if product.featured_image %}{{ product.featured_image | image_url: width: 720 | json }}{% else %}null{% endif %}
+            }{% unless json_index == product_count %},{% endunless %}
+          {% endfor %}
+        {% endfor %}
+      ]
+    </script>
+  {% endif %}
+</product-swipe>
+
+{% style %}
+  #ProductSwipe-{{ section.id }} {
+    --ps-like-opacity: 0;
+    --ps-nope-opacity: 0;
+    position: relative;
+    isolation: isolate;
+    display: block;
+    width: 100%;
+    height: min(760px, 100svh);
+    min-height: min(580px, 100svh);
+    overflow: hidden;
+    background: var(--ps-neutral);
+    color: var(--color-foreground, #2d1d22);
+    font-family: var(--font-paragraph--family, inherit);
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__background {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__background--like {
+    opacity: var(--ps-like-opacity);
+    background: linear-gradient(135deg, var(--ps-neutral) 15%, var(--ps-like-bg));
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__background--nope {
+    opacity: var(--ps-nope-opacity);
+    background: linear-gradient(225deg, var(--ps-neutral) 15%, var(--ps-nope-bg));
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__inner {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: clamp(10px, 2vh, 18px);
+    width: 100%;
+    height: 100%;
+    padding: var(--ps-padding-top) 24px var(--ps-padding-bottom);
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__heading {
+    max-width: 360px;
+    margin: 0 auto;
+    color: inherit;
+    font-family: var(--font-heading--family, inherit);
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__stage {
+    position: relative;
+    align-self: center;
+    justify-self: center;
+    width: min(var(--ps-card-width), calc(100vw - 48px), calc(64svh - 134px));
+    height: 100%;
+    max-height: 530px;
+    min-height: 0;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__card {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    display: none;
+    width: 100%;
+    max-height: 100%;
+    overflow: hidden;
+    border-radius: var(--ps-card-radius);
+    background: #fff;
+    box-shadow: var(--ps-card-shadow);
+    color: #2d1d22;
+    user-select: none;
+    touch-action: pan-y;
+    transform: translate3d(-50%, -50%, 0);
+    transform-origin: 50% 85%;
+    will-change: transform;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__card.is-active,
+  #ProductSwipe-{{ section.id }} .product-swipe__card.is-next {
+    display: block;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__card.is-active {
+    z-index: 2;
+    cursor: grab;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__card.is-dragging { cursor: grabbing; }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__card.is-next {
+    z-index: 1;
+    opacity: 0.72;
+    transform: translate3d(-50%, calc(-50% + 8px), 0) scale(0.965);
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__image {
+    width: 100%;
+    aspect-ratio: var(--ps-image-ratio);
+    overflow: hidden;
+    background: rgb(45 29 34 / 0.06);
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__image :is(img, svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__placeholder { padding: 12%; }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__details { padding: 12px 14px 14px; }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__title {
+    display: -webkit-box;
+    min-height: 2.6em;
+    margin: 0;
+    overflow: hidden;
+    font-family: var(--font-paragraph--family, inherit);
+    font-size: clamp(1.2rem, 3.4vw, 1.5rem);
+    font-weight: 500;
+    line-height: 1.3;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__price {
+    margin: 7px 0 0;
+    font-size: clamp(1.2rem, 3.3vw, 1.5rem);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__stamp {
+    position: absolute;
+    top: 24px;
+    z-index: 3;
+    padding: 4px 8px;
+    border: 3px solid currentColor;
+    border-radius: 4px;
+    opacity: 0;
+    font-size: clamp(2.2rem, 8vw, 3.6rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__stamp--nope {
+    left: 18px;
+    color: var(--ps-nope-color);
+    transform: rotate(-10deg);
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__stamp--like {
+    right: 18px;
+    color: var(--ps-like-color);
+    transform: rotate(10deg);
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__footer {
+    display: grid;
+    gap: 12px;
+    width: min(var(--ps-card-width), calc(100vw - 48px));
+    margin: 0 auto;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__progress {
+    width: 100%;
+    height: 2px;
+    overflow: hidden;
+    background: rgb(45 29 34 / 0.16);
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__progress span {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: currentColor;
+    transition: width 240ms ease;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(22px, 8vw, 42px);
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__control {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    place-items: center;
+    border: 1px solid var(--ps-button-border);
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 4px 12px rgb(45 29 34 / 0.08);
+    color: var(--ps-button-color);
+    cursor: pointer;
+    transition: transform 160ms ease, opacity 160ms ease, box-shadow 160ms ease;
+    appearance: none;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__control:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 16px rgb(45 29 34 / 0.13);
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__control:focus-visible,
+  #ProductSwipe-{{ section.id }} .product-swipe__restart:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__control:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__control svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__control--like { color: var(--ps-like-color); }
+  #ProductSwipe-{{ section.id }} .product-swipe__control--nope { color: var(--ps-nope-color); }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__completion,
+  #ProductSwipe-{{ section.id }} .product-swipe__empty {
+    align-self: center;
+    justify-self: center;
+    max-width: 360px;
+    text-align: center;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__completion[hidden] { display: none; }
+  #ProductSwipe-{{ section.id }} .product-swipe__completion h3 { margin: 0 0 8px; font-family: var(--font-heading--family, inherit); }
+  #ProductSwipe-{{ section.id }} .product-swipe__completion p { margin: 0 0 18px; }
+  #ProductSwipe-{{ section.id }} .product-swipe__completion-icon {
+    width: 30px;
+    height: 30px;
+    margin-block-end: 16px;
+    fill: none;
+    stroke: var(--ps-nope-color);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  #ProductSwipe-{{ section.id }} :is(.product-swipe__more, .product-swipe__stock-link, .product-swipe__restart) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: min(100%, 260px);
+    min-height: 44px;
+    margin: 10px auto 0;
+    padding: 10px 20px;
+    border: 1px solid var(--ps-button-border);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--ps-button-color);
+    font: inherit;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__more {
+    border-color: var(--ps-nope-color);
+    background: var(--ps-nope-color);
+    color: #fff;
+  }
+
+  #ProductSwipe-{{ section.id }} :is(.product-swipe__more, .product-swipe__restart)[hidden] { display: none; }
+
+  #ProductSwipe-{{ section.id }} .product-swipe__noscript { margin: 0; text-align: center; }
+
+  @media (prefers-reduced-motion: reduce) {
+    #ProductSwipe-{{ section.id }} *,
+    #ProductSwipe-{{ section.id }} *::before,
+    #ProductSwipe-{{ section.id }} *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+{% endstyle %}
+
+<script>
+  (() => {
+    if (customElements.get('product-swipe')) return;
+
+    class ProductSwipe extends HTMLElement {
+      connectedCallback() {
+        if (this.initialized) return;
+        this.initialized = true;
+        this.cards = [...this.querySelectorAll('[data-swipe-card]')];
+        if (!this.cards.length) return;
+        this.stage = this.querySelector('[data-swipe-stage]');
+        this.footer = this.querySelector('[data-swipe-footer]');
+        this.completion = this.querySelector('[data-completion]');
+        this.progress = this.querySelector('[role="progressbar"]');
+        this.progressBar = this.querySelector('[data-progress-bar]');
+        this.status = this.querySelector('[data-swipe-status]');
+        this.undoButton = this.querySelector('[data-action="undo"]');
+        this.moreButton = this.querySelector('[data-swipe-more]');
+        this.restartButton = this.querySelector('[data-restart]');
+        this.completionTitle = this.querySelector('[data-completion-title]');
+        this.batches = [...new Set(this.cards.map((card) => Number(card.dataset.batch)))].map((batchIndex) =>
+          this.cards.filter((card) => Number(card.dataset.batch) === batchIndex)
+        );
+        this.batchIndex = 0;
+        this.index = 0;
+        this.history = [];
+        this.dragging = false;
+        this.animating = false;
+        this.startX = 0;
+        this.deltaX = 0;
+        this.reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+        this.onPointerDown = this.pointerDown.bind(this);
+        this.onPointerMove = this.pointerMove.bind(this);
+        this.onPointerEnd = this.pointerEnd.bind(this);
+        this.onClick = this.handleClick.bind(this);
+        this.onBlockSelect = (event) => {
+          const card = this.querySelector(`[data-block-id="${CSS.escape(event.detail.blockId)}"]`);
+          if (!card) return;
+          this.batchIndex = Number(card.dataset.batch);
+          this.index = Number(card.dataset.index);
+          this.history = [];
+          this.render();
+        };
+        this.stage.addEventListener('pointerdown', this.onPointerDown);
+        this.stage.addEventListener('pointermove', this.onPointerMove);
+        this.stage.addEventListener('pointerup', this.onPointerEnd);
+        this.stage.addEventListener('pointercancel', this.onPointerEnd);
+        this.addEventListener('click', this.onClick);
+        document.addEventListener('shopify:block:select', this.onBlockSelect);
+        this.render();
+      }
+
+      disconnectedCallback() {
+        this.stage?.removeEventListener('pointerdown', this.onPointerDown);
+        this.stage?.removeEventListener('pointermove', this.onPointerMove);
+        this.stage?.removeEventListener('pointerup', this.onPointerEnd);
+        this.stage?.removeEventListener('pointercancel', this.onPointerEnd);
+        this.removeEventListener('click', this.onClick);
+        document.removeEventListener('shopify:block:select', this.onBlockSelect);
+        clearTimeout(this.animationTimer);
+        this.initialized = false;
+      }
+
+      get activeCard() { return this.cards[this.index]; }
+
+      pointerDown(event) {
+        if (this.animating || event.button > 0 || !event.target.closest('.is-active')) return;
+        this.dragging = true;
+        this.startX = event.clientX;
+        this.deltaX = 0;
+        this.activeCard.setPointerCapture(event.pointerId);
+        this.activeCard.classList.add('is-dragging');
+        this.activeCard.style.transition = 'none';
+      }
+
+      pointerMove(event) {
+        if (!this.dragging) return;
+        this.deltaX = event.clientX - this.startX;
+        const width = this.activeCard.offsetWidth || 1;
+        const strength = Math.min(Math.abs(this.deltaX) / width, 1);
+        const rotation = (this.deltaX / width) * 12;
+        this.activeCard.style.transform = `translate3d(calc(-50% + ${this.deltaX}px), -50%, 0) rotate(${rotation}deg)`;
+        this.updateFeedback(this.deltaX, strength);
+      }
+
+      pointerEnd(event) {
+        if (!this.dragging) return;
+        this.dragging = false;
+        if (this.activeCard.hasPointerCapture?.(event.pointerId)) this.activeCard.releasePointerCapture(event.pointerId);
+        this.activeCard.classList.remove('is-dragging');
+        const threshold = this.activeCard.offsetWidth * (Number(this.dataset.threshold) / 100);
+        if (Math.abs(this.deltaX) >= threshold) this.swipe(this.deltaX > 0 ? 'like' : 'nope');
+        else this.snapBack();
+      }
+
+      handleClick(event) {
+        const action = event.target.closest('[data-action]')?.dataset.action;
+        if (action === 'like' || action === 'nope') this.swipe(action);
+        if (action === 'undo') this.undo();
+        if (event.target.closest('[data-swipe-more]')) this.nextBatch();
+        if (event.target.closest('[data-restart]')) this.restart();
+      }
+
+      updateFeedback(delta, strength) {
+        this.style.setProperty('--ps-like-opacity', delta > 0 ? String(strength * 0.9) : '0');
+        this.style.setProperty('--ps-nope-opacity', delta < 0 ? String(strength * 0.9) : '0');
+        const like = this.activeCard?.querySelector('[data-like-stamp]');
+        const nope = this.activeCard?.querySelector('[data-nope-stamp]');
+        if (like) like.style.opacity = delta > 0 ? String(strength) : '0';
+        if (nope) nope.style.opacity = delta < 0 ? String(strength) : '0';
+      }
+
+      snapBack() {
+        const card = this.activeCard;
+        if (!card) return;
+        card.style.transition = 'transform 260ms cubic-bezier(.22, 1, .36, 1)';
+        card.style.transform = 'translate3d(-50%, -50%, 0) rotate(0deg)';
+        this.updateFeedback(0, 0);
+        this.animationTimer = setTimeout(() => { card.style.transition = ''; card.style.transform = ''; }, 280);
+      }
+
+      swipe(direction) {
+        if (this.animating || !this.activeCard) return;
+        this.animating = true;
+        const card = this.activeCard;
+        const outgoingIndex = this.index;
+        const sign = direction === 'like' ? 1 : -1;
+        this.updateFeedback(sign, 1);
+        card.style.transition = this.reducedMotion.matches ? 'opacity 1ms linear' : 'transform 360ms cubic-bezier(.32, .72, 0, 1), opacity 300ms ease';
+        requestAnimationFrame(() => {
+          card.style.transform = `translate3d(calc(-50% + ${sign * Math.max(innerWidth, 700)}px), -50%, 0) rotate(${sign * 18}deg)`;
+          card.style.opacity = '0';
+        });
+        this.animationTimer = setTimeout(() => {
+          this.history.push({ index: outgoingIndex, direction });
+          this.index = outgoingIndex + 1;
+          this.announce(`${card.querySelector('.product-swipe__title')?.textContent.trim()} ${direction === 'like' ? 'liked' : 'rejected'}.`);
+          card.style.cssText = '';
+          this.updateFeedback(0, 0);
+          this.animating = false;
+          this.render();
+        }, this.reducedMotion.matches ? 20 : 370);
+      }
+
+      undo() {
+        if (this.animating || !this.history.length) return;
+        const previous = this.history.pop();
+        this.index = previous.index;
+        this.batchIndex = Number(this.cards[this.index].dataset.batch);
+        this.render();
+        const card = this.activeCard;
+        if (!card) return;
+        const sign = previous.direction === 'like' ? 1 : -1;
+        card.style.transition = 'none';
+        card.style.transform = `translate3d(calc(-50% + ${sign * 90}px), -50%, 0) rotate(${sign * 7}deg)`;
+        card.style.opacity = '0';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          card.style.transition = this.reducedMotion.matches ? 'opacity 1ms linear' : 'transform 300ms cubic-bezier(.22, 1, .36, 1), opacity 220ms ease';
+          card.style.transform = 'translate3d(-50%, -50%, 0) rotate(0deg)';
+          card.style.opacity = '1';
+        }));
+        this.announce(`${card.querySelector('.product-swipe__title')?.textContent.trim()} restored.`);
+      }
+
+      restart() {
+        this.batchIndex = 0;
+        this.index = 0;
+        this.history = [];
+        this.cards.forEach((card) => card.style.cssText = '');
+        this.updateFeedback(0, 0);
+        this.render();
+        this.announce('Product discovery restarted.');
+      }
+
+      nextBatch() {
+        if (this.batchIndex >= this.batches.length - 1) return;
+        this.batchIndex += 1;
+        this.index = Number(this.batches[this.batchIndex][0].dataset.index);
+        this.updateFeedback(0, 0);
+        this.render();
+        this.announce('The next product batch is ready.');
+      }
+
+      render() {
+        const stackEnabled = this.dataset.stackEnabled === 'true';
+        const batch = this.batches[this.batchIndex] || [];
+        const batchLastIndex = batch.length ? Number(batch[batch.length - 1].dataset.index) : -1;
+        const batchComplete = this.index > batchLastIndex;
+        const finalBatch = this.batchIndex >= this.batches.length - 1;
+        this.cards.forEach((card, cardIndex) => {
+          const active = cardIndex === this.index;
+          const next = stackEnabled && cardIndex === this.index + 1 && Number(card.dataset.batch) === this.batchIndex;
+          card.classList.toggle('is-active', active);
+          card.classList.toggle('is-next', next);
+          card.setAttribute('aria-hidden', String(!active));
+          card.toggleAttribute('inert', !active);
+        });
+        this.stage.hidden = batchComplete;
+        this.completion.hidden = !batchComplete;
+        this.footer.hidden = batchComplete;
+        if (this.completionTitle) this.completionTitle.textContent = `You've seen ${this.history.length} styles`;
+        if (this.moreButton) this.moreButton.hidden = !batchComplete || finalBatch;
+        if (this.restartButton) this.restartButton.hidden = !batchComplete || !finalBatch;
+        const judged = this.history.length;
+        const percent = this.cards.length ? (judged / this.cards.length) * 100 : 0;
+        this.progressBar.style.width = `${percent}%`;
+        this.progress.setAttribute('aria-valuenow', String(judged));
+        this.undoButton.disabled = !this.history.length;
+        if (batchComplete) {
+          this.announce(finalBatch ? 'All product batches have been reviewed.' : 'This product batch is complete. You can swipe more.');
+        }
+      }
+
+      announce(message) {
+        if (!this.status) return;
+        this.status.textContent = '';
+        requestAnimationFrame(() => { this.status.textContent = message; });
+      }
+    }
+
+    customElements.define('product-swipe', ProductSwipe);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Product swipe",
+  "max_blocks": 10,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Your next Koskii crush starts with a swipe" },
+    { "type": "text", "id": "batch_message", "label": "Batch completion message", "default": "Keep swiping for more, or shop what's ready today" },
+    { "type": "url", "id": "stock_link", "label": "Shop in-stock link" },
+    { "type": "text", "id": "stock_link_label", "label": "Shop link label", "default": "Shop what's in stock" },
+    { "type": "range", "id": "card_width", "label": "Card width", "min": 220, "max": 420, "step": 10, "unit": "px", "default": 300 },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Card image aspect ratio",
+      "options": [
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "square", "label": "Square" },
+        { "value": "landscape", "label": "Landscape" }
+      ],
+      "default": "portrait"
+    },
+    { "type": "range", "id": "card_radius", "label": "Card border radius", "min": 0, "max": 28, "step": 2, "unit": "px", "default": 12 },
+    {
+      "type": "select",
+      "id": "card_shadow",
+      "label": "Card shadow",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "soft", "label": "Soft" },
+        { "value": "strong", "label": "Strong" }
+      ],
+      "default": "soft"
+    },
+    { "type": "range", "id": "padding_top", "label": "Top spacing", "min": 8, "max": 64, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom spacing", "min": 8, "max": 64, "step": 4, "unit": "px", "default": 24 },
+    { "type": "color", "id": "neutral_background", "label": "Neutral background", "default": "#fbf9f8" },
+    { "type": "color", "id": "like_background", "label": "Like background", "default": "#dff3e8" },
+    { "type": "color", "id": "nope_background", "label": "Nope background", "default": "#f8dfe4" },
+    { "type": "color", "id": "like_label_color", "label": "Like label color", "default": "#348a62" },
+    { "type": "color", "id": "nope_label_color", "label": "Nope label color", "default": "#c64b63" },
+    { "type": "color", "id": "button_border_color", "label": "Button border color", "default": "#76515c" },
+    { "type": "color", "id": "button_icon_color", "label": "Button icon color", "default": "#5d3944" },
+    { "type": "range", "id": "swipe_threshold", "label": "Swipe threshold", "min": 15, "max": 45, "step": 5, "unit": "%", "default": 25 },
+    { "type": "checkbox", "id": "enable_stack", "label": "Enable card stack", "default": true },
+    { "type": "checkbox", "id": "enable_restart", "label": "Enable restart button", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "product_batch",
+      "name": "Product batch",
+      "settings": [
+        { "type": "product_list", "id": "products", "label": "Products", "limit": 50 }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product swipe",
+      "blocks": [{ "type": "product_batch" }]
+    }
+  ]
+}
+{% endschema %}
