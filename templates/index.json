@@ -339,7 +339,7 @@
       "settings": {
         "desktop_image": "shopify://shop_images/Koskii_Klan_-_Half_Banner_Update.png",
         "alt_text": "Rewards",
-        "link": "/account"
+        "link": "shopify://pages/rewards"
       }
     },
     "custom_featured_collection_y9nKtX": {
