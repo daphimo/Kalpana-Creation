@@ -201,8 +201,8 @@
           "settings": {
             "label": "Swipe",
             "action_type": "link",
-            "link": "shopify://pages/swipe",
-            "icon": "swipe"
+            "link": "shopify://pages/contact",
+            "icon": "contact"
           }
         },
         "bar_item_QMWGxT": {
