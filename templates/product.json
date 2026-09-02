@@ -267,6 +267,16 @@
               },
               "blocks": {}
             },
+            "product_icon_with_text_YWGdHB": {
+              "type": "product-icon-with-text",
+              "name": "Icon with Text",
+              "settings": {
+                "icon": "truck",
+                "text": "COD for orders under ₹11,000",
+                "link": ""
+              },
+              "blocks": {}
+            },
             "product_you_may_like_4AQgHE": {
               "type": "product-you-may-like",
               "name": "You may also like",
@@ -293,7 +303,7 @@
               "settings": {
                 "label": "DETAILS",
                 "content": "{{ closest.product.description }}",
-                "open_initially": false
+                "open_initially": true
               },
               "blocks": {}
             },
@@ -333,6 +343,7 @@
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
             "product_pincode_checker_AdiknV",
+            "product_icon_with_text_YWGdHB",
             "product_you_may_like_4AQgHE",
             "product_collapsible_NLexCU",
             "product_specifications_fWJrT4",
