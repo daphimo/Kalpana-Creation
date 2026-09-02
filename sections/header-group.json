@@ -231,6 +231,7 @@
         "bar_item_QMWGxT",
         "bar_item_8EHWE8"
       ],
+      "disabled": true,
       "name": "Mobile bar",
       "settings": {
         "show_labels": false,
@@ -247,6 +248,7 @@
     },
     "mobile_page_header_LFRWEj": {
       "type": "mobile-page-header",
+      "disabled": true,
       "name": "Mobile page header",
       "settings": {
         "padding_top": 8,
