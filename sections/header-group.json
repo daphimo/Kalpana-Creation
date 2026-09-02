@@ -191,7 +191,7 @@
           "type": "bar_item",
           "settings": {
             "label": "Shop",
-            "action_type": "menu",
+            "action_type": "link",
             "link": "shopify://collections",
             "icon": "grid"
           }
