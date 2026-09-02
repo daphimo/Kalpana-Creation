@@ -250,6 +250,43 @@
               },
               "block_order": []
             },
+            "product_pincode_checker_AdiknV": {
+              "type": "product-pincode-checker",
+              "name": "Pincode checker",
+              "settings": {
+                "heading": "Check delivery availability",
+                "placeholder": "Enter 6-digit pincode",
+                "button_label": "Check",
+                "fast_pincodes": "",
+                "fast_message": "Fast delivery is available for your pincode.",
+                "medium_pincodes": "",
+                "medium_message": "Standard delivery is available for your pincode.",
+                "delayed_pincodes": "",
+                "delayed_message": "Delivery is available, but it may take a little longer.",
+                "unmatched_message": "Sorry, delivery is not currently available for this pincode."
+              },
+              "blocks": {}
+            },
+            "product_you_may_like_4AQgHE": {
+              "type": "product-you-may-like",
+              "name": "You may also like",
+              "settings": {
+                "title": "You may also like",
+                "title_alignment": "center",
+                "products": [
+                  "kalpna-creation-digital-print-bhagalpuri-linen-saree-multicolor-1",
+                  "kalpna-creation-digital-print-bhagalpuri-linen-saree-multicolor-2",
+                  "kalpna-creation-printed-bollywood-linen-saree-multicolor",
+                  "kalpna-creation-solid-plain-bollywood-georgette-saree-multicolor",
+                  "supalee-tex-solid-bollywood-georgette-saree-with-unstitched-blouse-multicolor"
+                ],
+                "cards_desktop": "4",
+                "cards_mobile": "2",
+                "padding_top": 24,
+                "padding_bottom": 24
+              },
+              "blocks": {}
+            },
             "product_collapsible_NLexCU": {
               "type": "product-collapsible",
               "name": "Collapsible",
@@ -295,6 +332,8 @@
             "color_family_products_yU4pRU",
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
+            "product_pincode_checker_AdiknV",
+            "product_you_may_like_4AQgHE",
             "product_collapsible_NLexCU",
             "product_specifications_fWJrT4",
             "product_collapsible_mQga4Y",
