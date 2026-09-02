@@ -257,7 +257,7 @@
                 "heading": "Check delivery availability",
                 "placeholder": "Enter 6-digit pincode",
                 "button_label": "Check",
-                "fast_pincodes": "",
+                "fast_pincodes": "394210",
                 "fast_message": "Fast delivery is available for your pincode.",
                 "medium_pincodes": "",
                 "medium_message": "Standard delivery is available for your pincode.",
