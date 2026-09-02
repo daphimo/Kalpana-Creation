@@ -228,7 +228,7 @@
       "settings": {
         "section_title": "FESTIVE FAVOURITES",
         "grid_per_desktop": 3,
-        "grid_per_mobile": 3,
+        "grid_per_mobile": 1,
         "mobile_layout": "stack",
         "padding-block-start": 24,
         "padding-block-end": 24
@@ -307,7 +307,7 @@
       "settings": {
         "section_title": "FESTIVE FAVOURITES",
         "grid_per_desktop": 6,
-        "grid_per_mobile": 3,
+        "grid_per_mobile": 2,
         "mobile_layout": "stack",
         "padding-block-start": 24,
         "padding-block-end": 24
