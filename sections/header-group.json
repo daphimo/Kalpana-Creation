@@ -103,12 +103,7 @@
           "settings": {
             "title": "Fabric",
             "collections": [
-              "cotton",
-              "silk",
-              "satin",
-              "georgette",
-              "chiffon",
-              "organza"
+              "cotton"
             ]
           }
         },
@@ -264,8 +259,8 @@
         "icon_size": 60,
         "bottom_offset": 90,
         "side_offset": 24,
-        "background_color": "#25D366",
-        "icon_color": "#FFFFFF"
+        "background_color": "#25d366",
+        "icon_color": "#ffffff"
       }
     }
   },
