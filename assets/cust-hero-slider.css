@@ -113,7 +113,7 @@
   .cust-hero-slider__mobile-actions,
   .cust-hero-slider__search { pointer-events: auto; }
   .cust-hero-slider__mobile-logo { display: flex; align-items: center; max-width: min(48vw, 180px); color: inherit; text-decoration: none; }
-  .cust-hero-slider__mobile-logo img { display: block; width: auto; max-width: 100%; height: var(--header-logo-image-height-mobile, 32px); object-fit: contain; }
+  .cust-hero-slider__mobile-logo img { display: block; width: auto; max-width: 100%; height: var(--header-logo-image-height-mobile, 80px); object-fit: contain; }
   .cust-hero-slider__mobile-actions { display: flex; align-items: center; gap: 2px; }
   .cust-hero-slider__mobile-action { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; color: inherit; }
   .cust-hero-slider__mobile-action svg { width: 21px; height: 21px; }
