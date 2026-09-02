@@ -247,7 +247,6 @@
     },
     "mobile_page_header_LFRWEj": {
       "type": "mobile-page-header",
-      "disabled": true,
       "name": "Mobile page header",
       "settings": {
         "padding_top": 8,
