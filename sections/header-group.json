@@ -191,8 +191,8 @@
           "type": "bar_item",
           "settings": {
             "label": "Shop",
-            "action_type": "menu",
-            "link": "shopify://collections/all",
+            "action_type": "link",
+            "link": "shopify://collections",
             "icon": "grid"
           }
         },
@@ -201,8 +201,8 @@
           "settings": {
             "label": "Swipe",
             "action_type": "link",
-            "link": "shopify://pages/contact",
-            "icon": "contact"
+            "link": "shopify://pages/swipe",
+            "icon": "swipe"
           }
         },
         "bar_item_QMWGxT": {

@@ -228,7 +228,7 @@
       "settings": {
         "section_title": "FESTIVE FAVOURITES",
         "grid_per_desktop": 3,
-        "grid_per_mobile": 3,
+        "grid_per_mobile": 1,
         "mobile_layout": "stack",
         "padding-block-start": 24,
         "padding-block-end": 24
@@ -307,7 +307,7 @@
       "settings": {
         "section_title": "FESTIVE FAVOURITES",
         "grid_per_desktop": 6,
-        "grid_per_mobile": 3,
+        "grid_per_mobile": 2,
         "mobile_layout": "stack",
         "padding-block-start": 24,
         "padding-block-end": 24
@@ -318,8 +318,8 @@
       "name": "Clickable image",
       "settings": {
         "desktop_image": "shopify://shop_images/Coming_Soon_-_Early_Access_Unloc.png",
-        "alt_text": "",
-        "link": ""
+        "alt_text": "Early Access",
+        "link": "shopify://pages/swipe"
       }
     },
     "clickable_image_section_M4BKAP": {
@@ -327,8 +327,8 @@
       "name": "Clickable image",
       "settings": {
         "desktop_image": "shopify://shop_images/Koskii_Klan_-_Half_Banner_Update.png",
-        "alt_text": "",
-        "link": ""
+        "alt_text": "Rewards",
+        "link": "/account"
       }
     },
     "custom_featured_collection_y9nKtX": {

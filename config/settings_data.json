@@ -9,6 +9,7 @@
  */
 {
   "current": {
+    "logo": "shopify://shop_images/Kalpana_Creations_White_logo.png",
     "logo_height": 36,
     "logo_height_mobile": 28,
     "page_text_color": "{{ settings.color_palette.foreground }}",
@@ -105,6 +106,13 @@
     "best_seller_badge_image": "shopify://shop_images/Bestseller.02mkicrcrgcw8.png",
     "best_seller_badge_width": 100,
     "content_for_index": [],
+    "blocks": {
+      "7584948915495707528": {
+        "type": "shopify://apps/joy-loyalty-program/blocks/app-embed/555c55c9-9a3d-4fe0-a7a8-2c256984a371",
+        "disabled": false,
+        "settings": {}
+      }
+    },
     "color_palette": {
       "background": "#ffffff",
       "foreground": "#000000",

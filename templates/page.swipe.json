@@ -1,0 +1,124 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "name": "t:names.title",
+          "settings": {
+            "text": "<h1>{{ closest.page.title }}</h1>",
+            "width": "100%",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "page-content": {
+          "type": "page-content",
+          "settings": {
+            "text_color": ""
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "heading",
+        "page-content"
+      ],
+      "disabled": true,
+      "settings": {
+        "content_direction": "column",
+        "gap": 32,
+        "background_color": "{{ settings.color_palette.background }}",
+        "padding-block-start": 40,
+        "padding-block-end": 80
+      }
+    },
+    "product_swipe_f4ttTK": {
+      "type": "product-swipe",
+      "blocks": {
+        "product_batch_QGXcJE": {
+          "type": "product_batch",
+          "settings": {
+            "products": [
+              "kalpna-collection-self-design-bollywood-cotton-linen-saree-multicolor",
+              "kalpna-creation-digital-print-bhagalpuri-linen-saree-multicolor",
+              "kalpna-creation-digital-print-bhagalpuri-linen-saree-multicolor-1",
+              "kalpna-creation-digital-print-bhagalpuri-linen-saree-multicolor-2",
+              "kalpna-creation-printed-bandhani-georgette-saree-green",
+              "kalpna-creation-printed-bollywood-cotton-linen-saree-purple"
+            ]
+          }
+        },
+        "product_batch_EREEw4": {
+          "type": "product_batch",
+          "settings": {
+            "products": [
+              "kalpna-creation-printed-bollywood-linen-saree-multicolor",
+              "kalpna-creation-self-design-bollywood-cotton-linen-saree-multicolor",
+              "kalpna-creation-solid-plain-bollywood-georgette-saree-multicolor",
+              "supalee-tex-solid-bollywood-georgette-saree-with-unstitched-blouse-multicolor",
+              "kalpna-creation-printed-bollywood-cotton-linen-saree-purple"
+            ]
+          }
+        }
+      },
+      "block_order": [
+        "product_batch_QGXcJE",
+        "product_batch_EREEw4"
+      ],
+      "name": "Product swipe",
+      "settings": {
+        "heading": "Your next Koskii crush starts with a swipe",
+        "batch_message": "Keep swiping for more, or shop what's ready today",
+        "stock_link": "",
+        "stock_link_label": "Shop what's in stock",
+        "card_width": 300,
+        "image_ratio": "portrait",
+        "card_radius": 12,
+        "card_shadow": "soft",
+        "padding_top": 24,
+        "padding_bottom": 24,
+        "neutral_background": "#fbf9f8",
+        "like_background": "#dff3e8",
+        "nope_background": "#f8dfe4",
+        "like_label_color": "#348a62",
+        "nope_label_color": "#c64b63",
+        "button_border_color": "#76515c",
+        "button_icon_color": "#5d3944",
+        "swipe_threshold": 25,
+        "enable_stack": true,
+        "enable_restart": true
+      }
+    }
+  },
+  "order": [
+    "main",
+    "product_swipe_f4ttTK"
+  ]
+}

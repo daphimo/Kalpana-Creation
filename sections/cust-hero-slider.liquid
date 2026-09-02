@@ -25,7 +25,7 @@
   data-autoplay="{{ section.settings.enable_autoplay }}"
   data-keywords="[{{ keyword_values | escape }}]"
   data-splide='{"type":"loop","perPage":1,"perMove":1,"arrows":{{ section.settings.show_navigation }},"pagination":{{ section.settings.show_pagination }},"autoplay":{{ section.settings.enable_autoplay }},"interval":{{ autoplay_ms }},"pauseOnHover":false,"pauseOnFocus":false,"keyboard":"global","speed":650,"reducedMotion":{"speed":0,"rewindSpeed":0,"autoplay":"pause"},"i18n":{"prev":"Previous slide","next":"Next slide","first":"Go to first slide","last":"Go to last slide","slideX":"Go to slide %s","pageX":"Go to page %s","play":"Start autoplay","pause":"Pause autoplay"}}'
-  style="--cust-hero-autoplay-duration: {{ section.settings.autoplay_duration }}s;"
+  style="--cust-hero-autoplay-duration: {{ section.settings.autoplay_duration }}s; --cust-hero-mobile-logo-height: {{ section.settings.mobile_logo_height }}px;"
 >
   {% render 'cust-mobile-hero-header' %}
   <div class="splide__track">
@@ -105,6 +105,17 @@
       "step": 1,
       "unit": "s",
       "default": 5
+    },
+    { "type": "header", "content": "Mobile header" },
+    {
+      "type": "range",
+      "id": "mobile_logo_height",
+      "label": "Logo height",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 60
     },
     { "type": "header", "content": "Mobile search keywords" },
     { "type": "paragraph", "content": "Add keyword blocks below. The word “Search” remains static." }

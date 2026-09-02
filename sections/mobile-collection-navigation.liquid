@@ -103,9 +103,9 @@
       --mobile-category-card-width: 72px;
       display: block;
       width: 100%;
-      height: var(--mobile-category-navigation-height, 100%);
+      height: var(--mobile-category-navigation-height, calc(100dvh - var(--header-height, 0px)));
       min-height: 0;
-      max-height: 100dvh;
+      max-height: calc(100dvh - var(--header-height, 0px));
       overflow: hidden;
       background: var(--color-background, #fff);
       color: var(--color-foreground, #1f1f1f);
@@ -131,6 +131,7 @@
       min-width: 0;
       overflow-y: auto;
       overscroll-behavior: contain;
+      touch-action: pan-y;
       border-inline-end: 1px solid var(--mobile-category-divider);
       background: rgb(var(--color-foreground-rgb, 31 31 31) / 0.035);
       scrollbar-width: none;
@@ -200,10 +201,12 @@
       min-height: 0;
       overflow-x: hidden;
       overflow-y: auto;
-      overscroll-behavior: contain;
+      overscroll-behavior-y: contain;
       scroll-behavior: smooth;
       scrollbar-width: thin;
       scroll-padding-top: var(--padding-lg, 16px);
+      padding-block-end: calc(88px + env(safe-area-inset-bottom, 0px));
+      touch-action: pan-y;
       -webkit-overflow-scrolling: touch;
     }
 
@@ -381,8 +384,14 @@
             });
           }
           if (shouldScroll) {
-            const top = target.getBoundingClientRect().top - this.content.getBoundingClientRect().top + this.content.scrollTop;
-            this.content.scrollTo({ top, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+            const contentTop = this.content.getBoundingClientRect().top;
+            const targetTop = target.getBoundingClientRect().top;
+            const top = this.content.scrollTop + targetTop - contentTop;
+            const maxTop = this.content.scrollHeight - this.content.clientHeight;
+            this.content.scrollTo({
+              top: Math.max(0, Math.min(top, maxTop)),
+              behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+            });
           }
         }
 

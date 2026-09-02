@@ -1,0 +1,262 @@
+<product-pincode-checker
+  class="product-pincode-checker"
+  data-fast-message="{{ block.settings.fast_message | escape }}"
+  data-medium-message="{{ block.settings.medium_message | escape }}"
+  data-delayed-message="{{ block.settings.delayed_message | escape }}"
+  data-unmatched-message="{{ block.settings.unmatched_message | escape }}"
+  {{ block.shopify_attributes }}
+>
+  {% if block.settings.heading != blank %}
+    <h3 class="product-pincode-checker__heading">{{ block.settings.heading | escape }}</h3>
+  {% endif %}
+
+  <form class="product-pincode-checker__form" data-pincode-form>
+    <label class="visually-hidden" for="ProductPincode-{{ block.id }}">Enter delivery pincode</label>
+    <input
+      id="ProductPincode-{{ block.id }}"
+      class="product-pincode-checker__input"
+      type="text"
+      inputmode="numeric"
+      autocomplete="postal-code"
+      pattern="[0-9]{6}"
+      maxlength="6"
+      placeholder="{{ block.settings.placeholder | escape }}"
+      aria-describedby="ProductPincodeMessage-{{ block.id }}"
+      required
+      data-pincode-input
+    >
+    <button class="product-pincode-checker__button" type="submit">
+      {{ block.settings.button_label | escape }}
+    </button>
+  </form>
+
+  <p
+    id="ProductPincodeMessage-{{ block.id }}"
+    class="product-pincode-checker__message"
+    role="status"
+    aria-live="polite"
+    hidden
+    data-pincode-message
+  ></p>
+
+  <script type="application/json" data-pincode-groups>
+    {
+      "fast": {{ block.settings.fast_pincodes | json }},
+      "medium": {{ block.settings.medium_pincodes | json }},
+      "delayed": {{ block.settings.delayed_pincodes | json }}
+    }
+  </script>
+</product-pincode-checker>
+
+{% stylesheet %}
+  .product-pincode-checker {
+    display: block;
+    width: 100%;
+  }
+
+  .product-pincode-checker__heading {
+    margin: 0 0 var(--padding-sm, 8px);
+    font-size: var(--font-size--md, 1rem);
+    line-height: 1.3;
+  }
+
+  .product-pincode-checker__form {
+    display: flex;
+    width: 100%;
+  }
+
+  .product-pincode-checker__input {
+    min-width: 0;
+    min-height: 46px;
+    flex: 1 1 auto;
+    padding: 0 14px;
+    border: 1px solid rgb(var(--color-foreground-rgb, 31 31 31) / 0.3);
+    border-inline-end: 0;
+    border-radius: var(--style-border-radius-inputs, 4px) 0 0 var(--style-border-radius-inputs, 4px);
+    background: var(--color-background, #fff);
+    color: var(--color-foreground, #1f1f1f);
+    font: inherit;
+  }
+
+  .product-pincode-checker__button {
+    min-height: 46px;
+    flex: 0 0 auto;
+    padding: 0 18px;
+    border: 1px solid var(--color-primary-button-background, #1f1f1f);
+    border-radius: 0 var(--style-border-radius-inputs, 4px) var(--style-border-radius-inputs, 4px) 0;
+    background: var(--color-primary-button-background, #1f1f1f);
+    color: var(--color-primary-button-text, #fff);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .product-pincode-checker__input:focus-visible,
+  .product-pincode-checker__button:focus-visible {
+    position: relative;
+    z-index: 1;
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .product-pincode-checker__message {
+    margin: var(--padding-sm, 8px) 0 0;
+    font-size: var(--font-size--sm, 0.9rem);
+    line-height: 1.4;
+  }
+
+  .product-pincode-checker__message[data-status='fast'] { color: var(--color-success, #16794b); }
+  .product-pincode-checker__message[data-status='medium'] { color: var(--color-foreground, #1f1f1f); }
+  .product-pincode-checker__message[data-status='delayed'],
+  .product-pincode-checker__message[data-status='unmatched'] { color: var(--color-warning, #9a6700); }
+{% endstylesheet %}
+
+<script>
+  (() => {
+    if (customElements.get('product-pincode-checker')) return;
+
+    class ProductPincodeChecker extends HTMLElement {
+      connectedCallback() {
+        if (this.initialized) return;
+        this.initialized = true;
+        this.form = this.querySelector('[data-pincode-form]');
+        this.input = this.querySelector('[data-pincode-input]');
+        this.message = this.querySelector('[data-pincode-message]');
+
+        try {
+          const values = JSON.parse(this.querySelector('[data-pincode-groups]')?.textContent || '{}');
+          this.groups = Object.fromEntries(
+            Object.entries(values).map(([name, list]) => [name, new Set(this.parsePincodes(list))])
+          );
+        } catch (error) {
+          this.groups = { fast: new Set(), medium: new Set(), delayed: new Set() };
+        }
+
+        this.onSubmit = (event) => {
+          event.preventDefault();
+          if (!this.input.reportValidity()) return;
+
+          const pincode = this.input.value.trim();
+          const status = ['fast', 'medium', 'delayed'].find((name) => this.groups[name]?.has(pincode)) || 'unmatched';
+          this.message.textContent = this.dataset[`${status}Message`] || '';
+          this.message.dataset.status = status;
+          this.message.hidden = false;
+        };
+
+        this.onInput = () => {
+          this.input.value = this.input.value.replace(/\D/g, '').slice(0, 6);
+          this.message.hidden = true;
+        };
+
+        this.form?.addEventListener('submit', this.onSubmit);
+        this.input?.addEventListener('input', this.onInput);
+      }
+
+      disconnectedCallback() {
+        this.form?.removeEventListener('submit', this.onSubmit);
+        this.input?.removeEventListener('input', this.onInput);
+        this.initialized = false;
+      }
+
+      parsePincodes(value) {
+        return String(value || '')
+          .split(/[\s,]+/)
+          .map((pincode) => pincode.trim())
+          .filter(Boolean);
+      }
+    }
+
+    customElements.define('product-pincode-checker', ProductPincodeChecker);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Pincode checker",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Check delivery availability"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Input placeholder",
+      "default": "Enter 6-digit pincode"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Check"
+    },
+    {
+      "type": "header",
+      "content": "Fast delivery"
+    },
+    {
+      "type": "textarea",
+      "id": "fast_pincodes",
+      "label": "Valid pincodes",
+      "info": "Enter pincodes separated by commas."
+    },
+    {
+      "type": "textarea",
+      "id": "fast_message",
+      "label": "Success message",
+      "default": "Fast delivery is available for your pincode."
+    },
+    {
+      "type": "header",
+      "content": "Medium delivery"
+    },
+    {
+      "type": "textarea",
+      "id": "medium_pincodes",
+      "label": "Valid pincodes",
+      "info": "Enter pincodes separated by commas."
+    },
+    {
+      "type": "textarea",
+      "id": "medium_message",
+      "label": "Success message",
+      "default": "Standard delivery is available for your pincode."
+    },
+    {
+      "type": "header",
+      "content": "Delayed delivery"
+    },
+    {
+      "type": "textarea",
+      "id": "delayed_pincodes",
+      "label": "Valid pincodes",
+      "info": "Enter pincodes separated by commas."
+    },
+    {
+      "type": "textarea",
+      "id": "delayed_message",
+      "label": "Success message",
+      "default": "Delivery is available, but it may take a little longer."
+    },
+    {
+      "type": "header",
+      "content": "Pincode not found"
+    },
+    {
+      "type": "textarea",
+      "id": "unmatched_message",
+      "label": "Message",
+      "default": "Sorry, delivery is not currently available for this pincode."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Pincode checker",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}
