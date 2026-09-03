@@ -267,6 +267,46 @@
               },
               "blocks": {}
             },
+            "text_QUJAmt": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<p>Secured Payments</p>",
+                "width": "fit-content",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "custom",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 14,
+                "padding-block-end": 4,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "payment_icons_wKHehk": {
+              "type": "payment-icons",
+              "name": "t:names.payment_icons",
+              "settings": {
+                "icon_height": 26,
+                "horizontal_alignment": "flex-start",
+                "gap": 5,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
             "product_you_may_like_4AQgHE": {
               "type": "product-you-may-like",
               "name": "You may also like",
@@ -333,6 +373,8 @@
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
             "product_pincode_checker_AdiknV",
+            "text_QUJAmt",
+            "payment_icons_wKHehk",
             "product_you_may_like_4AQgHE",
             "product_collapsible_NLexCU",
             "product_specifications_fWJrT4",
@@ -362,7 +404,7 @@
         "products_to_show": 4,
         "columns_desktop": 4,
         "columns_mobile": "2",
-        "mobile_layout": "slide",
+        "mobile_layout": "grid",
         "image_ratio": 135,
         "padding-block-start": 48,
         "padding-block-end": 48
@@ -376,7 +418,7 @@
         "products_to_show": 4,
         "columns_desktop": 4,
         "columns_mobile": "2",
-        "mobile_layout": "slide",
+        "mobile_layout": "grid",
         "image_ratio": 135,
         "padding-block-start": 48,
         "padding-block-end": 48

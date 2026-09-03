@@ -53,8 +53,8 @@
       cart-summary-sticky="true"
     >
       <cart-drawer-component
-        {% if settings.auto_open_cart_drawer and template.name != 'cart' %}
-          auto-open
+        {% if template.name != 'cart' %}
+          {% if settings.auto_open_cart_drawer or template.name == 'product' %}auto-open{% endif %}
         {% endif %}
       >
         <template id="empty-cart-template">

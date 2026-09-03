@@ -342,6 +342,82 @@
         "link": "shopify://pages/rewards"
       }
     },
+    "premium_testimonials_FH3dTN": {
+      "type": "premium-testimonials",
+      "blocks": {
+        "testimonial_TXKCKP": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Priya Sharma",
+            "rating": 5,
+            "title": "Beautifully made and effortless to wear",
+            "description": "<p>The fabric and finish exceeded my expectations. Every detail feels considered and special.</p>",
+            "product": "",
+            "image_position": "right",
+            "image_size": 110,
+            "image_ratio": "square",
+            "card_alignment": "top"
+          }
+        },
+        "testimonial_tjYCib": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Ananya Mehta",
+            "rating": 5,
+            "title": "My new celebration favourite",
+            "description": "<p>Elegant, comfortable and even more beautiful in person. I received compliments all evening.</p>",
+            "product": "",
+            "image_position": "right",
+            "image_size": 110,
+            "image_ratio": "square",
+            "card_alignment": "top"
+          }
+        },
+        "testimonial_ECmqAw": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Kavya Rao",
+            "rating": 5,
+            "title": "Luxury in every detail",
+            "description": "<p>From the thoughtful packaging to the graceful silhouette, the entire experience felt exceptional.</p>",
+            "product": "",
+            "image_position": "right",
+            "image_size": 110,
+            "image_ratio": "square",
+            "card_alignment": "top"
+          }
+        },
+        "testimonial_mpTcPk": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Meera Patel",
+            "rating": 5,
+            "title": "A piece I will treasure",
+            "description": "<p>The craftsmanship is remarkable and the fit feels as though it was made especially for me.</p>",
+            "product": "",
+            "image_position": "right",
+            "image_size": 110,
+            "image_ratio": "square",
+            "card_alignment": "top"
+          }
+        }
+      },
+      "block_order": [
+        "testimonial_TXKCKP",
+        "testimonial_tjYCib",
+        "testimonial_ECmqAw",
+        "testimonial_mpTcPk"
+      ],
+      "name": "Premium testimonials",
+      "settings": {
+        "eyebrow": "Discover how we're making a difference, one outfit at a time.",
+        "heading": "See why everyone loves Kalpana's Creations.",
+        "heading_alignment": "center",
+        "section_width": "contained",
+        "padding-block-start": 64,
+        "padding-block-end": 64
+      }
+    },
     "custom_infinite_collection_F98UNE": {
       "type": "custom-infinite-collection",
       "name": "Infinite collection",
@@ -367,6 +443,7 @@
     "responsive_flex_grid_NJGdmw",
     "clickable_image_section_8Npbd8",
     "clickable_image_section_M4BKAP",
+    "premium_testimonials_FH3dTN",
     "custom_infinite_collection_F98UNE"
   ]
 }

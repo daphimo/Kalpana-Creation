@@ -15,6 +15,9 @@
   assign is_product_page = false
   if request.page_type == 'product' and product != blank
     assign is_product_page = true
+    assign mobile_bar_variant = product.selected_or_first_available_variant
+    assign mobile_bar_can_add = mobile_bar_variant.available
+    assign mobile_bar_form_id = 'MobileBarProductForm-' | append: section.id
   endif
 %}
 
@@ -35,10 +38,39 @@
   "
 >
   {% if is_product_page %}
-    <div class="mobile-bar__product-actions" aria-label="Product purchase actions">
-      <button type="button" class="mobile-bar__product-button" data-mobile-buy-now>Buy now</button>
-      <button type="button" class="mobile-bar__product-button" data-mobile-add-to-cart>Add to bag</button>
-    </div>
+    <product-form-component
+      class="mobile-bar__product-form"
+      data-section-id="{{ section.id }}"
+      data-product-id="{{ product.id }}"
+      data-product-url="{{ product.url }}"
+      data-quantity-default="{{ mobile_bar_variant.quantity_rule.min | default: 1 }}"
+      data-quantity-error-max="{{ 'products.product.quantity_error_max' | t }}"
+      on:submit="/handleSubmit"
+    >
+      <div class="visually-hidden" aria-live="assertive" role="status" aria-atomic="true" ref="liveRegion"></div>
+      {% form 'product', product, id: mobile_bar_form_id, data-type: 'add-to-cart-form' %}
+        <input type="hidden" name="id" ref="variantId" value="{{ mobile_bar_variant.id }}">
+        <div class="mobile-bar__product-actions" aria-label="Product purchase actions" ref="productFormButtons">
+          <div
+            class="mobile-bar__buy-now"
+            ref="acceleratedCheckoutButtonContainer"
+            {% unless mobile_bar_can_add %}hidden{% endunless %}
+          >
+            {{ form | payment_button }}
+          </div>
+          {% render 'add-to-cart-button',
+            id: 'MobileBarAddToCart',
+            class: 'mobile-bar__product-button add-to-cart-button',
+            can_add_to_cart: mobile_bar_can_add,
+            show_icon: false,
+            product: product,
+            add_to_cart_text: 'Add to bag',
+            data_testid: 'mobile-bar-add-to-cart'
+          %}
+        </div>
+      {% endform %}
+    </product-form-component>
+    {% render 'add-to-cart-button-styles' %}
   {% endif %}
 
   <header-actions class="mobile-bar__inner{% if section.settings.show_top_border %} mobile-bar__inner--bordered{% endif %}{% unless section.settings.show_labels %} mobile-bar__inner--icons-only{% endunless %}">
@@ -250,6 +282,7 @@
     border: 1px solid var(--mobile-bar-border);
   }
 
+  .mobile-bar__product-form,
   .mobile-bar__product-actions {
     display: none;
   }
@@ -367,8 +400,27 @@
       padding: 10px 12px 4px;
     }
 
-    .mobile-bar--product .mobile-bar__product-button {
+    .mobile-bar--product .mobile-bar__product-form {
+      display: block;
+    }
+
+    .mobile-bar--product .mobile-bar__buy-now,
+    .mobile-bar--product .mobile-bar__buy-now shopify-accelerated-checkout,
+    .mobile-bar--product .mobile-bar__product-actions > add-to-cart-component {
+      display: block;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .mobile-bar--product .mobile-bar__buy-now {
+      --shopify-accelerated-checkout-button-block-size: 50px;
+      --shopify-accelerated-checkout-button-border-radius: 7px;
+    }
+
+    .mobile-bar--product .mobile-bar__product-button,
+    .mobile-bar--product .shopify-payment-button__button--unbranded {
       min-height: 50px;
+      width: 100%;
       padding: 10px 12px;
       border: 0;
       border-radius: 7px;
@@ -398,6 +450,10 @@
       background: transparent;
       box-shadow: none;
       backdrop-filter: none;
+    }
+
+    body:has(.mobile-bar--product) .buy-buttons-block {
+      display: none !important;
     }
   }
 
@@ -446,36 +502,18 @@
 
     if (!bar?.classList.contains('mobile-bar--product')) return;
 
-    const mobileAddToCart = bar.querySelector('[data-mobile-add-to-cart]');
-    const mobileBuyNow = bar.querySelector('[data-mobile-buy-now]');
+    document.addEventListener('shopify:product:select', async (event) => {
+      const result = await event.promise;
+      const variant = result?.detail?.resource;
+      const form = bar.querySelector('product-form-component');
+      const variantInput = form?.querySelector('[ref="variantId"]');
+      const addButton = form?.querySelector('[ref="addToCartButton"]');
+      const buyNow = form?.querySelector('[ref="acceleratedCheckoutButtonContainer"]');
 
-    const getProductForm = () =>
-      document.querySelector('product-form-component[data-product-id="{{ product.id }}"]');
-
-    const getAddToCartButton = () => getProductForm()?.querySelector('[ref="addToCartButton"]');
-    const getBuyNowButton = () =>
-      getProductForm()?.querySelector('.shopify-payment-button__button, shopify-accelerated-checkout button');
-
-    const syncAvailability = () => {
-      const sourceButton = getAddToCartButton();
-      const unavailable = !sourceButton || sourceButton.disabled;
-      if (mobileAddToCart) mobileAddToCart.disabled = unavailable;
-      if (mobileBuyNow) mobileBuyNow.disabled = unavailable || !getBuyNowButton();
-    };
-
-    mobileAddToCart?.addEventListener('click', () => getAddToCartButton()?.click());
-    mobileBuyNow?.addEventListener('click', () => getBuyNowButton()?.click());
-
-    syncAvailability();
-    const productForm = getProductForm();
-    if (productForm) {
-      new MutationObserver(syncAvailability).observe(productForm, {
-        attributes: true,
-        childList: true,
-        subtree: true,
-        attributeFilter: ['disabled', 'value'],
-      });
-    }
+      if (variantInput && variant?.id) variantInput.value = variant.id;
+      if (addButton) addButton.disabled = !variant?.available;
+      if (buyNow) buyNow.hidden = !variant?.available;
+    });
   })();
 </script>
 
