@@ -342,17 +342,16 @@
         "link": "shopify://pages/rewards"
       }
     },
-    "custom_featured_collection_y9nKtX": {
-      "type": "custom-featured-collection",
-      "name": "Custom featured",
+    "custom_infinite_collection_F98UNE": {
+      "type": "custom-infinite-collection",
+      "name": "Infinite collection",
       "settings": {
-        "heading": "Diwali festive",
-        "collection": "diwali",
-        "products_to_show": 5,
-        "columns_desktop": 4,
+        "heading": "Best Sellers",
+        "collection": "best-sellers",
+        "loading_mode": "infinite",
+        "products_per_page": 5,
+        "columns_desktop": 5,
         "columns_mobile": "2",
-        "mobile_layout": "grid",
-        "grid_gap": 12,
         "image_ratio": 135,
         "padding-block-start": 48,
         "padding-block-end": 48
@@ -368,6 +367,6 @@
     "responsive_flex_grid_NJGdmw",
     "clickable_image_section_8Npbd8",
     "clickable_image_section_M4BKAP",
-    "custom_featured_collection_y9nKtX"
+    "custom_infinite_collection_F98UNE"
   ]
 }
