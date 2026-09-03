@@ -15,7 +15,7 @@ class CustomInfiniteCollection {
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) this.loadNextPage();
       },
-      { rootMargin: '600px 0px' }
+      { rootMargin: '160px 0px' }
     );
     this.observer.observe(this.status);
   }
@@ -25,6 +25,7 @@ class CustomInfiniteCollection {
     this.loading = true;
     this.status.classList.add('is-loading');
     this.status.querySelector('[data-infinite-status-text]')?.replaceChildren('Loading more products');
+    const loaderStartedAt = performance.now();
 
     try {
       const url = new URL(window.location.href);
@@ -39,6 +40,12 @@ class CustomInfiniteCollection {
       const nextGrid = nextSection?.querySelector('[data-infinite-product-grid]');
       const nextStatus = nextSection?.querySelector('[data-infinite-status]');
       if (!nextGrid || !nextStatus) throw new Error('The next product batch was not found');
+
+      const minimumLoaderTime = 450;
+      const remainingLoaderTime = minimumLoaderTime - (performance.now() - loaderStartedAt);
+      if (remainingLoaderTime > 0) {
+        await new Promise((resolve) => window.setTimeout(resolve, remainingLoaderTime));
+      }
 
       this.grid.append(...nextGrid.children);
       this.currentPage = Number(nextStatus.dataset.currentPage || this.currentPage + 1);

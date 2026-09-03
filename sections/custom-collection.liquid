@@ -1,4 +1,8 @@
 {{ 'custom-collection.css' | asset_url | stylesheet_tag }}
+{% if section.settings.loading_mode == 'infinite' %}
+  {{ 'custom-infinite-collection.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'custom-infinite-collection.js' | asset_url }}" type="module" fetchpriority="low"></script>
+{% endif %}
 <script src="{{ 'custom-collection.js' | asset_url }}" type="module" fetchpriority="low"></script>
 <script src="{{ 'custom-product-card.js' | asset_url }}" type="module" fetchpriority="low"></script>
 
@@ -22,6 +26,7 @@
   id="CustomCollection-{{ section.id }}"
   class="custom-collection"
   data-custom-collection-root
+  {% if section.settings.loading_mode == 'infinite' %}data-custom-infinite-collection{% endif %}
   data-section-id="{{ section.id }}"
   style="
     --custom-collection-columns: {{ section.settings.columns_desktop }};
@@ -162,7 +167,7 @@
         <div class="custom-collection__results" data-custom-collection-results>
           {% paginate collection.products by section.settings.products_per_page %}
             {% if collection.products_count > 0 %}
-              <ul class="custom-collection__grid" role="list">
+              <ul class="custom-collection__grid" role="list"{% if section.settings.loading_mode == 'infinite' %} data-infinite-product-grid{% endif %}>
                 {% for product in collection.products %}
                   <li>
                     {% render 'custom-collection-product-card', product: product %}
@@ -177,7 +182,23 @@
               </div>
             {% endif %}
 
-            {% if paginate.pages > 1 %}
+            {% if paginate.pages > 1 and section.settings.loading_mode == 'infinite' %}
+              <div
+                class="custom-infinite-collection__status"
+                data-infinite-status
+                data-current-page="{{ paginate.current_page }}"
+                data-total-pages="{{ paginate.pages }}"
+                aria-live="polite"
+              >
+                {% if paginate.next %}
+                  <span class="custom-infinite-collection__loader" aria-hidden="true">
+                    <i></i><i></i><i></i>
+                  </span>
+                  <span class="visually-hidden" data-infinite-status-text>More products will load automatically</span>
+                  <noscript><a href="{{ paginate.next.url }}">View more products</a></noscript>
+                {% endif %}
+              </div>
+            {% elsif paginate.pages > 1 %}
               <nav class="custom-collection__pagination" aria-label="Pagination">
                 {% if paginate.previous %}
                   <a href="{{ paginate.previous.url }}" data-custom-collection-link aria-label="Previous page">
@@ -297,6 +318,7 @@
     { "type": "range", "id": "columns_desktop", "label": "Desktop columns", "min": 2, "max": 5, "step": 1, "default": 4 },
     { "type": "range", "id": "columns_mobile", "label": "Mobile columns", "min": 1, "max": 3, "step": 1, "default": 2 },
     { "type": "range", "id": "image_ratio", "label": "Image height ratio", "min": 110, "max": 150, "step": 5, "unit": "%", "default": 130 },
+    { "type": "select", "id": "loading_mode", "label": "Product navigation", "options": [{ "value": "pagination", "label": "Pagination" }, { "value": "infinite", "label": "Infinite loading" }], "default": "pagination" },
     { "type": "range", "id": "products_per_page", "label": "Products per page", "min": 12, "max": 36, "step": 4, "default": 24 },
     { "type": "checkbox", "id": "show_seo_description", "label": "Show full description below products", "default": true }
   ],

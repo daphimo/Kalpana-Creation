@@ -11,6 +11,9 @@
     {% liquid
       assign link_url = block.settings[link_key]
       assign platform = link_key | remove: '_url'
+      if link_key == 'whatsapp_url' and block.settings.whatsapp_link_type == 'community'
+        assign link_url = block.settings.whatsapp_community_url
+      endif
       assign icon_key = platform | append: '_icon'
       assign icon_image = block.settings[icon_key]
       assign url_parts = link_url | split: '//' | last | split: '/'
@@ -108,7 +111,18 @@
     { "type": "url", "id": "instagram_url", "label": "Instagram URL" },
     { "type": "header", "content": "WhatsApp" },
     { "type": "image_picker", "id": "whatsapp_icon", "label": "WhatsApp PNG" },
-    { "type": "url", "id": "whatsapp_url", "label": "WhatsApp URL" },
+    {
+      "type": "select",
+      "id": "whatsapp_link_type",
+      "label": "WhatsApp link type",
+      "options": [
+        { "value": "mobile", "label": "Mobile / direct message" },
+        { "value": "community", "label": "Community link" }
+      ],
+      "default": "mobile"
+    },
+    { "type": "url", "id": "whatsapp_url", "label": "WhatsApp direct message URL" },
+    { "type": "url", "id": "whatsapp_community_url", "label": "WhatsApp community link" },
     { "type": "header", "content": "YouTube" },
     { "type": "image_picker", "id": "youtube_icon", "label": "YouTube PNG" },
     { "type": "url", "id": "youtube_url", "label": "YouTube URL" },

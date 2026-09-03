@@ -19,6 +19,10 @@
       assign link_url = block.settings[link_key]
       assign render_icon = true
 
+      if link_key == 'whatsapp_url' and block.settings.whatsapp_link_type == 'community'
+        assign link_url = block.settings.whatsapp_community_url
+      endif
+
       if link_url != blank
         # Map setting names to platform names for display and icon purposes
         case link_key
@@ -199,9 +203,24 @@
       "label": "t:options.instagram"
     },
     {
+      "type": "select",
+      "id": "whatsapp_link_type",
+      "label": "WhatsApp link type",
+      "options": [
+        { "value": "mobile", "label": "Mobile / direct message" },
+        { "value": "community", "label": "Community link" }
+      ],
+      "default": "mobile"
+    },
+    {
       "type": "url",
       "id": "whatsapp_url",
-      "label": "t:options.social_whatsapp"
+      "label": "WhatsApp direct message URL"
+    },
+    {
+      "type": "url",
+      "id": "whatsapp_community_url",
+      "label": "WhatsApp community link"
     },
     {
       "type": "url",

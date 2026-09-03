@@ -40,10 +40,21 @@
         {% liquid
           assign whatsapp_number = block.settings.phone_number | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
           assign whatsapp_message = block.settings.message | url_encode
+          assign whatsapp_link = blank
+
+          if block.settings.link_type == 'community'
+            assign whatsapp_link = block.settings.community_link
+          elsif whatsapp_number != blank
+            assign whatsapp_link = 'https://wa.me/' | append: whatsapp_number
+            if block.settings.message != blank
+              assign whatsapp_link = whatsapp_link | append: '?text=' | append: whatsapp_message
+            endif
+          endif
         %}
+        {% if whatsapp_link != blank %}
         <a
           class="mobile-bar__item mobile-bar__item--whatsapp"
-          href="https://wa.me/{{ whatsapp_number }}{% if block.settings.message != blank %}?text={{ whatsapp_message }}{% endif %}"
+          href="{{ whatsapp_link }}"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="{{ item_label | escape }}"
@@ -58,6 +69,7 @@
           </span>
           {% if section.settings.show_labels %}<span class="mobile-bar__label">{{ item_label | escape }}</span>{% endif %}
         </a>
+        {% endif %}
       {% elsif block.settings.action_type == 'cart' %}
         <button
           type="button"
@@ -463,10 +475,26 @@
           "default": "WhatsApp"
         },
         {
+          "type": "select",
+          "id": "link_type",
+          "label": "WhatsApp link type",
+          "options": [
+            { "value": "mobile", "label": "Mobile number" },
+            { "value": "community", "label": "Community link" }
+          ],
+          "default": "mobile"
+        },
+        {
           "type": "text",
           "id": "phone_number",
           "label": "WhatsApp number",
           "info": "Include the country code, for example 919876543210."
+        },
+        {
+          "type": "url",
+          "id": "community_link",
+          "label": "WhatsApp community link",
+          "info": "Used when the WhatsApp link type is Community link."
         },
         {
           "type": "textarea",

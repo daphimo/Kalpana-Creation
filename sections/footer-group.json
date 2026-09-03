@@ -210,12 +210,14 @@
                   },
                   "blocks": {}
                 },
-                "social_links_nUrTRt": {
-                  "type": "social-links",
+                "social_links_png_bBcdt8": {
+                  "type": "social-links-png",
+                  "name": "Social media links (PNG)",
                   "settings": {
-                    "icon_color": "",
-                    "facebook_url": "shopify://products/kalpna-collection-self-design-bollywood-cotton-linen-saree-multicolor",
-                    "instagram_url": "",
+                    "icon_size": 24,
+                    "icon_gap": 8,
+                    "facebook_url": "https://www.facebook.com/share/19E2QTw8dd/",
+                    "instagram_url": "https://www.instagram.com/kalpanacreationig?igsi=NTI5dmpqYjdwODR5",
                     "whatsapp_url": "",
                     "youtube_url": "",
                     "tiktok_url": "",
@@ -226,8 +228,7 @@
                     "snapchat_url": "",
                     "pinterest_url": "",
                     "tumblr_url": "",
-                    "vimeo_url": "",
-                    "custom_url": ""
+                    "vimeo_url": ""
                   },
                   "blocks": {}
                 }
@@ -235,7 +236,7 @@
               "block_order": [
                 "text_M9LQLR",
                 "email_signup_gQTqPA",
-                "social_links_nUrTRt"
+                "social_links_png_bBcdt8"
               ]
             }
           },

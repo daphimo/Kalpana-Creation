@@ -2,13 +2,15 @@
 {{ 'custom-featured-collection.css' | asset_url | stylesheet_tag }}
 {{ 'custom-infinite-collection.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'custom-product-card.js' | asset_url }}" type="module" fetchpriority="low"></script>
-<script src="{{ 'custom-infinite-collection.js' | asset_url }}" type="module" fetchpriority="low"></script>
+{% if section.settings.loading_mode == 'infinite' %}
+  <script src="{{ 'custom-infinite-collection.js' | asset_url }}" type="module" fetchpriority="low"></script>
+{% endif %}
 
 <div class="section-background"></div>
 <section
   id="CustomInfiniteCollection-{{ section.id }}"
   class="section section--page-width spacing-style custom-featured-collection custom-featured-collection--mobile-grid custom-infinite-collection"
-  data-custom-infinite-collection
+  {% if section.settings.loading_mode == 'infinite' %}data-custom-infinite-collection{% endif %}
   data-section-id="{{ section.id }}"
   style="
     --custom-featured-columns: {{ section.settings.columns_desktop }};
@@ -26,7 +28,7 @@
 
     {% if section.settings.collection != blank and section.settings.collection.products_count > 0 %}
       {% paginate section.settings.collection.products by section.settings.products_per_page %}
-        <ul class="custom-featured-collection__products" role="list" data-infinite-product-grid>
+        <ul class="custom-featured-collection__products" role="list"{% if section.settings.loading_mode == 'infinite' %} data-infinite-product-grid{% endif %}>
           {% for product in section.settings.collection.products %}
             <li class="custom-featured-collection__item">
               {% render 'custom-collection-product-card', product: product %}
@@ -34,19 +36,27 @@
           {% endfor %}
         </ul>
 
-        <div
-          class="custom-infinite-collection__status"
-          data-infinite-status
-          data-current-page="{{ paginate.current_page }}"
-          data-total-pages="{{ paginate.pages }}"
-          aria-live="polite"
-        >
-          {% if paginate.next %}
-            <span class="custom-infinite-collection__spinner" aria-hidden="true"></span>
-            <span class="visually-hidden" data-infinite-status-text>Load more products</span>
-            <noscript><a href="{{ paginate.next.url }}">Load more products</a></noscript>
+        {% if paginate.pages > 1 %}
+          {% if section.settings.loading_mode == 'infinite' %}
+            <div
+              class="custom-infinite-collection__status"
+              data-infinite-status
+              data-current-page="{{ paginate.current_page }}"
+              data-total-pages="{{ paginate.pages }}"
+              aria-live="polite"
+            >
+              {% if paginate.next %}
+                <span class="custom-infinite-collection__loader" aria-hidden="true">
+                  <i></i><i></i><i></i>
+                </span>
+                <span class="visually-hidden" data-infinite-status-text>More products will load automatically</span>
+                <noscript><a href="{{ paginate.next.url }}">View more products</a></noscript>
+              {% endif %}
+            </div>
+          {% else %}
+            {% render 'pagination-controls', paginate: paginate %}
           {% endif %}
-        </div>
+        {% endif %}
       {% endpaginate %}
     {% else %}
       <div class="custom-featured-collection__empty">
@@ -63,7 +73,8 @@
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading", "default": "Featured collection" },
     { "type": "collection", "id": "collection", "label": "Collection" },
-    { "type": "range", "id": "products_per_page", "label": "Products per load", "min": 2, "max": 48, "step": 1, "default": 8, "info": "The first batch and every batch loaded on scroll use this number." },
+    { "type": "select", "id": "loading_mode", "label": "Product navigation", "options": [{ "value": "pagination", "label": "Pagination" }, { "value": "infinite", "label": "Infinite loading" }], "default": "pagination" },
+    { "type": "range", "id": "products_per_page", "label": "Products per page", "min": 2, "max": 48, "step": 1, "default": 8, "info": "Controls each page or infinite-loading batch." },
     { "type": "range", "id": "columns_desktop", "label": "Desktop columns", "min": 2, "max": 6, "step": 1, "default": 4 },
     { "type": "select", "id": "columns_mobile", "label": "Mobile columns", "options": [{ "value": "1", "label": "1" }, { "value": "2", "label": "2" }], "default": "2" },
     { "type": "range", "id": "image_ratio", "label": "Image height ratio", "min": 110, "max": 150, "step": 5, "unit": "%", "default": 135 },
