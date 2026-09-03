@@ -297,7 +297,7 @@
               "type": "payment-icons",
               "name": "t:names.payment_icons",
               "settings": {
-                "icon_height": 30,
+                "icon_height": 26,
                 "horizontal_alignment": "flex-start",
                 "gap": 5,
                 "padding-block-start": 0,
