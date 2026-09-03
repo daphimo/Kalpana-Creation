@@ -404,7 +404,7 @@
         "products_to_show": 4,
         "columns_desktop": 4,
         "columns_mobile": "2",
-        "mobile_layout": "slide",
+        "mobile_layout": "grid",
         "image_ratio": 135,
         "padding-block-start": 48,
         "padding-block-end": 48
@@ -418,7 +418,7 @@
         "products_to_show": 4,
         "columns_desktop": 4,
         "columns_mobile": "2",
-        "mobile_layout": "slide",
+        "mobile_layout": "grid",
         "image_ratio": 135,
         "padding-block-start": 48,
         "padding-block-end": 48
