@@ -1,7 +1,5 @@
-
-{% assign block_settings = block.settings %}
-
 {%- assign block_settings = block.settings -%}
+{%- assign payment_icon_entries = shop.metaobjects.payment_icons.values -%}
 
 <div
   class="
@@ -10,22 +8,36 @@
   "
   style="
     {% render 'spacing-padding', settings: block_settings %}
-    --icon-gap: {{ block_settings.gap }}px;
-    --alignment: {{ block_settings.horizontal_alignment }};
+    --payment-icon-height: {{ block_settings.icon_height }}px;
+    --payment-icon-gap: {{ block_settings.gap }}px;
+    --payment-icon-alignment: {{ block_settings.horizontal_alignment }};
   "
   {{ block.shopify_attributes }}
 >
-  <span class="visually-hidden">{{ 'blocks.payment_methods' | t }}</span>
-  <ul
-    class="payment-icons__list"
-    role="list"
-  >
-    {%- for type in shop.enabled_payment_types -%}
-      <li class="payment-icons__item">
-        {{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}
-      </li>
-    {%- endfor -%}
-  </ul>
+  {%- if payment_icon_entries != blank -%}
+    <span class="visually-hidden">{{ 'blocks.payment_methods' | t }}</span>
+    <ul
+      class="payment-icons__list"
+      role="list"
+    >
+      {%- for payment_icon_entry in payment_icon_entries -%}
+        {%- assign payment_icon = payment_icon_entry.icon.value -%}
+        {%- assign payment_icon_alt = payment_icon_entry.name_for_seo.value | default: payment_icon.alt -%}
+        {%- if payment_icon != blank -%}
+          <li class="payment-icons__item">
+            {{
+              payment_icon
+              | image_url: height: 120
+              | image_tag:
+                class: 'payment-icons__image',
+                loading: 'lazy',
+                alt: payment_icon_alt
+            }}
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
 </div>
 
 {% stylesheet %}
@@ -36,16 +48,24 @@
   .payment-icons__list {
     display: flex;
     align-items: center;
-    justify-content: var(--alignment);
+    justify-content: var(--payment-icon-alignment);
     flex-wrap: wrap;
-    gap: var(--icon-gap);
+    gap: var(--payment-icon-gap);
     margin: 0;
     padding: 0;
+    list-style: none;
   }
 
   .payment-icons__item {
     display: flex;
     align-items: center;
+  }
+
+  .payment-icons__image {
+    display: block;
+    width: auto;
+    height: var(--payment-icon-height);
+    object-fit: contain;
   }
 {% endstylesheet %}
 
@@ -54,6 +74,16 @@
   "name": "t:names.payment_icons",
   "tag": null,
   "settings": [
+    {
+      "type": "range",
+      "id": "icon_height",
+      "label": "Icon height",
+      "min": 10,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
     {
       "type": "select",
       "id": "horizontal_alignment",
@@ -86,7 +116,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 10
+      "default": 5
     },
     {
       "type": "header",

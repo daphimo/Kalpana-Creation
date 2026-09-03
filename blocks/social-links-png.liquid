@@ -11,8 +11,15 @@
     {% liquid
       assign link_url = block.settings[link_key]
       assign platform = link_key | remove: '_url'
-      if link_key == 'whatsapp_url' and block.settings.whatsapp_link_type == 'community'
-        assign link_url = block.settings.whatsapp_community_url
+      if link_key == 'whatsapp_url'
+        if block.settings.whatsapp_link_type == 'community'
+          assign link_url = block.settings.whatsapp_community_url
+        elsif link_url != blank
+          unless link_url contains '://'
+            assign whatsapp_number = link_url | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+            assign link_url = 'https://wa.me/' | append: whatsapp_number
+          endunless
+        endif
       endif
       assign icon_key = platform | append: '_icon'
       assign icon_image = block.settings[icon_key]
@@ -28,18 +35,22 @@
         <a
           class="social-png-icons__link{% unless has_profile %} social-png-icons__link--disabled{% endunless %}"
           href="{{ link_url }}"
-          target="_blank"
-          rel="noopener noreferrer"
+          {% if block.settings.link_target == 'new_tab' %}target="_blank" rel="noopener noreferrer"{% endif %}
           aria-label="{{ platform | capitalize }}"
           {% unless has_profile %}
             {% if request.design_mode %}onclick="return false;" aria-disabled="true"{% endif %}
           {% endunless %}
         >
-          <span
-            class="social-png-icons__icon"
-            style="--social-png-image: url('{{ icon_image | image_url: width: 128 }}');"
-            aria-hidden="true"
-          ></span>
+          {{
+            icon_image
+            | image_url: width: 128
+            | image_tag:
+              class: 'social-png-icons__icon',
+              loading: 'lazy',
+              widths: '32, 48, 64, 96, 128',
+              sizes: '48px',
+              alt: ''
+          }}
         </a>
       {% endif %}
     {% endif %}
@@ -69,9 +80,7 @@
     display: block;
     width: var(--social-png-size);
     height: var(--social-png-size);
-    background: currentColor;
-    -webkit-mask: var(--social-png-image) center / contain no-repeat;
-    mask: var(--social-png-image) center / contain no-repeat;
+    object-fit: contain;
   }
 
   .social-png-icons__link:hover .social-png-icons__icon {
@@ -102,7 +111,8 @@
     { "type": "header", "content": "Appearance" },
     { "type": "range", "id": "icon_size", "label": "Icon size", "min": 16, "max": 48, "step": 2, "unit": "px", "default": 24 },
     { "type": "range", "id": "icon_gap", "label": "Icon gap", "min": 0, "max": 32, "step": 2, "unit": "px", "default": 8 },
-    { "type": "paragraph", "content": "Upload transparent PNG icons. Their shapes inherit the footer's theme color automatically." },
+    { "type": "select", "id": "link_target", "label": "Open links", "options": [{ "value": "same_tab", "label": "Normally (same tab)" }, { "value": "new_tab", "label": "In a new tab" }], "default": "new_tab" },
+    { "type": "paragraph", "content": "Upload transparent PNG icons. Icons display using their original colors." },
     { "type": "header", "content": "Facebook" },
     { "type": "image_picker", "id": "facebook_icon", "label": "Facebook PNG" },
     { "type": "url", "id": "facebook_url", "label": "Facebook URL" },
@@ -121,7 +131,7 @@
       ],
       "default": "mobile"
     },
-    { "type": "url", "id": "whatsapp_url", "label": "WhatsApp direct message URL" },
+    { "type": "text", "id": "whatsapp_url", "label": "WhatsApp mobile number", "info": "Include the country code, for example 919876543210." },
     { "type": "url", "id": "whatsapp_community_url", "label": "WhatsApp community link" },
     { "type": "header", "content": "YouTube" },
     { "type": "image_picker", "id": "youtube_icon", "label": "YouTube PNG" },

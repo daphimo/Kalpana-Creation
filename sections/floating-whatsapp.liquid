@@ -17,8 +17,7 @@
   <a
     class="floating-whatsapp floating-whatsapp--{{ section.settings.position }}"
     href="{{ whatsapp_link }}"
-    target="_blank"
-    rel="noopener noreferrer"
+    {% if section.settings.link_target == 'new_tab' %}target="_blank" rel="noopener noreferrer"{% endif %}
     aria-label="{{ section.settings.accessibility_label | escape }}"
     style="
       --floating-whatsapp-size: {{ section.settings.icon_size }}px;
@@ -115,6 +114,16 @@
       "id": "message",
       "label": "Pre-filled message",
       "default": "Hello, I would like to know more."
+    },
+    {
+      "type": "select",
+      "id": "link_target",
+      "label": "Open link",
+      "options": [
+        { "value": "same_tab", "label": "Normally (same tab)" },
+        { "value": "new_tab", "label": "In a new tab" }
+      ],
+      "default": "new_tab"
     },
     {
       "type": "text",

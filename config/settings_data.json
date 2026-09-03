@@ -103,17 +103,14 @@
     "variant_button_border_width": 1,
     "variant_button_radius": 14,
     "variant_button_width": "equal-width-buttons",
+    "product_card_column_gap": 2,
+    "product_card_row_gap": 16,
     "best_seller_badge_image": "shopify://shop_images/Bestseller.02mkicrcrgcw8.png",
     "best_seller_badge_width": 100,
     "content_for_index": [],
     "blocks": {
       "7584948915495707528": {
         "type": "shopify://apps/joy-loyalty-program/blocks/app-embed/555c55c9-9a3d-4fe0-a7a8-2c256984a371",
-        "disabled": false,
-        "settings": {}
-      },
-      "1409715032340194113": {
-        "type": "shopify://apps/gokwik-cart-slide-cart-drawer/blocks/app-embed/531cd8ff-cc36-43b1-9a44-c16d44927215",
         "disabled": false,
         "settings": {}
       }

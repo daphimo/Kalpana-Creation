@@ -9,9 +9,18 @@
   fetchpriority="low"
 ></script>
 
+{% render 'brand-colors' %}
+
+{% liquid
+  assign is_product_page = false
+  if request.page_type == 'product' and product != blank
+    assign is_product_page = true
+  endif
+%}
+
 <nav
   id="MobileBar-{{ section.id }}"
-  class="mobile-bar"
+  class="mobile-bar{% if is_product_page %} mobile-bar--product{% endif %}"
   aria-label="Mobile navigation"
   style="
     --mobile-bar-background: {{ section.settings.background_color }};
@@ -22,8 +31,16 @@
     --mobile-bar-icon-size: {{ section.settings.icon_size }}px;
     --mobile-bar-label-size: {{ section.settings.label_size }}px;
     --mobile-bar-item-gap: {{ section.settings.item_gap }}px;
+    --button-background-color: #53634a;
   "
 >
+  {% if is_product_page %}
+    <div class="mobile-bar__product-actions" aria-label="Product purchase actions">
+      <button type="button" class="mobile-bar__product-button" data-mobile-buy-now>Buy now</button>
+      <button type="button" class="mobile-bar__product-button" data-mobile-add-to-cart>Add to bag</button>
+    </div>
+  {% endif %}
+
   <header-actions class="mobile-bar__inner{% if section.settings.show_top_border %} mobile-bar__inner--bordered{% endif %}{% unless section.settings.show_labels %} mobile-bar__inner--icons-only{% endunless %}">
     {% for block in section.blocks %}
       {% liquid
@@ -55,8 +72,7 @@
         <a
           class="mobile-bar__item mobile-bar__item--whatsapp"
           href="{{ whatsapp_link }}"
-          target="_blank"
-          rel="noopener noreferrer"
+          {% if block.settings.link_target == 'new_tab' %}target="_blank" rel="noopener noreferrer"{% endif %}
           aria-label="{{ item_label | escape }}"
           {{ block.shopify_attributes }}
         >
@@ -150,6 +166,7 @@
         <a
           class="mobile-bar__item{% if is_active %} mobile-bar__item--active{% endif %}"
           href="{{ block.settings.link | default: routes.root_url }}"
+          {% if block.settings.link_target == 'new_tab' %}target="_blank" rel="noopener noreferrer"{% endif %}
           {% if is_active %}aria-current="page"{% endif %}
           aria-label="{{ item_label | escape }}"
           {{ block.shopify_attributes }}
@@ -231,6 +248,10 @@
 
   .mobile-bar__inner--bordered {
     border: 1px solid var(--mobile-bar-border);
+  }
+
+  .mobile-bar__product-actions {
+    display: none;
   }
 
   .mobile-bar__item {
@@ -331,6 +352,55 @@
     }
   }
 
+  @media screen and (max-width: 749px) {
+    .mobile-bar--product {
+      overflow: hidden;
+      border-radius: 18px;
+      background: var(--brand-background);
+      box-shadow: 0 6px 24px rgb(0 0 0 / 0.14);
+    }
+
+    .mobile-bar--product .mobile-bar__product-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      padding: 10px 12px 4px;
+    }
+
+    .mobile-bar--product .mobile-bar__product-button {
+      min-height: 50px;
+      padding: 10px 12px;
+      border: 0;
+      border-radius: 7px;
+      background: var(--button-background-color);
+      color: var(--brand-background);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .mobile-bar--product .mobile-bar__product-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .mobile-bar--product .mobile-bar__product-button:focus-visible {
+      outline: 2px solid var(--brand-primary);
+      outline-offset: -3px;
+    }
+
+    .mobile-bar--product .mobile-bar__inner {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+    }
+  }
+
   .mobile-bar__label {
     display: block;
     max-width: 100%;
@@ -373,6 +443,39 @@
     bar?.querySelectorAll('[data-mobile-bar-menu-trigger]').forEach((button) => {
       button.addEventListener('click', () => document.querySelector('.custom-desktop-header__menu-trigger')?.click());
     });
+
+    if (!bar?.classList.contains('mobile-bar--product')) return;
+
+    const mobileAddToCart = bar.querySelector('[data-mobile-add-to-cart]');
+    const mobileBuyNow = bar.querySelector('[data-mobile-buy-now]');
+
+    const getProductForm = () =>
+      document.querySelector('product-form-component[data-product-id="{{ product.id }}"]');
+
+    const getAddToCartButton = () => getProductForm()?.querySelector('[ref="addToCartButton"]');
+    const getBuyNowButton = () =>
+      getProductForm()?.querySelector('.shopify-payment-button__button, shopify-accelerated-checkout button');
+
+    const syncAvailability = () => {
+      const sourceButton = getAddToCartButton();
+      const unavailable = !sourceButton || sourceButton.disabled;
+      if (mobileAddToCart) mobileAddToCart.disabled = unavailable;
+      if (mobileBuyNow) mobileBuyNow.disabled = unavailable || !getBuyNowButton();
+    };
+
+    mobileAddToCart?.addEventListener('click', () => getAddToCartButton()?.click());
+    mobileBuyNow?.addEventListener('click', () => getBuyNowButton()?.click());
+
+    syncAvailability();
+    const productForm = getProductForm();
+    if (productForm) {
+      new MutationObserver(syncAvailability).observe(productForm, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+        attributeFilter: ['disabled', 'value'],
+      });
+    }
   })();
 </script>
 
@@ -501,6 +604,16 @@
           "id": "message",
           "label": "Pre-filled message",
           "default": "Hello, I would like to know more."
+        },
+        {
+          "type": "select",
+          "id": "link_target",
+          "label": "Open link",
+          "options": [
+            { "value": "same_tab", "label": "Normally (same tab)" },
+            { "value": "new_tab", "label": "In a new tab" }
+          ],
+          "default": "new_tab"
         }
       ]
     },
@@ -529,6 +642,17 @@
           "type": "url",
           "id": "link",
           "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "link_target",
+          "label": "Open link",
+          "options": [
+            { "value": "same_tab", "label": "Normally (same tab)" },
+            { "value": "new_tab", "label": "In a new tab" }
+          ],
+          "default": "same_tab",
+          "visible_if": "{{ block.settings.action_type == 'link' }}"
         },
         {
           "type": "select",

@@ -272,11 +272,11 @@
 {% endif %}
 
 {% if template == 'product' or template.name == 'product' or request.page_type == 'product' %}
-  <script
-    src="{{ 'sticky-add-to-cart.js' | asset_url }}"
-    type="module"
-    fetchpriority="low"
-  ></script>
+  <script type="module">
+    if (window.matchMedia('(min-width: 750px)').matches) {
+      import('{{ 'sticky-add-to-cart.js' | asset_url }}');
+    }
+  </script>
   <script type="module">
     import { RecentlyViewed } from '@theme/recently-viewed-products';
     RecentlyViewed.addProduct('{{ product.id }}');

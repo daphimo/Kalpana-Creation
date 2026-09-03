@@ -18,8 +18,8 @@
         "sidebar_width": 250,
         "columns_desktop": 5,
         "columns_mobile": 2,
-        "grid_gap": 16,
         "image_ratio": 130,
+        "loading_mode": "infinite",
         "products_per_page": 24,
         "show_seo_description": false
       }

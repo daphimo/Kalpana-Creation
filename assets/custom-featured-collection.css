@@ -94,7 +94,7 @@
 }
 
 .custom-featured-collection .custom-collection-card__content {
-  padding-top: 11px;
+  padding: 8px;
 }
 
 .custom-featured-collection .custom-collection-card__title {
@@ -120,7 +120,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 7px;
-  margin-top: 7px;
+  margin-top: 0;
   font-size: 13px;
 }
 
