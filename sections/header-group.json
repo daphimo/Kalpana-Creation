@@ -187,6 +187,7 @@
             "label": "Home",
             "action_type": "link",
             "link": "/",
+            "link_target": "same_tab",
             "icon": "home"
           }
         },
@@ -196,6 +197,7 @@
             "label": "Shop",
             "action_type": "link",
             "link": "shopify://collections",
+            "link_target": "same_tab",
             "icon": "grid"
           }
         },
@@ -205,6 +207,7 @@
             "label": "Swipe",
             "action_type": "link",
             "link": "shopify://pages/swipe",
+            "link_target": "same_tab",
             "icon": "swipe"
           }
         },
@@ -214,6 +217,7 @@
             "label": "Cart",
             "action_type": "cart",
             "link": "",
+            "link_target": "same_tab",
             "icon": "cart"
           }
         },
@@ -221,8 +225,11 @@
           "type": "whatsapp",
           "settings": {
             "label": "WhatsApp",
+            "link_type": "mobile",
             "phone_number": "918780324558",
-            "message": "Hello, I would like to know more."
+            "community_link": "",
+            "message": "Hello, I would like to know more.",
+            "link_target": "new_tab"
           }
         }
       },
@@ -239,7 +246,7 @@
         "background_color": "#ffffff",
         "text_color": "#302a27",
         "accent_color": "#8a3426",
-        "bar_height": 68,
+        "bar_height": 56,
         "icon_size": 23,
         "label_size": 11,
         "item_gap": 5,
@@ -260,8 +267,11 @@
       "type": "floating-whatsapp",
       "name": "Floating WhatsApp",
       "settings": {
+        "link_type": "mobile",
         "phone_number": "918780324558",
+        "community_link": "",
         "message": "Hello, I would like to know more.",
+        "link_target": "new_tab",
         "accessibility_label": "Chat with us on WhatsApp",
         "position": "right",
         "icon_size": 60,
