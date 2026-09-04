@@ -65,26 +65,13 @@
         "product_batch_QGXcJE": {
           "type": "product_batch",
           "settings": {
-            "products": [
-              "kalpna-collection-self-design-bollywood-cotton-linen-saree-multicolor",
-              "kalpna-creation-digital-print-bhagalpuri-linen-saree-multicolor",
-              "kalpna-creation-digital-print-bhagalpuri-linen-saree-multicolor-1",
-              "kalpna-creation-digital-print-bhagalpuri-linen-saree-multicolor-2",
-              "kalpna-creation-printed-bandhani-georgette-saree-green",
-              "kalpna-creation-printed-bollywood-cotton-linen-saree-purple"
-            ]
+            "collection": "casual-everyday"
           }
         },
         "product_batch_EREEw4": {
           "type": "product_batch",
           "settings": {
-            "products": [
-              "kalpna-creation-printed-bollywood-linen-saree-multicolor",
-              "kalpna-creation-self-design-bollywood-cotton-linen-saree-multicolor",
-              "kalpna-creation-solid-plain-bollywood-georgette-saree-multicolor",
-              "supalee-tex-solid-bollywood-georgette-saree-with-unstitched-blouse-multicolor",
-              "kalpna-creation-printed-bollywood-cotton-linen-saree-purple"
-            ]
+            "collection": "diwali"
           }
         }
       },
@@ -94,7 +81,7 @@
       ],
       "name": "Product swipe",
       "settings": {
-        "heading": "Your next Koskii crush starts with a swipe",
+        "heading": "Your next Kalpana crush starts with a swipe",
         "batch_message": "Keep swiping for more, or shop what's ready today",
         "stock_link": "",
         "stock_link_label": "Shop what's in stock",
