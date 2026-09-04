@@ -216,6 +216,7 @@
                   "settings": {
                     "icon_size": 24,
                     "icon_gap": 8,
+                    "link_target": "new_tab",
                     "facebook_icon": "shopify://shop_images/devicon--facebook.svg",
                     "facebook_url": "https://www.facebook.com/share/19E2QTw8dd/",
                     "instagram_icon": "shopify://shop_images/selfhst--instagram.svg",
@@ -314,7 +315,7 @@
                 "accordion_dividers": true,
                 "background_color": "",
                 "text_color": "",
-                "heading_preset": "h5",
+                "heading_preset": "h4",
                 "link_preset": "paragraph",
                 "padding-block-start": 0,
                 "padding-block-end": 0,
@@ -334,7 +335,7 @@
                 "accordion_dividers": true,
                 "background_color": "",
                 "text_color": "",
-                "heading_preset": "h5",
+                "heading_preset": "h4",
                 "link_preset": "paragraph",
                 "padding-block-start": 0,
                 "padding-block-end": 0,
@@ -346,6 +347,7 @@
             "payment_icons_HfUdTX": {
               "type": "payment-icons",
               "settings": {
+                "icon_height": 30,
                 "horizontal_alignment": "center",
                 "gap": 8,
                 "padding-block-start": 0,

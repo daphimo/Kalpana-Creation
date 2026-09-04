@@ -35,6 +35,12 @@
       >
     {% endif %}
 
+    {% if product %}
+      {% render 'product-page' %}
+    {% else %}
+      {% render 'all-over' %}
+    {% endif %}
+
     {%- render 'meta-tags' -%}
     {%- render 'stylesheets' -%}
     {%- render 'card-hover-effect-styles' -%}
