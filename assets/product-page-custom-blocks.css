@@ -191,3 +191,45 @@
     gap: var(--gap-sm);
   }
 }
+
+/* Details block: reuse specification markup with labels above values. */
+.product-details-collapsible > * + * {
+  margin-top: var(--gap-xl);
+}
+
+.product-details-collapsible > :first-child {
+  margin-top: 0;
+}
+
+.product-details-collapsible .product-collapsible__supplement {
+  font-size: var(--font-size--sm);
+  color: rgb(var(--color-foreground-rgb) / 68%);
+}
+
+.product-details-collapsible .product-collapsible__specifications {
+  gap: var(--gap-md);
+}
+
+.product-details-collapsible .product-details-collapsible__grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--gap-xl);
+}
+
+.product-details-collapsible .product-collapsible__specification {
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gap-xs);
+  padding: 0;
+  border: 0;
+}
+
+.product-details-collapsible .product-collapsible__specification dt {
+  color: inherit;
+  font-weight: var(--font-weight-semibold);
+}
+
+@media screen and (max-width: 749px) {
+  .product-details-collapsible .product-details-collapsible__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

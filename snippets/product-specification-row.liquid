@@ -1,6 +1,17 @@
-{%- if field != blank -%}
-  <div class="product-collapsible__specification">
-    <dt>{{ label | escape }}</dt>
-    <dd>{{ field | metafield_tag }}</dd>
-  </div>
+{%- if field != blank or field.type == 'boolean' -%}
+  {%- capture specification_value -%}
+    {%- if field.type == 'boolean' -%}
+      {%- if field.value == true -%}Included{%- else -%}Not Included{%- endif -%}
+    {%- else -%}
+      {{- field | metafield_tag -}}
+    {%- endif -%}
+  {%- endcapture -%}
+  {%- if inline -%}
+    {{- label | escape -}}: {{ specification_value | strip_html | strip | escape }}
+  {%- else -%}
+    <div class="product-collapsible__specification">
+      <dt>{{ label | escape }}</dt>
+      <dd>{{ specification_value }}</dd>
+    </div>
+  {%- endif -%}
 {%- endif -%}

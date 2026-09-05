@@ -37,3 +37,7 @@
 @media (prefers-reduced-motion: reduce) {
   .custom-infinite-collection__loader i { animation: none; opacity: 0.65; }
 }
+
+.custom-infinite-collection__status[hidden] {
+  display: none;
+}

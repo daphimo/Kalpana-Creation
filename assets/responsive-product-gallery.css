@@ -1,0 +1,21 @@
+.responsive-product-gallery { display: block; width: 100%; min-width: 0; }
+.responsive-product-gallery [hidden] { display: none !important; }
+.responsive-product-gallery__source { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gallery-gap, 12px); }
+.responsive-product-gallery [data-gallery-list] { margin: 0; padding: 0; list-style: none; width: 100%; min-width: 0; }
+.responsive-product-gallery__card { position: relative; min-width: 0; overflow: hidden; border-radius: var(--gallery-radius, 0); aspect-ratio: var(--gallery-ratio, .8); background: #f7f7f7; }
+.responsive-product-gallery__image-button { display: block; width: 100%; height: 100%; cursor: zoom-in; }
+.responsive-product-gallery__card img, .responsive-product-gallery__card > svg { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+.responsive-product-gallery__image-button:focus-visible { outline: 2px solid currentColor; outline-offset: -4px; }
+.responsive-product-gallery [data-media-preview], .responsive-product-gallery [data-media-player]:not(:empty), .responsive-product-gallery .product-media { width: 100%; height: 100%; }
+.responsive-product-gallery .product-media { position: relative; }
+.responsive-product-gallery .product-media > .product-media__image { position: absolute; inset: 0; }
+.responsive-product-gallery :is(deferred-media, product-model) { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
+.responsive-product-gallery :is(video, iframe, model-viewer, .shopify-model-viewer-ui) { width: 100%; height: 100%; }
+.responsive-product-gallery .button-shopify-xr { position: absolute; bottom: 8px; left: 8px; max-width: calc(100% - 16px); }
+.product-gallery-viewer { padding: 0; border: 0; overflow: hidden; overscroll-behavior: none; background: #fff; color: #222; box-sizing: border-box; }
+.product-gallery-viewer::backdrop { background: rgb(0 0 0 / .62); }
+.product-gallery-viewer button { display: grid; place-items: center; padding: 0; min-width: 44px; min-height: 44px; border: 0; border-radius: 50%; background: #fff; color: #222; cursor: pointer; }
+.product-gallery-viewer button:focus-visible { outline: 2px solid #222; outline-offset: 2px; }
+.product-gallery-viewer [hidden] { display: none !important; }
+.product-gallery-viewer__close { position: absolute; z-index: 3; font-size: 28px; line-height: 1; }
+.product-gallery-viewer__status { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); margin: 0; font-size: 12px; text-align: center; pointer-events: none; }

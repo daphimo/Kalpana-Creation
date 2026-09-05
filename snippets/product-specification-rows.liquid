@@ -1,0 +1,50 @@
+{%- comment -%}
+  Shared specification fields, labels, and ordering from the Specifications block.
+  Pass product and group ('general', 'size_fit', or 'blouse_piece').
+  Optional inline formats size fields as a sentence and excludes Blouse Piece.
+  Empty fields are omitted by the row snippet.
+{%- endcomment -%}
+{%- assign p = product -%}
+{%- case group -%}
+  {%- when 'general' -%}
+{% render 'product-specification-row', label: 'Fabric', field: p.metafields.custom.fabric %}
+{% render 'product-specification-row', label: 'Primary Color', field: p.metafields.custom.primary_color %}
+{% render 'product-specification-row', label: 'Secondary Color', field: p.metafields.custom.secondary_color %}
+{% render 'product-specification-row', label: 'Pattern', field: p.metafields.custom.pattern %}
+{% render 'product-specification-row', label: 'Craft', field: p.metafields.custom.craft %}
+{% render 'product-specification-row', label: 'Embellishment', field: p.metafields.custom.embellishment %}
+{% render 'product-specification-row', label: 'Weave', field: p.metafields.custom.weave %}
+{% render 'product-specification-row', label: 'Pallu Style', field: p.metafields.custom.pallu_style %}
+{% render 'product-specification-row', label: 'Border Type', field: p.metafields.custom.border_type %}
+{% render 'product-specification-row', label: 'Border Width', field: p.metafields.custom.border_width %}
+{% render 'product-specification-row', label: 'Transparency', field: p.metafields.custom.transparency %}
+{% render 'product-specification-row', label: 'Occasion', field: p.metafields.custom.occasion %}
+{% render 'product-specification-row', label: 'Season', field: p.metafields.custom.season %}
+{% render 'product-specification-row', label: 'Draping Style', field: p.metafields.custom.draping_style %}
+{% render 'product-specification-row', label: 'Fall Pico', field: p.metafields.custom.fall_pico %}
+  {%- when 'size_fit', 'blouse_piece' -%}
+    {%- assign size_fields = 'saree_length:Saree Length|saree_width:Saree Width|blouse_piece:Blouse Piece|blouse_piece_length:Blouse Piece Length' | split: '|' -%}
+    {%- assign separator = '' -%}
+    {%- for definition in size_fields -%}
+      {%- liquid
+        assign parts = definition | split: ':'
+        assign key = parts | first
+        assign label = parts | last
+        assign field = p.metafields.custom[key]
+        if group == 'blouse_piece' and key != 'blouse_piece'
+          continue
+        endif
+        if inline and key == 'blouse_piece'
+          continue
+        endif
+      -%}
+      {%- capture row -%}
+        {%- render 'product-specification-row', label: label, field: field, inline: inline -%}
+      {%- endcapture -%}
+      {%- assign row = row | strip -%}
+      {%- if row != blank -%}
+        {{- separator -}}{{- row -}}
+        {%- if inline -%}{%- assign separator = ', ' -%}{%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+{%- endcase -%}

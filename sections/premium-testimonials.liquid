@@ -9,9 +9,21 @@
     assign section_class = section_class | append: ' section section--page-width'
   endif
   capture slider_options
-    echo '{"type":"slide","perPage":3,"perMove":1,"gap":"'
+    echo '{"type":"slide","perPage":'
+    echo section.settings.slides_per_view_desktop | default: 3
+    echo ',"perMove":1,"gap":"'
     echo settings.product_card_column_gap | default: 16
-    echo 'px","arrows":false,"pagination":true,"drag":true,"snap":true,"rewind":true,"keyboard":"focused","speed":450,"breakpoints":{"989":{"perPage":2},"749":{"perPage":1,"gap":"12px"}},"reducedMotion":{"speed":0,"rewindSpeed":0,"autoplay":"pause"}}'
+    echo 'px","arrows":'
+    echo section.settings.show_navigation
+    echo ',"pagination":'
+    echo section.settings.show_pagination
+    echo ',"autoplay":'
+    echo section.settings.autoplay
+    echo ',"interval":'
+    echo section.settings.autoplay_speed | times: 1000
+    echo ',"pauseOnHover":true,"pauseOnFocus":true,"drag":true,"snap":true,"rewind":true,"keyboard":"focused","speed":450,"breakpoints":{"749":{"perPage":'
+    echo section.settings.slides_per_view_mobile | default: 1
+    echo ',"gap":"12px"}},"reducedMotion":{"speed":0,"rewindSpeed":0,"autoplay":"pause"}}'
   endcapture
   capture slider_data_attribute
     echo 'data-premium-testimonials data-splide-asset="'
@@ -31,26 +43,27 @@
     %}
     <li class="splide__slide premium-testimonials__slide" {{ block.shopify_attributes }}>
       <{{ card_tag }}
-        class="premium-testimonials__card premium-testimonials__card--image-{{ block.settings.image_position }} premium-testimonials__card--align-{{ block.settings.card_alignment }}"
+        class="premium-testimonials__card premium-testimonials__card--align-{{ block.settings.card_alignment }}"
         {% if block.settings.product != blank %}href="{{ block.settings.product.url }}"{% endif %}
-        style="--testimonial-image-size: {{ block.settings.image_size }}px;"
       >
-        <div class="premium-testimonials__header">
-          <div class="premium-testimonials__customer">
-            {% if block.settings.customer_name != blank %}<p class="premium-testimonials__name">{{ block.settings.customer_name | escape }}</p>{% endif %}
-            <div class="premium-testimonials__stars" role="img" aria-label="{{ block.settings.rating }} out of 5 stars">
-              {% for star in (1..5) %}<span{% if star > block.settings.rating %} class="is-empty"{% endif %} aria-hidden="true">★</span>{% endfor %}
+        {% if block.settings.image != blank %}
+          <div class="premium-testimonials__image">
+            {{ block.settings.image | image_url: width: 1600 | image_tag: widths: '240, 360, 480, 750, 1000, 1200, 1600', sizes: '(max-width: 749px) 100vw, (max-width: 1200px) 75vw, 1000px', loading: 'lazy', alt: image_alt }}
+          </div>
+        {% endif %}
+        <div class="premium-testimonials__body">
+          <div class="premium-testimonials__header">
+            <div class="premium-testimonials__customer">
+              {% if block.settings.customer_name != blank %}<p class="premium-testimonials__name">{{ block.settings.customer_name | escape }}</p>{% endif %}
+              <div class="premium-testimonials__stars" role="img" aria-label="{{ block.settings.rating }} out of 5 stars">
+                {% for star in (1..5) %}<span{% if star > block.settings.rating %} class="is-empty"{% endif %} aria-hidden="true">★</span>{% endfor %}
+              </div>
             </div>
           </div>
-          {% if block.settings.image != blank %}
-            <div class="premium-testimonials__image premium-testimonials__image--{{ block.settings.image_ratio }}">
-              {{ block.settings.image | image_url: width: 480 | image_tag: widths: '120, 180, 240, 360, 480', sizes: '(max-width: 749px) 30vw, 180px', loading: 'lazy', alt: image_alt }}
-            </div>
-          {% endif %}
-        </div>
-        <div class="premium-testimonials__copy">
-          {% if block.settings.title != blank %}<h3>{{ block.settings.title | escape }}</h3>{% endif %}
-          {% if block.settings.description != blank %}<div class="rte">{{ block.settings.description }}</div>{% endif %}
+          <div class="premium-testimonials__copy">
+            {% if block.settings.title != blank %}<h3>{{ block.settings.title | escape }}</h3>{% endif %}
+            {% if block.settings.description != blank %}<div class="rte">{{ block.settings.description }}</div>{% endif %}
+          </div>
         </div>
       </{{ card_tag }}>
     </li>
@@ -61,7 +74,7 @@
   id="PremiumTestimonials-{{ section.id }}"
   class="{{ section_class }} spacing-style"
   data-premium-testimonials-section
-  style="--testimonial-heading-align: {{ section.settings.heading_alignment }}; {% render 'spacing-style', settings: section.settings %}"
+  style="--testimonial-image-height: {{ section.settings.image_height }}px; --testimonial-heading-align: {{ section.settings.heading_alignment }}; {% render 'spacing-style', settings: section.settings %}"
 >
   <div class="premium-testimonials__inner{% if section.settings.section_width == 'full' %} premium-testimonials__inner--full{% endif %}">
     <header class="premium-testimonials__heading-wrap">
@@ -94,6 +107,15 @@
     { "type": "text", "id": "heading", "label": "Heading", "default": "See why everyone loves Kalpana's Creations." },
     { "type": "text_alignment", "id": "heading_alignment", "label": "Heading alignment", "default": "center" },
     { "type": "select", "id": "section_width", "label": "Section width", "options": [{"value":"contained","label":"Contained"},{"value":"full","label":"Full width"}], "default": "contained" },
+    { "type": "header", "content": "Slider" },
+    { "type": "range", "id": "slides_per_view_desktop", "label": "Slides per view on desktop", "min": 1, "max": 5, "step": 0.5, "default": 3 },
+    { "type": "range", "id": "slides_per_view_mobile", "label": "Slides per view on mobile", "min": 1, "max": 3, "step": 0.5, "default": 1 },
+    { "type": "checkbox", "id": "autoplay", "label": "Autoplay", "default": false },
+    { "type": "range", "id": "autoplay_speed", "label": "Autoplay speed", "min": 1, "max": 10, "step": 0.5, "unit": "s", "default": 5 },
+    { "type": "checkbox", "id": "show_navigation", "label": "Show navigation", "default": false },
+    { "type": "checkbox", "id": "show_pagination", "label": "Show pagination", "default": true },
+    { "type": "header", "content": "Cards" },
+    { "type": "range", "id": "image_height", "label": "Image height", "min": 100, "max": 600, "step": 10, "unit": "px", "default": 280 },
     { "type": "range", "id": "padding-block-start", "label": "Top spacing", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64 },
     { "type": "range", "id": "padding-block-end", "label": "Bottom spacing", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64 }
   ],
@@ -108,9 +130,6 @@
         { "type": "richtext", "id": "description", "label": "Testimonial description", "default": "<p>The fabric, finish and thoughtful detailing exceeded my expectations. It felt special from the moment I opened the package.</p>" },
         { "type": "image_picker", "id": "image", "label": "Customer or product image" },
         { "type": "product", "id": "product", "label": "Linked product" },
-        { "type": "select", "id": "image_position", "label": "Image position", "options": [{"value":"left","label":"Left"},{"value":"right","label":"Right"}], "default": "right" },
-        { "type": "range", "id": "image_size", "label": "Image width", "min": 60, "max": 180, "step": 10, "unit": "px", "default": 110 },
-        { "type": "select", "id": "image_ratio", "label": "Image aspect ratio", "options": [{"value":"square","label":"Square"},{"value":"portrait","label":"Portrait"},{"value":"natural","label":"Natural"}], "default": "square" },
         { "type": "select", "id": "card_alignment", "label": "Card content alignment", "options": [{"value":"top","label":"Top"},{"value":"center","label":"Center"}], "default": "top" }
       ]
     }

@@ -1,0 +1,77 @@
+{%- liquid
+  assign selected_product = closest.product
+  assign selected_media = selected_product.selected_or_first_available_variant.featured_media
+  assign sorted_media = selected_product.media
+  if selected_media
+    assign first_media = selected_product.media | where: 'id', selected_media.id
+    assign sorted_media = first_media
+    for media in selected_product.media
+      if media.id != selected_media.id
+        assign next_media = selected_product.media | where: 'id', media.id
+        assign sorted_media = sorted_media | concat: next_media
+      endif
+    endfor
+  endif
+  assign variant_images = selected_product.images | where: 'attached_to_variant?', true | map: 'src'
+  assign gallery_sizes = '(min-width: 750px) 30vw, 100vw'
+  if selected_product.media.size == 1
+    assign gallery_sizes = '(min-width: 750px) 60vw, 100vw'
+  endif
+  assign gallery_ratio = block.settings.aspect_ratio
+  if gallery_ratio == 'adapt' or gallery_ratio == blank
+    assign gallery_ratio = sorted_media.first.preview_image.aspect_ratio | default: 0.8
+  endif
+-%}
+{{ 'responsive-product-gallery.css' | asset_url | stylesheet_tag }}
+<link rel="stylesheet" href="{{ 'desktop-product-gallery.css' | asset_url }}" media="(min-width: 750px)">
+<link rel="stylesheet" href="{{ 'mobile-product-gallery.css' | asset_url }}" media="(max-width: 749px)">
+<script src="{{ 'responsive-product-gallery.js' | asset_url }}" type="module"></script>
+<responsive-product-gallery
+  class="responsive-product-gallery spacing-style"
+  data-block-id="{{ block.id }}"
+  data-product-media-count="{{ selected_product.media.size }}"
+  data-selected-media="{{ selected_media.id }}"
+  data-desktop-module="{{ 'desktop-product-gallery.js' | asset_url }}"
+  data-mobile-module="{{ 'mobile-product-gallery.js' | asset_url }}"
+  style="--gallery-gap: {{ block.settings.image_gap | default: 12 | at_least: 4 }}px; --gallery-ratio: {{ gallery_ratio }}; --gallery-radius: {{ block.settings.media_radius }}px; {% render 'spacing-style', settings: block.settings %}"
+  {{ block.shopify_attributes }}
+>
+  <div class="desktop-product-gallery" data-desktop-host></div>
+  <div class="mobile-product-gallery" data-mobile-host></div>
+  <ul class="responsive-product-gallery__source" data-gallery-list role="list" aria-label="{{ selected_product.title | escape }} media">
+    {%- for media in sorted_media -%}
+      {%- if block.settings.hide_variants and variant_images contains media.src and media.id != selected_media.id -%}
+        {%- continue -%}
+      {%- endif -%}
+      {%- liquid
+        assign loading = 'lazy'
+        assign priority = 'auto'
+        if forloop.first
+          assign loading = 'eager'
+          assign priority = 'high'
+        endif
+        assign image_alt = media.alt | default: selected_product.title
+      -%}
+      <li class="responsive-product-gallery__card" data-gallery-card data-media-id="{{ media.id }}" data-media-type="{{ media.media_type }}">
+        {%- if media.media_type == 'image' -%}
+          <a class="responsive-product-gallery__image-button" href="{{ media.preview_image | image_url: width: 3840 }}" data-gallery-open aria-label="View image: {{ image_alt | escape }}" aria-haspopup="dialog">
+            {{ media.preview_image | image_url: width: 1600 | image_tag: widths: '240, 480, 750, 1000, 1200, 1600', sizes: gallery_sizes, loading: loading, fetchpriority: priority, alt: image_alt }}
+          </a>
+        {%- else -%}
+          <div data-media-preview>{{ media.preview_image | image_url: width: 1000 | image_tag: loading: loading, alt: image_alt }}</div>
+          <div data-media-player></div>
+          <template data-media-template>
+            {% render 'product-media', media: media, loading: 'lazy', sizes: gallery_sizes, block: block, selected_product: selected_product %}
+          </template>
+        {%- endif -%}
+      </li>
+    {%- else -%}
+      <li class="responsive-product-gallery__card">{{ 'product-apparel-1' | placeholder_svg_tag }}</li>
+    {%- endfor -%}
+  </ul>
+  {%- assign models = selected_product.media | where: 'media_type', 'model' -%}
+  {%- if models.size > 0 -%}
+    <link rel="stylesheet" href="https://cdn.shopify.com/shopifycloud/model-viewer-ui/assets/v1.0/model-viewer-ui.css">
+    <script type="application/json" data-gallery-models>{{ models | json }}</script>
+  {%- endif -%}
+</responsive-product-gallery>

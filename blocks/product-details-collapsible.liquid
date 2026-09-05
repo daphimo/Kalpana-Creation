@@ -1,0 +1,79 @@
+{%- capture general_specifications -%}
+  {%- render 'product-specification-rows', product: closest.product, group: 'general' -%}
+  {%- render 'product-specification-rows', product: closest.product, group: 'blouse_piece' -%}
+{%- endcapture -%}
+{%- capture size_fit_specifications -%}
+  {%- render 'product-specification-rows', product: closest.product, group: 'size_fit', inline: true -%}
+{%- endcapture -%}
+{%- liquid
+  assign general_specifications = general_specifications | strip
+  assign size_fit_specifications = size_fit_specifications | strip
+-%}
+{%- capture details_content -%}
+  <div class="product-details-collapsible">
+    {%- if block.settings.content != blank -%}
+      <div class="product-collapsible__richtext rte">{{ block.settings.content }}</div>
+    {%- endif -%}
+    {%- if block.settings.disclaimer != blank -%}
+      <div class="product-collapsible__supplement rte">{{ block.settings.disclaimer }}</div>
+    {%- endif -%}
+    {%- if size_fit_specifications != blank -%}
+      <section class="product-collapsible__size-fit">
+        <h3>Size &amp; Fit</h3>
+        <p class="product-collapsible__specifications">{{ size_fit_specifications }}</p>
+      </section>
+    {%- endif -%}
+    {%- if general_specifications != blank -%}
+      <dl class="product-collapsible__specifications product-details-collapsible__grid">{{ general_specifications }}</dl>
+    {%- endif -%}
+    {%- if block.settings.note != blank -%}
+      <div class="product-collapsible__supplement rte">{{ block.settings.note }}</div>
+    {%- endif -%}
+  </div>
+{%- endcapture -%}
+
+{% render 'product-collapsible', label: block.settings.label, content: details_content, block_id: block.id, open_initially: block.settings.open_initially, shopify_attributes: block.shopify_attributes %}
+
+{% schema %}
+{
+  "name": "New Collapsible",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "More Information"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Content"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_initially",
+      "label": "Open initially",
+      "default": false
+    },
+    {
+      "type": "richtext",
+      "id": "disclaimer",
+      "label": "Disclaimer"
+    },
+    {
+      "type": "richtext",
+      "id": "note",
+      "label": "Note"
+    }
+  ],
+  "presets": [
+    {
+      "name": "New Collapsible",
+      "settings": {
+        "label": "DETAILS"
+      }
+    }
+  ]
+}
+{% endschema %}

@@ -7,9 +7,11 @@ class CustomInfiniteCollection {
     this.status = section.querySelector('[data-infinite-status]');
     this.currentPage = Number(this.status?.dataset.currentPage || 1);
     this.totalPages = Number(this.status?.dataset.totalPages || 1);
+    this.totalProducts = Number(this.status?.dataset.totalProducts ?? NaN);
     this.loading = false;
 
-    if (!this.grid || !this.status || this.currentPage >= this.totalPages) return;
+    if (!this.grid || !this.status) return;
+    if (this.hideStatusIfComplete()) return;
 
     this.observer = new IntersectionObserver(
       (entries) => {
@@ -20,8 +22,18 @@ class CustomInfiniteCollection {
     this.observer.observe(this.status);
   }
 
+  hideStatusIfComplete() {
+    const allProductsLoaded = Number.isFinite(this.totalProducts)
+      && this.grid.children.length >= this.totalProducts;
+    if (this.currentPage < this.totalPages && !allProductsLoaded) return false;
+    this.observer?.disconnect();
+    this.status.hidden = true;
+    this.status.replaceChildren();
+    return true;
+  }
+
   async loadNextPage() {
-    if (this.loading || this.currentPage >= this.totalPages) return;
+    if (this.loading || this.hideStatusIfComplete()) return;
     this.loading = true;
     this.status.classList.add('is-loading');
     this.status.querySelector('[data-infinite-status-text]')?.replaceChildren('Loading more products');
@@ -53,10 +65,7 @@ class CustomInfiniteCollection {
       this.status.dataset.currentPage = String(this.currentPage);
       document.dispatchEvent(new CustomEvent('custom:products-loaded', { detail: { section: this.section } }));
 
-      if (this.currentPage >= this.totalPages) {
-        this.observer?.disconnect();
-        this.status.replaceChildren();
-      }
+      this.hideStatusIfComplete();
     } catch (error) {
       console.error('[infinite-collection] Could not load products', error);
       this.status.querySelector('[data-infinite-status-text]')?.replaceChildren('Products could not be loaded');

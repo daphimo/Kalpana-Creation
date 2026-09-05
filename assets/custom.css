@@ -15,3 +15,12 @@
     display: none !important;
   }
 }
+/* Product gallery device visibility must remain in this universally loaded stylesheet. */
+@media screen and (min-width: 750px) {
+  .mobile-product-gallery, .mobile-product-viewer { display: none !important; }
+}
+@media screen and (max-width: 749px) {
+  .desktop-product-gallery, .desktop-product-viewer { display: none !important; }
+  .responsive-product-gallery__source { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .responsive-product-gallery__source > li { flex: 0 0 100%; scroll-snap-align: start; }
+}
