@@ -80,6 +80,84 @@
         "mobile_logo_height": 60
       }
     },
+    "custom_collection_slider_N3eCr7": {
+      "type": "custom-collection-slider",
+      "blocks": {
+        "collection_b4Aj4A": {
+          "type": "collection",
+          "settings": {
+            "collection": "banarasi-saree",
+            "image": "shopify://shop_images/2c83374cf3f841acb94bfe4d5df46ac2.webp",
+            "title": ""
+          }
+        },
+        "collection_hJAprm": {
+          "type": "collection",
+          "settings": {
+            "collection": "best-sellers",
+            "image": "shopify://shop_images/32c80520d52741dab8cacc99af0ab987.webp",
+            "title": ""
+          }
+        },
+        "collection_K3YkNp": {
+          "type": "collection",
+          "settings": {
+            "collection": "casual-everyday",
+            "image": "shopify://shop_images/e453a844c3504913b76b7623c4034f4e.webp",
+            "title": ""
+          }
+        },
+        "collection_fkwhcn": {
+          "type": "collection",
+          "settings": {
+            "collection": "chiffon",
+            "image": "shopify://shop_images/0d99fd7b24914012b6e28aa47f8897de.webp",
+            "title": ""
+          }
+        },
+        "collection_4xza9J": {
+          "type": "collection",
+          "settings": {
+            "collection": "cotton",
+            "image": "shopify://shop_images/ba7caa2ce4b4487fbfd61c3d6b321522.webp",
+            "title": ""
+          }
+        },
+        "collection_n9YcMy": {
+          "type": "collection",
+          "settings": {
+            "collection": "designer-saree",
+            "image": "shopify://shop_images/cb56450bf83948cbb9a39b6776812cdc.webp",
+            "title": ""
+          }
+        }
+      },
+      "block_order": [
+        "collection_b4Aj4A",
+        "collection_hJAprm",
+        "collection_K3YkNp",
+        "collection_fkwhcn",
+        "collection_4xza9J",
+        "collection_n9YcMy"
+      ],
+      "name": "Custom collection slider",
+      "settings": {
+        "heading": "",
+        "show_title": false,
+        "slides_per_view_desktop": 2,
+        "slides_per_view_mobile": 1.5,
+        "gap_desktop": 16,
+        "gap_mobile": 12,
+        "slides_per_move": 1,
+        "autoplay": false,
+        "autoplay_speed": 5,
+        "show_navigation": false,
+        "show_pagination": true,
+        "image_ratio": 135,
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    },
     "responsive_flex_grid_fctXQK": {
       "type": "responsive-flex-grid",
       "blocks": {
@@ -354,9 +432,6 @@
             "description": "<p>The fabric and finish exceeded my expectations. Every detail feels considered and special.</p>",
             "image": "shopify://shop_images/5.jpg",
             "product": "kalpna-creation-printed-bandhani-georgette-saree-green",
-            "image_position": "right",
-            "image_size": 110,
-            "image_ratio": "square",
             "card_alignment": "top"
           }
         },
@@ -369,9 +444,6 @@
             "description": "<p>Elegant, comfortable and even more beautiful in person. I received compliments all evening.</p>",
             "image": "shopify://shop_images/3.jpg",
             "product": "kalpna-creation-digital-print-bhagalpuri-linen-saree-multicolor-2",
-            "image_position": "right",
-            "image_size": 110,
-            "image_ratio": "square",
             "card_alignment": "top"
           }
         },
@@ -384,9 +456,6 @@
             "description": "<p>From the thoughtful packaging to the graceful silhouette, the entire experience felt exceptional.</p>",
             "image": "shopify://shop_images/1.jpg",
             "product": "supalee-tex-solid-bollywood-georgette-saree-with-unstitched-blouse-multicolor",
-            "image_position": "right",
-            "image_size": 110,
-            "image_ratio": "square",
             "card_alignment": "top"
           }
         },
@@ -399,9 +468,6 @@
             "description": "<p>The craftsmanship is remarkable and the fit feels as though it was made especially for me.</p>",
             "image": "shopify://shop_images/6.jpg",
             "product": "kalpna-creation-digital-print-bhagalpuri-linen-saree-multicolor-1",
-            "image_position": "right",
-            "image_size": 110,
-            "image_ratio": "square",
             "card_alignment": "top"
           }
         }
@@ -418,6 +484,13 @@
         "heading": "See why everyone loves Kalpana's Creations.",
         "heading_alignment": "center",
         "section_width": "contained",
+        "slides_per_view_desktop": 3,
+        "slides_per_view_mobile": 1,
+        "autoplay": false,
+        "autoplay_speed": 5,
+        "show_navigation": false,
+        "show_pagination": true,
+        "image_height": 280,
         "padding-block-start": 64,
         "padding-block-end": 64
       }
@@ -440,6 +513,7 @@
   },
   "order": [
     "cust_hero_slider_3CVCek",
+    "custom_collection_slider_N3eCr7",
     "responsive_flex_grid_fctXQK",
     "responsive_flex_grid_mzmCmE",
     "responsive_flex_grid_DbQiYV",
