@@ -326,14 +326,6 @@
               },
               "blocks": {}
             },
-            "product_specifications_fWJrT4": {
-              "type": "product-specifications",
-              "name": "Specifications",
-              "settings": {
-                "label": "SPECIFICATIONS"
-              },
-              "blocks": {}
-            },
             "product_collapsible_mQga4Y": {
               "type": "product-collapsible",
               "name": "Collapsible",
@@ -366,7 +358,6 @@
             "payment_icons_wKHehk",
             "product_you_may_like_4AQgHE",
             "product_details_collapsible_jzWpBJ",
-            "product_specifications_fWJrT4",
             "product_collapsible_mQga4Y",
             "product_collapsible_dRyhgV"
           ]
