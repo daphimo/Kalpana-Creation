@@ -56,10 +56,15 @@ const server = http.createServer((request, response) => {
     await desktop.screenshot({path:path.join(__dirname,'artifacts/desktop-viewer.png')});
     const width = (await image.boundingBox()).width;
     const stage = await desktop.locator('[data-stage]').boundingBox();
-    assert.deepEqual(stage, {x:0,y:0,width:1440,height:1000});
+    assert.deepEqual(stage, {x:230,y:0,width:980,height:1000});
     assert.deepEqual(await desktop.locator('dialog').boundingBox(), stage);
     assert.equal(width, 980);
-    assert.equal((await image.boundingBox()).x, (stage.width - width) / 2);
+    assert.equal(await desktop.locator('.desktop-product-viewer__thumbnail').count(), 3);
+    await desktop.locator('.desktop-product-viewer__thumbnail').nth(2).click();
+    assert.equal(await image.getAttribute('alt'), 'Product image 3');
+    assert.equal(await desktop.locator('.desktop-product-viewer__thumbnail').nth(2).getAttribute('aria-current'), 'true');
+    await desktop.locator('.desktop-product-viewer__thumbnail').first().click();
+    assert.equal((await image.boundingBox()).x, stage.x + (stage.width - width) / 2);
     assert.ok(Math.abs((await image.boundingBox()).height / width - 1800 / 800) < .001);
 
     await desktop.mouse.move(stage.x + stage.width/2, stage.y + stage.height - 5);
@@ -71,8 +76,8 @@ const server = http.createServer((request, response) => {
     assert.equal(await desktop.locator('.page-wrapper').evaluate(el => getComputedStyle(el).overflow), 'hidden');
     assert.equal(await desktop.locator('dialog').evaluate(el => el.scrollHeight > el.clientHeight), false);
     // Every overlay must stop an in-flight pan immediately and keep the normal cursor.
-    for (const selector of ['[data-thumbnail]', '[data-close]', '[data-previous]', '[data-next]', '[data-status]']) {
-      await desktop.mouse.move(stage.width / 2, 100);
+    for (const selector of ['[data-thumbnails]', '[data-close]', '[data-previous]', '[data-next]', '[data-status]']) {
+      await desktop.mouse.move(stage.x + stage.width / 2, 100);
       await desktop.waitForTimeout(30);
       const control = desktop.locator(selector);
       const box = await control.boundingBox();
@@ -83,15 +88,15 @@ const server = http.createServer((request, response) => {
       await desktop.mouse.wheel(0, 180);
       await desktop.waitForTimeout(100);
       assert.equal(await image.getAttribute('style'), stopped, `Pan continued over ${selector}`);
-      await desktop.mouse.move(stage.width / 2, 900);
+      await desktop.mouse.move(stage.x + stage.width / 2, 900);
       await desktop.waitForTimeout(30);
       assert.notEqual(await image.getAttribute('style'), stopped);
     }
-    await desktop.mouse.move(stage.width / 2, 450);
+    await desktop.mouse.move(stage.x + stage.width / 2, 450);
     assert.equal(await desktop.locator('[data-stage]').getAttribute('data-direction'), 'up');
-    await desktop.mouse.move(stage.width / 2, 510);
+    await desktop.mouse.move(stage.x + stage.width / 2, 510);
     assert.equal(await desktop.locator('[data-stage]').getAttribute('data-direction'), 'up');
-    await desktop.mouse.move(stage.width / 2, 560);
+    await desktop.mouse.move(stage.x + stage.width / 2, 560);
     assert.equal(await desktop.locator('[data-stage]').getAttribute('data-direction'), 'down');
     await desktop.keyboard.press('ArrowRight');
     await desktop.waitForFunction(() => document.querySelector('dialog [data-image]').alt === 'Product image 2');
@@ -176,7 +181,12 @@ const server = http.createServer((request, response) => {
     assert.equal(await mobile.locator('dialog').count(),0);
     await mobile.locator('[data-gallery-open]').nth(2).tap();
     await mobile.waitForSelector('.mobile-product-viewer[open]');
-    assert.equal(await mobile.locator('dialog [data-thumbnail], dialog [data-previous], dialog [data-next]').count(),0);
+    assert.equal(await mobile.locator('dialog [data-thumbnails]').count(),0);
+    assert.equal(await mobile.locator('dialog').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(255, 255, 255)');
+    await mobile.locator('dialog [data-next]').tap();
+    assert.equal(await mobile.locator('dialog [data-image]').getAttribute('alt'), 'Product image 1');
+    await mobile.locator('dialog [data-previous]').tap();
+    assert.equal(await mobile.locator('dialog [data-image]').getAttribute('alt'), 'Product image 3');
     await mobile.screenshot({path:path.join(__dirname,'artifacts/mobile-viewer.png')});
     const mobileStage=await mobile.locator('dialog [data-stage]').boundingBox();
     const cx=mobileStage.x+mobileStage.width/2, cy=mobileStage.y+mobileStage.height/2;

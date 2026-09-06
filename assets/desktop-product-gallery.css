@@ -1,6 +1,9 @@
 .desktop-product-gallery__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gallery-gap, 12px); }
-.desktop-product-viewer { position: fixed; inset: 0; margin: 0; width: 100%; height: 100dvh; max-width: 100%; max-height: 100dvh; border-radius: 0; box-shadow: none; }
-.desktop-product-viewer__thumbnail { position: absolute; z-index: 3; top: 20px; left: 20px; width: 42px; height: 56px; object-fit: cover; border: 1px solid #eee; border-radius: 2px; }
+.desktop-product-viewer { position: fixed; inset: 0; margin: 0 auto; width: 100%; height: 100dvh; max-width: 980px; max-height: 100dvh; border-radius: 0; box-shadow: none; }
+.desktop-product-viewer__thumbnails { position: absolute; z-index: 3; top: 20px; left: 20px; display: flex; flex-direction: column; gap: 8px; max-height: calc(50% - 64px); overflow-y: auto; padding: 4px; }
+.desktop-product-viewer .desktop-product-viewer__thumbnail { flex: 0 0 64px; width: 48px; height: 64px; border: 2px solid transparent; border-radius: 2px; overflow: hidden; }
+.desktop-product-viewer__thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+.desktop-product-viewer .desktop-product-viewer__thumbnail[aria-current='true'] { border-color: #222; }
 .desktop-product-viewer .product-gallery-viewer__close { top: 16px; right: 16px; }
 .desktop-product-viewer__stage { position: absolute; inset: 0; z-index: 0; overflow: hidden; outline-offset: -2px; }
 .desktop-product-viewer__image { position: absolute; top: 0; left: 50%; max-width: none; max-height: none; object-fit: contain; will-change: transform; user-select: none; }

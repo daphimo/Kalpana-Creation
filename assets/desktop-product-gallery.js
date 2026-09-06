@@ -3,7 +3,7 @@ import { GalleryViewer, clamp, reducedMotion, pauseMedia, loadViewerImage } from
 class DesktopViewer extends GalleryViewer {
   constructor(images) {
     super('desktop-product-viewer', `
-      <img class="desktop-product-viewer__thumbnail" data-thumbnail alt="">
+      <div class="desktop-product-viewer__thumbnails" data-thumbnails aria-label="Product images"></div>
       <button class="product-gallery-viewer__close" data-close aria-label="Close image viewer">×</button>
       <button class="desktop-product-viewer__previous" data-previous aria-label="Previous image">←</button>
       <div class="desktop-product-viewer__stage" data-stage tabindex="0" aria-label="Image viewing area. Use up and down arrows to pan; left and right arrows to change image.">
@@ -14,7 +14,22 @@ class DesktopViewer extends GalleryViewer {
     `, 'Product image viewer');
     this.images = images;
     this.image = this.dialog.querySelector('[data-image]');
-    this.thumbnail = this.dialog.querySelector('[data-thumbnail]');
+    const thumbnails = this.dialog.querySelector('[data-thumbnails]');
+    thumbnails.hidden = images.length < 2;
+    this.thumbnails = images.map((link, index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'desktop-product-viewer__thumbnail';
+      button.setAttribute('aria-label', `Show image ${index + 1}`);
+      const preview = link.querySelector('img');
+      const thumbnail = document.createElement('img');
+      thumbnail.src = preview.currentSrc || preview.src;
+      thumbnail.alt = '';
+      button.append(thumbnail);
+      this.on(button, 'click', () => this.select(index));
+      thumbnails.append(button);
+      return button;
+    });
     this.stage = this.dialog.querySelector('[data-stage]');
     this.status = this.dialog.querySelector('[data-status]');
     this.version = 0;
@@ -70,7 +85,7 @@ class DesktopViewer extends GalleryViewer {
     const preview = link.querySelector('img');
     this.image.alt = preview.alt;
     this.image.src = preview.currentSrc || preview.src;
-    this.thumbnail.src = preview.currentSrc || preview.src;
+    this.thumbnails.forEach((button, i) => button.setAttribute('aria-current', String(i === this.index)));
     this.ratio = Number(preview.getAttribute('width')) / Number(preview.getAttribute('height')) || .8;
     this.target = this.position = 0;
     this.measure();
@@ -88,7 +103,7 @@ class DesktopViewer extends GalleryViewer {
 
   measure() {
     this.bounds = this.stage.getBoundingClientRect();
-    const width = Math.min(980, Math.max(0, this.bounds.width - 48));
+    const width = Math.min(980, Math.max(0, this.bounds.width));
     const height = width / this.ratio;
     this.image.style.width = `${width}px`;
     this.image.style.height = `${height}px`;

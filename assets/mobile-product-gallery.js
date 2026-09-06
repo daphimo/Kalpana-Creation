@@ -1,18 +1,26 @@
 import { GalleryViewer, clamp, reducedMotion, pauseMedia, loadViewerImage } from './product-gallery-viewer.js';
 
 class MobileViewer extends GalleryViewer {
-  constructor() {
+  constructor(images) {
     super('mobile-product-viewer', `
       <button class="product-gallery-viewer__close" data-close aria-label="Close image viewer">×</button>
       <div class="mobile-product-viewer__stage" data-stage>
         <img data-image alt="" draggable="false">
       </div>
+      <button class="mobile-product-viewer__previous" data-previous aria-label="Previous image">&#8592;</button>
+      <button class="mobile-product-viewer__next" data-next aria-label="Next image">&#8594;</button>
       <div class="mobile-product-viewer__zoom-controls">
         <button data-zoom-out aria-label="Zoom out">−</button>
         <button data-zoom-in aria-label="Zoom in">+</button>
       </div>
       <p class="product-gallery-viewer__status" data-status role="status" aria-live="polite"></p>
     `, 'Product image zoom viewer');
+    this.images = images;
+    for (const [selector, direction] of [['[data-previous]', -1], ['[data-next]', 1]]) {
+      const button = this.dialog.querySelector(selector);
+      button.hidden = images.length < 2;
+      this.on(button, 'click', () => this.select(this.index + direction));
+    }
     this.image = this.dialog.querySelector('[data-image]');
     this.stage = this.dialog.querySelector('[data-stage]');
     this.status = this.dialog.querySelector('[data-status]');
@@ -33,6 +41,8 @@ class MobileViewer extends GalleryViewer {
     this.on(this.dialog, 'keydown', (event) => {
       if (event.key === '+' || event.key === '=') this.zoom(this.scale + 1);
       else if (event.key === '-') this.zoom(this.scale - 1);
+      else if (event.key === 'ArrowLeft') this.select(this.index - 1);
+      else if (event.key === 'ArrowRight') this.select(this.index + 1);
       else return;
       event.preventDefault();
     });
@@ -49,13 +59,24 @@ class MobileViewer extends GalleryViewer {
 
   show(link) {
     this.open(link);
+    this.select(this.images.indexOf(link));
+  }
+
+  select(index) {
+    this.index = (index + this.images.length) % this.images.length;
+    const link = this.images[this.index];
+    this.points.clear();
+    this.lastTap = 0;
+    this.tap = undefined;
+    cancelAnimationFrame(this.frame);
+    this.frame = 0;
     const preview = link.querySelector('img');
     this.image.alt = preview.alt;
     this.image.src = preview.currentSrc || preview.src;
     this.ratio = Number(preview.getAttribute('width')) / Number(preview.getAttribute('height')) || .8;
     this.scale = 1;
     this.x = this.y = 0;
-    this.status.textContent = 'Pinch or double-tap to zoom';
+    this.status.textContent = `${this.index + 1} / ${this.images.length} ? Pinch or double-tap to zoom`;
     this.measure();
     const version = ++this.version;
     loadViewerImage(link.href).then((loaded) => {
@@ -209,7 +230,7 @@ export default class MobileGallery {
       event.preventDefault();
       if (this.dragged) return;
       pauseMedia(root);
-      this.viewer ||= new MobileViewer();
+      this.viewer ||= new MobileViewer([...list.querySelectorAll('[data-gallery-open]')]);
       this.viewer.show(link);
     }, { signal });
     this.resize = new ResizeObserver(() => this.select(this.index, false));
