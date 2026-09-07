@@ -104,26 +104,45 @@
 }
 
 .product-collapsible__specifications {
-  display: grid;
-  gap: 0;
   margin: 0;
+}
+
+dl.product-collapsible__specifications {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap-md) var(--gap-xl);
 }
 
 .product-collapsible__specification {
   display: grid;
-  grid-template-columns: minmax(110px, 38%) minmax(0, 1fr);
-  gap: var(--gap-md);
-  padding: 9px 0;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--gap-xs);
+  padding: 0 0 12px;
   border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 10%);
 }
 
+.product-collapsible__specification :is(dt, dd) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .product-collapsible__specification dt {
-  color: rgb(var(--color-foreground-rgb) / 68%);
+  color: rgb(var(--color-foreground-rgb) / 75%);
+  font-size: var(--font-size--2xs);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .product-collapsible__specification dd {
-  min-width: 0;
   margin: 0;
+  color: var(--color-foreground);
+  font-size: var(--font-size--sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.5;
 }
 
 .product-collapsible__specification :is(ul, ol, p) {
@@ -186,9 +205,8 @@
 }
 
 @media screen and (max-width: 749px) {
-  .product-collapsible__specification {
-    grid-template-columns: minmax(96px, 34%) minmax(0, 1fr);
-    gap: var(--gap-sm);
+  dl.product-collapsible__specifications {
+    column-gap: var(--gap-md);
   }
 }
 
@@ -204,32 +222,4 @@
 .product-details-collapsible .product-collapsible__supplement {
   font-size: var(--font-size--sm);
   color: rgb(var(--color-foreground-rgb) / 68%);
-}
-
-.product-details-collapsible .product-collapsible__specifications {
-  gap: var(--gap-md);
-}
-
-.product-details-collapsible .product-details-collapsible__grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: var(--gap-xl);
-}
-
-.product-details-collapsible .product-collapsible__specification {
-  min-width: 0;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--gap-xs);
-  padding: 0;
-  border: 0;
-}
-
-.product-details-collapsible .product-collapsible__specification dt {
-  color: inherit;
-  font-weight: var(--font-weight-semibold);
-}
-
-@media screen and (max-width: 749px) {
-  .product-details-collapsible .product-details-collapsible__grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
