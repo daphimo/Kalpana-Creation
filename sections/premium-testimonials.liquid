@@ -83,14 +83,7 @@
     </header>
 
     {% if section.blocks.size > 0 %}
-      {% render 'splide-slider',
-        slider_id: 'PremiumTestimonialsSlider-' | append: section.id,
-        class: 'premium-testimonials__slider',
-        data_attribute: slider_data_attribute,
-        aria_label: section.settings.heading,
-        splide_options: slider_options,
-        slides_markup: testimonial_slides
-      %}
+      {% render 'splide-slider', slider_id: 'PremiumTestimonialsSlider-', append: section.id, class: 'premium-testimonials__slider', data_attribute: slider_data_attribute, aria_label: section.settings.heading, splide_options: slider_options, slides_markup: testimonial_slides %}
     {% elsif request.design_mode %}
       <p class="premium-testimonials__empty">Add testimonial blocks to build the slider.</p>
     {% endif %}
@@ -147,3 +140,24 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: |-
+    {% render 'splide-slider',
+            slider_id: 'PremiumTestimonialsSlider-' | append: section.id,
+            class: 'premium-testimonials__slider',
+            data_attribute: slider_data_attribute,
+            aria_label: section.settings.heading,
+            splide_options: slider_options,
+            slides_markup: testimonial_slides
+          %}
+  to: "{% render 'splide-slider', slider_id: 'PremiumTestimonialsSlider-', append:
+    section.id, class: 'premium-testimonials__slider', data_attribute: slider_data_attribute,
+    aria_label: section.settings.heading, splide_options: slider_options, slides_markup:
+    testimonial_slides %}"
+  position: 4319..4591
+{% endcomment %}

@@ -145,7 +145,7 @@
         "heading": "",
         "show_title": false,
         "slides_per_view_desktop": 2,
-        "slides_per_view_mobile": 1.5,
+        "slides_per_view_mobile": 2,
         "gap_desktop": 16,
         "gap_mobile": 12,
         "slides_per_move": 1,

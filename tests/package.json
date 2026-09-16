@@ -1,9 +1,0 @@
-{
-  "private": true,
-  "scripts": {
-    "test": "node product-gallery.test.cjs"
-  },
-  "devDependencies": {
-    "playwright": "1.63.0"
-  }
-}
