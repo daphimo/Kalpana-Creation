@@ -85,7 +85,9 @@
         endif
       %}
 
-      {% if block.type == 'whatsapp' %}
+      {% if block.type == 'videos' %}
+        {% render 'mobile-bar-shoppable-videos', block: block, show_labels: section.settings.show_labels, section_id: section.id %}
+      {% elsif block.type == 'whatsapp' %}
         {% liquid
           assign whatsapp_number = block.settings.phone_number | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
           assign whatsapp_message = block.settings.message | url_encode
@@ -604,6 +606,24 @@
     }
   ],
   "blocks": [
+    {
+      "type": "videos",
+      "name": "Shoppable videos",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Videos"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom icon image"
+        }
+      ]
+    },
     {
       "type": "whatsapp",
       "name": "WhatsApp",

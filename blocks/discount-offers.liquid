@@ -1,0 +1,325 @@
+{% render 'brand-colors' %}
+{{ 'block-discount-offers.css' | asset_url | stylesheet_tag }}
+
+{% capture discount_cards %}
+  {% for discount_number in (1..10) %}
+    {% assign title_key = 'discount_title_' | append: discount_number %}
+    {% assign description_key = 'discount_description_' | append: discount_number %}
+    {% assign code_key = 'discount_code_' | append: discount_number %}
+    {% assign discount_title = block.settings[title_key] %}
+    {% assign discount_description = block.settings[description_key] %}
+    {% assign discount_code = block.settings[code_key] %}
+    {% if discount_title != blank or discount_description != blank or discount_code != blank %}
+      <li class="product-discounts__slide"><article class="discount-card">
+        <div class="discount-card__content">
+          {% if discount_title != blank %}
+            <h3 class="discount-card__title">{{ discount_title | escape }}</h3>
+          {% endif %}
+          {% if discount_description != blank %}
+            <p class="discount-card__description">{{ discount_description | escape | newline_to_br }}</p>
+          {% endif %}
+        </div>
+        {% if discount_code != blank %}
+          <div class="discount-card__code-wrap">
+            <span class="discount-card__code">{{ discount_code | escape }}</span>
+            <button class="discount-card__copy" type="button" aria-label="Copy discount code {{ discount_code | escape }}">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false">
+                <rect x="7" y="7" width="9" height="9" rx="1.5"></rect>
+                <path d="M13 7V5.5A1.5 1.5 0 0 0 11.5 4h-7A1.5 1.5 0 0 0 3 5.5v7A1.5 1.5 0 0 0 4.5 14H7"></path>
+              </svg>
+              <span>Copy</span>
+            </button>
+          </div>
+        {% endif %}
+      </article></li>
+    {% endif %}
+  {% endfor %}
+{% endcapture %}
+
+{% assign visible_cards = discount_cards | strip %}
+{% assign show_header = false %}
+{% if block.settings.show_accent_title and block.settings.accent_title != blank %}
+  {% assign show_header = true %}
+{% endif %}
+{% if block.settings.show_main_title and block.settings.main_title != blank %}
+  {% assign show_header = true %}
+{% endif %}
+{% if visible_cards != blank or request.design_mode %}
+  <div id="ProductDiscounts-{{ block.id }}" class="product-discounts" style="--discount-margin-top: {{ block.settings.margin_top }}px; --discount-margin-bottom: {{ block.settings.margin_bottom }}px;" {{ block.shopify_attributes }}>
+    {% if show_header %}
+      <div class="product-discounts__header">
+        {% if block.settings.show_accent_title and block.settings.accent_title != blank %}
+          <p class="product-discounts__eyebrow">{{ block.settings.accent_title | escape }}</p>
+        {% endif %}
+        {% if block.settings.show_main_title and block.settings.main_title != blank %}
+          <h2 class="product-discounts__heading">{{ block.settings.main_title | escape }}</h2>
+        {% endif %}
+      </div>
+    {% endif %}
+    {% if visible_cards != blank %}
+      <script src="{{ 'block-discount-offers.js' | asset_url }}" defer></script>
+      <div class="product-discounts__slider" data-discount-slider role="region" aria-label="Discount offers" tabindex="0">
+        <ul class="product-discounts__list" role="list">{{ discount_cards }}</ul>
+      </div>
+    {% elsif request.design_mode %}
+      <p class="product-discounts__empty">Add a discount title, description, or code in the block settings.</p>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Discount Offers",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Block heading"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_accent_title",
+      "label": "Show accent title",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "accent_title",
+      "label": "Accent title",
+      "default": "Exclusive offers"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_main_title",
+      "label": "Show main title",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "main_title",
+      "label": "Main title",
+      "default": "Save on your order"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top margin",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom margin",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Discount 1"
+    },
+    {
+      "type": "text",
+      "id": "discount_title_1",
+      "label": "Discount title 1"
+    },
+    {
+      "type": "textarea",
+      "id": "discount_description_1",
+      "label": "Discount description 1"
+    },
+    {
+      "type": "text",
+      "id": "discount_code_1",
+      "label": "Discount code 1"
+    },
+    {
+      "type": "header",
+      "content": "Discount 2"
+    },
+    {
+      "type": "text",
+      "id": "discount_title_2",
+      "label": "Discount title 2"
+    },
+    {
+      "type": "textarea",
+      "id": "discount_description_2",
+      "label": "Discount description 2"
+    },
+    {
+      "type": "text",
+      "id": "discount_code_2",
+      "label": "Discount code 2"
+    },
+    {
+      "type": "header",
+      "content": "Discount 3"
+    },
+    {
+      "type": "text",
+      "id": "discount_title_3",
+      "label": "Discount title 3"
+    },
+    {
+      "type": "textarea",
+      "id": "discount_description_3",
+      "label": "Discount description 3"
+    },
+    {
+      "type": "text",
+      "id": "discount_code_3",
+      "label": "Discount code 3"
+    },
+    {
+      "type": "header",
+      "content": "Discount 4"
+    },
+    {
+      "type": "text",
+      "id": "discount_title_4",
+      "label": "Discount title 4"
+    },
+    {
+      "type": "textarea",
+      "id": "discount_description_4",
+      "label": "Discount description 4"
+    },
+    {
+      "type": "text",
+      "id": "discount_code_4",
+      "label": "Discount code 4"
+    },
+    {
+      "type": "header",
+      "content": "Discount 5"
+    },
+    {
+      "type": "text",
+      "id": "discount_title_5",
+      "label": "Discount title 5"
+    },
+    {
+      "type": "textarea",
+      "id": "discount_description_5",
+      "label": "Discount description 5"
+    },
+    {
+      "type": "text",
+      "id": "discount_code_5",
+      "label": "Discount code 5"
+    },
+    {
+      "type": "header",
+      "content": "Discount 6"
+    },
+    {
+      "type": "text",
+      "id": "discount_title_6",
+      "label": "Discount title 6"
+    },
+    {
+      "type": "textarea",
+      "id": "discount_description_6",
+      "label": "Discount description 6"
+    },
+    {
+      "type": "text",
+      "id": "discount_code_6",
+      "label": "Discount code 6"
+    },
+    {
+      "type": "header",
+      "content": "Discount 7"
+    },
+    {
+      "type": "text",
+      "id": "discount_title_7",
+      "label": "Discount title 7"
+    },
+    {
+      "type": "textarea",
+      "id": "discount_description_7",
+      "label": "Discount description 7"
+    },
+    {
+      "type": "text",
+      "id": "discount_code_7",
+      "label": "Discount code 7"
+    },
+    {
+      "type": "header",
+      "content": "Discount 8"
+    },
+    {
+      "type": "text",
+      "id": "discount_title_8",
+      "label": "Discount title 8"
+    },
+    {
+      "type": "textarea",
+      "id": "discount_description_8",
+      "label": "Discount description 8"
+    },
+    {
+      "type": "text",
+      "id": "discount_code_8",
+      "label": "Discount code 8"
+    },
+    {
+      "type": "header",
+      "content": "Discount 9"
+    },
+    {
+      "type": "text",
+      "id": "discount_title_9",
+      "label": "Discount title 9"
+    },
+    {
+      "type": "textarea",
+      "id": "discount_description_9",
+      "label": "Discount description 9"
+    },
+    {
+      "type": "text",
+      "id": "discount_code_9",
+      "label": "Discount code 9"
+    },
+    {
+      "type": "header",
+      "content": "Discount 10"
+    },
+    {
+      "type": "text",
+      "id": "discount_title_10",
+      "label": "Discount title 10"
+    },
+    {
+      "type": "textarea",
+      "id": "discount_description_10",
+      "label": "Discount description 10"
+    },
+    {
+      "type": "text",
+      "id": "discount_code_10",
+      "label": "Discount code 10"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Discount Offers",
+      "category": "Products"
+    }
+  ]
+}
+{% endschema %}

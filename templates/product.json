@@ -177,6 +177,10 @@
               },
               "blocks": {}
             },
+            "discount_offers": {
+              "type": "discount-offers",
+              "settings": {}
+            },
             "buy_buttons_eYQEYi": {
               "type": "buy-buttons",
               "settings": {
@@ -345,6 +349,15 @@
                 "open_initially": false
               },
               "blocks": {}
+            },
+            "floating_product_video": {
+              "type": "product-floating-video",
+              "settings": {
+                "width": 180,
+                "bottom": 20,
+                "horizontal_position": "right",
+                "horizontal_offset": 20
+              }
             }
           },
           "block_order": [
@@ -352,6 +365,7 @@
             "divider_VJhene",
             "color_family_products_yU4pRU",
             "variant_picker_R3rGDr",
+            "discount_offers",
             "buy_buttons_eYQEYi",
             "product_pincode_checker_AdiknV",
             "text_QUJAmt",
@@ -359,7 +373,8 @@
             "product_you_may_like_4AQgHE",
             "product_details_collapsible_jzWpBJ",
             "product_collapsible_mQga4Y",
-            "product_collapsible_dRyhgV"
+            "product_collapsible_dRyhgV",
+            "floating_product_video"
           ]
         }
       },

@@ -1,0 +1,75 @@
+{% comment %}
+  Independent mobile-bar entry and reel popup for shopable_video_popup metaobjects.
+{% endcomment %}
+{% assign mobile_reel_count = 0 %}
+{% capture mobile_reels %}
+  {% for video_item in shop.metaobjects.shopable_video_popup.values %}
+    {% assign reel_video = video_item.video.value %}
+    {% assign reel_product = video_item.product.value %}
+    {% if reel_video != blank and reel_video.sources != blank %}
+      {% assign mobile_reel_count = mobile_reel_count | plus: 1 %}
+      <li class="splide__slide shoppable-reel__slide">
+        <div class="shoppable-reel__player">
+          <video class="shoppable-reel__video" preload="metadata" playsinline loop {% if reel_video.preview_image != blank %}poster="{{ reel_video.preview_image | image_url: width: 1000 }}"{% endif %}>
+            {% for video_source in reel_video.sources %}
+              <source src="{{ video_source.url }}" type="{{ video_source.mime_type }}">
+            {% endfor %}
+          </video>
+          <div class="shoppable-reel__overlay">
+            <div class="shoppable-reel__top">
+              <div class="shoppable-reel__logo">
+                {% if settings.logo != blank %}
+                  {{ settings.logo | image_url: width: 260 | image_tag: widths: '130,260', sizes: '130px', loading: 'lazy', alt: shop.name }}
+                {% else %}
+                  <span>{{ shop.name | escape }}</span>
+                {% endif %}
+              </div>
+              <button class="shoppable-reel__close" type="button" aria-label="Close videos">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 5 19 19M19 5 5 19"/></svg>
+              </button>
+            </div>
+            <div class="shoppable-reel__actions">
+              {% if reel_product != blank %}
+                <div class="shoppable-reel__wishlist">
+                  <button class="wishlist-button" type="button" button-wishlist data-product-title="{{ reel_product.title | escape }}" data-product-handle="{{ reel_product.handle }}" aria-label="Add to wishlist">
+                    {% render 'icon-heart' %}
+                  </button>
+                  <span>Wishlist</span>
+                </div>
+              {% endif %}
+              <button class="shoppable-reel__sound" type="button" aria-label="Mute video">
+                <svg class="shoppable-reel__sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>
+                <svg class="shoppable-reel__sound-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" hidden><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 6m0-6-5 6"/></svg>
+              </button>
+            </div>
+            {% render 'shoppable-video-product-stripe', product: reel_product, button_label: 'Shop' %}
+          </div>
+        </div>
+      </li>
+    {% endif %}
+  {% endfor %}
+{% endcapture %}
+
+{% if mobile_reel_count > 0 %}
+  {{ 'cust-splide-core.min.css' | asset_url | stylesheet_tag }}
+  {{ 'section-shoppable-videos.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'cust-splide.min.js' | asset_url }}" defer></script>
+  <script src="{{ 'mobile-bar-shoppable-videos.js' | asset_url }}" defer></script>
+  <button type="button" class="mobile-bar__item mobile-bar__item--videos" data-mobile-reels-open aria-label="{{ block.settings.label | default: 'Videos' | escape }}" aria-haspopup="dialog" aria-controls="MobileBarReels-{{ section_id }}" {{ block.shopify_attributes }}>
+    <span class="mobile-bar__icon-wrap">
+      {% if block.settings.custom_image != blank %}
+        {{ block.settings.custom_image | image_url: width: 96 | image_tag: class: 'mobile-bar__custom-image', widths: '48, 72, 96', sizes: '(max-width: 749px) var(--mobile-bar-icon-size), 1px', alt: block.settings.label, loading: 'eager' }}
+      {% else %}
+        <span class="mobile-bar__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3V9Z" fill="currentColor" stroke="none"/></svg>
+        </span>
+      {% endif %}
+    </span>
+    {% if show_labels %}<span class="mobile-bar__label">{{ block.settings.label | default: 'Videos' | escape }}</span>{% endif %}
+  </button>
+  <div id="MobileBarReels-{{ section_id }}" class="shoppable-reel__modal" data-mobile-reels-modal hidden role="dialog" aria-modal="true" aria-label="Shoppable videos" style="--sv-image-size: 54px; --sv-stripe-radius: 12px;">
+    <div class="splide shoppable-reel__slider" data-mobile-reels-slider data-splide='{"type":"slide","direction":"ttb","height":"100dvh","perPage":1,"perMove":1,"arrows":false,"pagination":false,"drag":true,"wheel":true,"wheelMinThreshold":30,"wheelSleep":450,"releaseWheel":true,"keyboard":"focused","noDrag":".shoppable-reel__top *, .shoppable-reel__actions *, .shoppable-videos__shop, .shoppable-videos__shop *"}'>
+      <div class="splide__track"><ul class="splide__list" role="list">{{ mobile_reels }}</ul></div>
+    </div>
+  </div>
+{% endif %}

@@ -1,0 +1,24 @@
+{% if product != blank %}
+  {% assign stripe_variant = product.selected_or_first_available_variant %}
+  <div class="shoppable-videos__stripe">
+    <div class="shoppable-videos__product-image">
+      {% if product.featured_image != blank %}
+        {{ product.featured_image | image_url: width: 160 | image_tag: widths: '80,160', sizes: '80px', loading: 'lazy', alt: product.title }}
+      {% endif %}
+    </div>
+    <div class="shoppable-videos__product-info">
+      <h3 class="shoppable-videos__product-title">{{ product.title | escape }}</h3>
+      {% if stripe_variant != blank %}
+        <div class="shoppable-videos__prices">
+          <span class="shoppable-videos__price">{{ stripe_variant.price | money }}</span>
+          {% if stripe_variant.compare_at_price > stripe_variant.price %}
+            <s class="shoppable-videos__compare-price">{{ stripe_variant.compare_at_price | money }}</s>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+    <a class="shoppable-videos__shop" href="{{ product.url }}" aria-label="Shop {{ product.title | escape }}">
+      {{ button_label | default: 'Shop' | escape }}
+    </a>
+  </div>
+{% endif %}

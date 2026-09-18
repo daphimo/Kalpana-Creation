@@ -1,0 +1,67 @@
+{% assign floating_video = closest.product.metafields.custom.video.value %}
+{% if floating_video != blank and floating_video.media_type == 'video' %}
+  <product-floating-video
+    class="product-floating-video"
+    style="--floating-width: {{ block.settings.width }}px; --floating-bottom: {{ block.settings.bottom }}px; --floating-side: {{ block.settings.horizontal_offset }}px;"
+    data-side="{{ block.settings.horizontal_position }}"
+    {{ block.shopify_attributes }}
+  >
+    <button class="product-floating-video__preview" type="button" aria-label="Open product video">
+      <video autoplay muted loop playsinline preload="metadata" aria-hidden="true" {% if floating_video.preview_image %}poster="{{ floating_video.preview_image | image_url: width: 400 }}"{% endif %}>
+        {% for source in floating_video.sources %}
+          <source src="{{ source.url }}" type="{{ source.mime_type }}">
+        {% endfor %}
+      </video>
+    </button>
+    <div class="product-floating-video__overlay" hidden role="dialog" aria-modal="true" aria-label="Product video" tabindex="-1">
+      <div class="product-floating-video__player">
+        <video playsinline preload="metadata" {% if floating_video.preview_image %}poster="{{ floating_video.preview_image | image_url: width: 1200 }}"{% endif %}>
+          {% for source in floating_video.sources %}
+            <source src="{{ source.url }}" type="{{ source.mime_type }}">
+          {% endfor %}
+        </video>
+        <button class="product-floating-video__play" type="button" aria-label="Pause video">
+          <span class="product-floating-video__icon--pause">{{ 'icon-pause.svg' | inline_asset_content }}</span>
+          <span class="product-floating-video__icon--play" hidden>{{ 'icon-play.svg' | inline_asset_content }}</span>
+        </button>
+        <button class="product-floating-video__mute" type="button" aria-label="Mute video">
+          <svg class="product-floating-video__icon--sound" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>
+          <svg class="product-floating-video__icon--silent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" hidden><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 6m0-6-5 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </product-floating-video>
+  {{ 'product-floating-video.js' | asset_url | script_tag }}
+{% endif %}
+
+{% stylesheet %}
+  .product-floating-video { position: fixed; bottom: var(--floating-bottom); z-index: 20; width: min(var(--floating-width), calc(100vw - 32px)); line-height: 0; }
+  .product-floating-video[data-side='left'] { left: var(--floating-side); }
+  .product-floating-video[data-side='right'] { right: var(--floating-side); }
+  .product-floating-video__preview { display: block; width: 100%; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: #000; cursor: pointer; box-shadow: 0 4px 18px #0004; }
+  .product-floating-video__preview video { display: block; width: 100%; height: auto; max-height: 40vh; object-fit: contain; }
+  .product-floating-video__overlay[hidden] { display: none; }
+  .product-floating-video__overlay { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 16px; background: #000b; line-height: normal; }
+  .product-floating-video__player { position: relative; display: flex; align-items: center; justify-content: center; max-width: 100%; max-height: 100%; }
+  .product-floating-video__player video { display: block; width: auto; height: auto; max-width: calc(100vw - 32px); max-height: calc(100vh - 32px); object-fit: contain; background: #000; }
+  .product-floating-video__play, .product-floating-video__mute { position: absolute; display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: #0009; color: #fff; cursor: pointer; }
+  .product-floating-video__play { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+  .product-floating-video__mute { top: 12px; right: 12px; }
+  .product-floating-video__play svg, .product-floating-video__mute svg { width: 24px; height: 24px; }
+  .product-floating-video__play [hidden], .product-floating-video__mute [hidden] { display: none; }
+  .product-floating-video__play:focus-visible, .product-floating-video__mute:focus-visible, .product-floating-video__preview:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Floating product video",
+  "tag": null,
+  "settings": [
+    { "type": "range", "id": "width", "label": "Floating video width", "min": 100, "max": 400, "step": 10, "unit": "px", "default": 180 },
+    { "type": "range", "id": "bottom", "label": "Distance from bottom", "min": 0, "max": 200, "step": 5, "unit": "px", "default": 20 },
+    { "type": "select", "id": "horizontal_position", "label": "Horizontal position", "options": [{ "value": "left", "label": "Left" }, { "value": "right", "label": "Right" }], "default": "right" },
+    { "type": "range", "id": "horizontal_offset", "label": "Distance from side", "min": 0, "max": 200, "step": 5, "unit": "px", "default": 20 }
+  ],
+  "presets": [{ "name": "Floating product video" }]
+}
+{% endschema %}

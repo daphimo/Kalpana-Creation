@@ -211,6 +211,12 @@
             "icon": "swipe"
           }
         },
+        "videos_shoppable": {
+          "type": "videos",
+          "settings": {
+            "label": "Videos"
+          }
+        },
         "bar_item_QMWGxT": {
           "type": "bar_item",
           "settings": {
@@ -237,6 +243,7 @@
         "bar_item_MNmqmb",
         "bar_item_fH9eMT",
         "bar_item_PCNEaw",
+        "videos_shoppable",
         "bar_item_QMWGxT",
         "whatsapp_74nDp9"
       ],

@@ -1,0 +1,591 @@
+{% render 'brand-colors' %}
+{{ 'section-shoppable-videos.css' | asset_url | stylesheet_tag }}
+
+{% if section.settings.data_source == 'metaobjects' %}
+  {% assign video_items = shop.metaobjects.shopable_video_popup.values %}
+{% else %}
+  {% assign video_items = section.blocks %}
+{% endif %}
+
+{% assign rendered_count = 0 %}
+{% capture video_cards %}
+  {% for video_item in video_items %}
+    {% if section.settings.data_source == 'metaobjects' and rendered_count >= section.settings.metaobject_limit %}
+      {% break %}
+    {% endif %}
+
+    {% if section.settings.data_source == 'metaobjects' %}
+      {% assign current_video = video_item.video.value %}
+      {% assign current_product = video_item.product.value %}
+      {% assign current_poster = current_video.preview_image %}
+    {% else %}
+      {% assign current_video = video_item.settings.video %}
+      {% assign current_product = video_item.settings.product %}
+      {% assign current_poster = video_item.settings.poster_image | default: current_video.preview_image %}
+    {% endif %}
+
+    {% if current_video != blank and current_video.sources != blank %}
+      {% assign rendered_count = rendered_count | plus: 1 %}
+      <li class="shoppable-videos__card"
+        {% if section.settings.data_source == 'blocks' %}{{ video_item.shopify_attributes }}{% endif %}
+      >
+        <div class="shoppable-videos__media">
+          <video
+            preload="metadata"
+            playsinline
+            {% if section.settings.autoplay %}autoplay{% endif %}
+            {% if section.settings.loop %}loop{% endif %}
+            {% if section.settings.muted or section.settings.autoplay %}muted{% endif %}
+            {% if current_poster != blank %}poster="{{ current_poster | image_url: width: 800 }}"{% endif %}
+          >
+            {% for video_source in current_video.sources %}
+              <source src="{{ video_source.url }}" type="{{ video_source.mime_type }}">
+            {% endfor %}
+          </video>
+        </div>
+        <button class="shoppable-videos__open" type="button" data-reel-open data-reel-index="{{ rendered_count | minus: 1 }}" aria-label="Watch shoppable video {{ rendered_count }}"></button>
+        <button class="shoppable-videos__play" type="button" aria-label="Play video" {% if section.settings.autoplay %}hidden{% endif %}>
+          <svg class="shoppable-videos__play-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5L8 5.5Z"/></svg>
+          <svg class="shoppable-videos__pause-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M7 5h3v14H7zm7 0h3v14h-3z"/></svg>
+        </button>
+        {% if section.settings.show_sound_button %}
+          <button class="shoppable-videos__sound" type="button" aria-label="Unmute video">
+            <svg class="shoppable-videos__sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" hidden><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>
+            <svg class="shoppable-videos__sound-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 6m0-6-5 6"/></svg>
+          </button>
+        {% endif %}
+        {% render 'shoppable-video-product-stripe', product: current_product, button_label: section.settings.shop_button_label %}
+      </li>
+    {% endif %}
+  {% endfor %}
+{% endcapture %}
+
+{% assign popup_count = 0 %}
+{% capture popup_reels %}
+  {% for video_item in video_items %}
+    {% if section.settings.data_source == 'metaobjects' and popup_count >= section.settings.metaobject_limit %}
+      {% break %}
+    {% endif %}
+    {% if section.settings.data_source == 'metaobjects' %}
+      {% assign current_video = video_item.video.value %}
+      {% assign current_product = video_item.product.value %}
+      {% assign current_poster = current_video.preview_image %}
+    {% else %}
+      {% assign current_video = video_item.settings.video %}
+      {% assign current_product = video_item.settings.product %}
+      {% assign current_poster = video_item.settings.poster_image | default: current_video.preview_image %}
+    {% endif %}
+    {% if current_video != blank and current_video.sources != blank %}
+      {% assign popup_count = popup_count | plus: 1 %}
+      <li class="splide__slide shoppable-reel__slide">
+        <div class="shoppable-reel__player">
+          <video class="shoppable-reel__video" preload="metadata" playsinline {% if section.settings.loop %}loop{% endif %} {% if current_poster != blank %}poster="{{ current_poster | image_url: width: 1000 }}"{% endif %}>
+            {% for video_source in current_video.sources %}
+              <source src="{{ video_source.url }}" type="{{ video_source.mime_type }}">
+            {% endfor %}
+          </video>
+          <div class="shoppable-reel__overlay">
+            <div class="shoppable-reel__top">
+              <div class="shoppable-reel__logo">
+                {% if settings.logo != blank %}
+                  {{ settings.logo | image_url: width: 260 | image_tag: widths: '130,260', sizes: '130px', loading: 'lazy', alt: shop.name }}
+                {% else %}
+                  <span>{{ shop.name | escape }}</span>
+                {% endif %}
+              </div>
+              <button class="shoppable-reel__close" type="button" aria-label="Close videos">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 5 19 19M19 5 5 19"/></svg>
+              </button>
+            </div>
+            <div class="shoppable-reel__actions">
+              {% if current_product != blank %}
+                <div class="shoppable-reel__wishlist">
+                  <button class="wishlist-button" type="button" button-wishlist data-product-title="{{ current_product.title | escape }}" data-product-handle="{{ current_product.handle }}" aria-label="Add to wishlist">
+                    {% render 'icon-heart' %}
+                  </button>
+                  <span>Wishlist</span>
+                </div>
+              {% endif %}
+              <button class="shoppable-reel__sound" type="button" aria-label="Mute video">
+                <svg class="shoppable-reel__sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>
+                <svg class="shoppable-reel__sound-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" hidden><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 6m0-6-5 6"/></svg>
+              </button>
+            </div>
+            {% render 'shoppable-video-product-stripe', product: current_product, button_label: section.settings.shop_button_label %}
+          </div>
+        </div>
+      </li>
+    {% endif %}
+  {% endfor %}
+{% endcapture %}
+
+{% if rendered_count > 0 or request.design_mode %}
+  <section
+    id="ShoppableVideos-{{ section.id }}"
+    class="shoppable-videos"
+    data-shoppable-videos
+    data-width="{{ section.settings.section_width }}"
+    data-header-alignment="{{ section.settings.header_alignment }}"
+    data-card-border="{{ section.settings.show_card_border }}"
+    data-autoplay="{{ section.settings.autoplay }}"
+    data-pause-offscreen="{{ section.settings.pause_offscreen }}"
+    data-slide-type="{{ section.settings.slide_type }}"
+    data-drag-enabled="{{ section.settings.enable_drag }}"
+    style="--sv-padding-top: {{ section.settings.padding_top }}px; --sv-padding-bottom: {{ section.settings.padding_bottom }}px; --sv-padding-top-mobile: {{ section.settings.padding_top_mobile }}px; --sv-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px; --sv-max-width: {{ section.settings.max_width }}px; --sv-aspect-ratio: {{ section.settings.video_aspect_ratio }}; --sv-card-radius: {{ section.settings.card_radius }}px; --sv-border-opacity: {{ section.settings.card_border_opacity }}%; --sv-stripe-bottom: {{ section.settings.product_stripe_bottom }}px; --sv-stripe-inset: {{ section.settings.product_stripe_inset }}px; --sv-stripe-radius: {{ section.settings.stripe_radius }}px; --sv-image-size: {{ section.settings.stripe_product_image_size }}px; --sv-header-alignment: {{ section.settings.header_alignment }}; --sv-desktop-count: {{ section.settings.desktop_count }}; --sv-mobile-count: {{ section.settings.mobile_count }}; --sv-card-gap: {{ section.settings.card_gap }}px; --sv-card-gap-mobile: {{ section.settings.card_gap_mobile }}px;"
+  >
+    <div class="shoppable-videos__inner">
+      {% if rendered_count > 0 %}
+        {{ 'cust-splide-core.min.css' | asset_url | stylesheet_tag }}
+        <script src="{{ 'cust-splide.min.js' | asset_url }}" defer></script>
+        <script src="{{ 'section-shoppable-videos.js' | asset_url }}" defer></script>
+      {% endif %}
+      {% if section.settings.show_header %}
+        <header class="shoppable-videos__header">
+          <div class="shoppable-videos__header-copy">
+            {% if section.settings.accent_title != blank %}<p class="shoppable-videos__eyebrow">{{ section.settings.accent_title | escape }}</p>{% endif %}
+            {% if section.settings.heading != blank %}<h2 class="shoppable-videos__heading">{{ section.settings.heading | escape }}</h2>{% endif %}
+            {% if section.settings.description != blank %}<p class="shoppable-videos__description">{{ section.settings.description | escape | newline_to_br }}</p>{% endif %}
+          </div>
+        </header>
+      {% endif %}
+      {% if rendered_count > 0 %}
+        <div class="shoppable-videos__slider" data-shoppable-slider>
+          <div class="shoppable-videos__stage">
+            <div class="shoppable-videos__track" data-shoppable-track tabindex="0" role="region" aria-label="Shoppable videos">
+              <ul class="shoppable-videos__list" role="list">{{ video_cards }}</ul>
+            </div>
+            {% if section.settings.show_nav_button %}
+              <div class="shoppable-videos__arrows">
+                <button class="shoppable-videos__arrow shoppable-videos__arrow--prev" type="button" data-shoppable-prev aria-label="Previous video">
+                  <svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d="m15 10 12 10-12 10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button class="shoppable-videos__arrow shoppable-videos__arrow--next" type="button" data-shoppable-next aria-label="Next video">
+                  <svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d="m15 10 12 10-12 10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            {% endif %}
+          </div>
+          {% if section.settings.show_pagination %}
+            <div class="shoppable-videos__progress" role="progressbar" aria-label="Video slider progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div class="shoppable-videos__progress-bar"></div>
+            </div>
+          {% endif %}
+        </div>
+      {% elsif request.design_mode %}
+        <p class="shoppable-videos__empty">Add shoppable video blocks or select Metaobjects as the video source.</p>
+      {% endif %}
+    </div>
+  </section>
+  {% if rendered_count > 0 %}
+    <div class="shoppable-reel__modal" data-reel-modal hidden role="dialog" aria-modal="true" aria-label="Shoppable videos" style="--sv-image-size: {{ section.settings.stripe_product_image_size }}px; --sv-stripe-radius: {{ section.settings.stripe_radius }}px;">
+      <div class="splide shoppable-reel__slider" data-reel-slider data-splide='{"type":"slide","direction":"ttb","height":"100dvh","perPage":1,"perMove":1,"arrows":false,"pagination":false,"drag":true,"wheel":true,"wheelMinThreshold":30,"wheelSleep":450,"releaseWheel":true,"keyboard":"focused","noDrag":".shoppable-reel__top *, .shoppable-reel__actions *, .shoppable-videos__shop, .shoppable-videos__shop *"}'>
+        <div class="splide__track"><ul class="splide__list" role="list">{{ popup_reels }}</ul></div>
+      </div>
+    </div>
+  {% endif %}
+{% endif %}
+
+{% schema %}
+{
+  "name": "Shoppable Videos",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "Show header",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "accent_title",
+      "label": "Accent title",
+      "default": "Shop the moment"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Watch. Discover. Shop."
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Header alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Video source"
+    },
+    {
+      "type": "select",
+      "id": "data_source",
+      "label": "Video source",
+      "options": [
+        {
+          "value": "blocks",
+          "label": "Section blocks"
+        },
+        {
+          "value": "metaobjects",
+          "label": "Metaobjects"
+        }
+      ],
+      "default": "blocks"
+    },
+    {
+      "type": "range",
+      "id": "metaobject_limit",
+      "label": "Maximum metaobject videos",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        {
+          "value": "page_width",
+          "label": "Page width"
+        },
+        {
+          "value": "full_width",
+          "label": "Full width"
+        }
+      ],
+      "default": "page_width"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Maximum width",
+      "min": 1000,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "default": 1480
+    },
+    {
+      "type": "header",
+      "content": "Slider"
+    },
+    {
+      "type": "select",
+      "id": "slide_type",
+      "label": "Slide type",
+      "options": [
+        { "value": "slide", "label": "Slide" },
+        { "value": "loop", "label": "Loop" }
+      ],
+      "default": "loop"
+    },
+    {
+      "type": "range",
+      "id": "desktop_count",
+      "label": "Videos visible on desktop",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "default": 3.5
+    },
+    {
+      "type": "range",
+      "id": "mobile_count",
+      "label": "Videos visible on mobile",
+      "min": 1,
+      "max": 2.5,
+      "step": 0.5,
+      "default": 1.5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_nav_button",
+      "label": "Show navigation buttons",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pagination",
+      "label": "Show progress bar",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_drag",
+      "label": "Drag to slide",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Card gap",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "card_gap_mobile",
+      "label": "Mobile card gap",
+      "min": 4,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "video_aspect_ratio",
+      "label": "Video aspect ratio",
+      "options": [
+        {
+          "value": "9 / 16",
+          "label": "9:16"
+        },
+        {
+          "value": "9 / 14",
+          "label": "9:14"
+        },
+        {
+          "value": "4 / 5",
+          "label": "4:5"
+        },
+        {
+          "value": "3 / 4",
+          "label": "3:4"
+        }
+      ],
+      "default": "9 / 14"
+    },
+    {
+      "type": "header",
+      "content": "Playback"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay videos",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop videos",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "muted",
+      "label": "Muted videos",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_offscreen",
+      "label": "Pause videos outside viewport",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sound_button",
+      "label": "Show sound button",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Video card"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "checkbox",
+      "id": "show_card_border",
+      "label": "Show card border",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "card_border_opacity",
+      "label": "Card border opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 18
+    },
+    {
+      "type": "header",
+      "content": "Product stripe"
+    },
+    {
+      "type": "range",
+      "id": "product_stripe_bottom",
+      "label": "Stripe bottom offset",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "product_stripe_inset",
+      "label": "Stripe side inset",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "stripe_radius",
+      "label": "Stripe radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "stripe_product_image_size",
+      "label": "Product image size",
+      "min": 40,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 54
+    },
+    {
+      "type": "text",
+      "id": "shop_button_label",
+      "label": "Shop button label",
+      "default": "Shop"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "shoppable_video",
+      "name": "Shoppable video",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "image_picker",
+          "id": "poster_image",
+          "label": "Poster image"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 20,
+  "presets": [
+    {
+      "name": "Shoppable Videos",
+      "blocks": [
+        {
+          "type": "shoppable_video"
+        },
+        {
+          "type": "shoppable_video"
+        },
+        {
+          "type": "shoppable_video"
+        },
+        {
+          "type": "shoppable_video"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
