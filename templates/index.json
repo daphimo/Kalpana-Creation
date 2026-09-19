@@ -421,6 +421,79 @@
         "link": "shopify://pages/rewards"
       }
     },
+    "shoppable_videos_4e3Ldi": {
+      "type": "shoppable-videos",
+      "blocks": {
+        "shoppable_video_ntGmNX": {
+          "type": "shoppable_video",
+          "settings": {
+            "product": ""
+          }
+        },
+        "shoppable_video_bGyN8U": {
+          "type": "shoppable_video",
+          "settings": {
+            "product": ""
+          }
+        },
+        "shoppable_video_cbinCy": {
+          "type": "shoppable_video",
+          "settings": {
+            "product": ""
+          }
+        },
+        "shoppable_video_8z9J6T": {
+          "type": "shoppable_video",
+          "settings": {
+            "product": ""
+          }
+        }
+      },
+      "block_order": [
+        "shoppable_video_ntGmNX",
+        "shoppable_video_bGyN8U",
+        "shoppable_video_cbinCy",
+        "shoppable_video_8z9J6T"
+      ],
+      "name": "Shoppable Videos",
+      "settings": {
+        "show_header": true,
+        "accent_title": "Shop the moment",
+        "heading": "Watch. Discover. Shop.",
+        "description": "",
+        "header_alignment": "left",
+        "data_source": "metaobjects",
+        "metaobject_limit": 12,
+        "section_width": "page_width",
+        "max_width": 1480,
+        "slide_type": "loop",
+        "desktop_count": 3.5,
+        "mobile_count": 1.5,
+        "show_nav_button": true,
+        "show_pagination": true,
+        "enable_drag": true,
+        "card_gap": 16,
+        "card_gap_mobile": 12,
+        "video_aspect_ratio": "9 / 14",
+        "autoplay": true,
+        "loop": true,
+        "muted": true,
+        "pause_offscreen": true,
+        "show_sound_button": true,
+        "card_radius": 18,
+        "show_card_border": true,
+        "card_border_opacity": 18,
+        "product_stripe_bottom": 12,
+        "product_stripe_inset": 12,
+        "stripe_radius": 12,
+        "stripe_product_image_size": 54,
+        "shop_button_label": "Shop",
+        "padding_top": 64,
+        "padding_bottom": 72,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 48
+      }
+    },
     "premium_testimonials_FH3dTN": {
       "type": "premium-testimonials",
       "blocks": {
@@ -522,6 +595,7 @@
     "responsive_flex_grid_NJGdmw",
     "clickable_image_section_8Npbd8",
     "clickable_image_section_M4BKAP",
+    "shoppable_videos_4e3Ldi",
     "premium_testimonials_FH3dTN",
     "custom_infinite_collection_F98UNE"
   ]
