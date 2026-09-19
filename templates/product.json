@@ -179,7 +179,45 @@
             },
             "discount_offers": {
               "type": "discount-offers",
-              "settings": {}
+              "settings": {
+                "show_accent_title": true,
+                "accent_title": "Exclusive offers",
+                "show_main_title": true,
+                "main_title": "Save on your order",
+                "margin_top": 0,
+                "margin_bottom": 0,
+                "discount_title_1": "Save 5%",
+                "discount_description_1": "Save 5% above 1000rs",
+                "discount_code_1": "ORDER1000",
+                "discount_title_2": "Save 10%",
+                "discount_description_2": "Save 10% above 2000rs",
+                "discount_code_2": "ORDER2000",
+                "discount_title_3": "Save 15%",
+                "discount_description_3": "Save 15% above 3000rs",
+                "discount_code_3": "ORDER3000",
+                "discount_title_4": "",
+                "discount_description_4": "",
+                "discount_code_4": "",
+                "discount_title_5": "",
+                "discount_description_5": "",
+                "discount_code_5": "",
+                "discount_title_6": "",
+                "discount_description_6": "",
+                "discount_code_6": "",
+                "discount_title_7": "",
+                "discount_description_7": "",
+                "discount_code_7": "",
+                "discount_title_8": "",
+                "discount_description_8": "",
+                "discount_code_8": "",
+                "discount_title_9": "",
+                "discount_description_9": "",
+                "discount_code_9": "",
+                "discount_title_10": "",
+                "discount_description_10": "",
+                "discount_code_10": ""
+              },
+              "blocks": {}
             },
             "buy_buttons_eYQEYi": {
               "type": "buy-buttons",
@@ -357,7 +395,8 @@
                 "bottom": 20,
                 "horizontal_position": "right",
                 "horizontal_offset": 20
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
