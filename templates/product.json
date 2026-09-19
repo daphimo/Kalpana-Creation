@@ -391,8 +391,8 @@
             "floating_product_video": {
               "type": "product-floating-video",
               "settings": {
-                "width": 180,
-                "bottom": 20,
+                "width": 100,
+                "bottom": 160,
                 "horizontal_position": "right",
                 "horizontal_offset": 20
               },
