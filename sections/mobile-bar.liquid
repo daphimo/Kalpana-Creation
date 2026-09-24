@@ -11,19 +11,9 @@
 
 {% render 'brand-colors' %}
 
-{% liquid
-  assign is_product_page = false
-  if request.page_type == 'product' and product != blank
-    assign is_product_page = true
-    assign mobile_bar_variant = product.selected_or_first_available_variant
-    assign mobile_bar_can_add = mobile_bar_variant.available
-    assign mobile_bar_form_id = 'MobileBarProductForm-' | append: section.id
-  endif
-%}
-
 <nav
   id="MobileBar-{{ section.id }}"
-  class="mobile-bar{% if is_product_page %} mobile-bar--product{% endif %}"
+  class="mobile-bar"
   aria-label="Mobile navigation"
   style="
     --mobile-bar-background: {{ section.settings.background_color }};
@@ -34,45 +24,8 @@
     --mobile-bar-icon-size: {{ section.settings.icon_size }}px;
     --mobile-bar-label-size: {{ section.settings.label_size }}px;
     --mobile-bar-item-gap: {{ section.settings.item_gap }}px;
-    --button-background-color: #53634a;
   "
 >
-  {% if is_product_page %}
-    <product-form-component
-      class="mobile-bar__product-form"
-      data-section-id="{{ section.id }}"
-      data-product-id="{{ product.id }}"
-      data-product-url="{{ product.url }}"
-      data-quantity-default="{{ mobile_bar_variant.quantity_rule.min | default: 1 }}"
-      data-quantity-error-max="{{ 'products.product.quantity_error_max' | t }}"
-      on:submit="/handleSubmit"
-    >
-      <div class="visually-hidden" aria-live="assertive" role="status" aria-atomic="true" ref="liveRegion"></div>
-      {% form 'product', product, id: mobile_bar_form_id, data-type: 'add-to-cart-form' %}
-        <input type="hidden" name="id" ref="variantId" value="{{ mobile_bar_variant.id }}">
-        <div class="mobile-bar__product-actions" aria-label="Product purchase actions" ref="productFormButtons">
-          <div
-            class="mobile-bar__buy-now"
-            ref="acceleratedCheckoutButtonContainer"
-            {% unless mobile_bar_can_add %}hidden{% endunless %}
-          >
-            {{ form | payment_button }}
-          </div>
-          {% render 'add-to-cart-button',
-            id: 'MobileBarAddToCart',
-            class: 'mobile-bar__product-button add-to-cart-button',
-            can_add_to_cart: mobile_bar_can_add,
-            show_icon: false,
-            product: product,
-            add_to_cart_text: 'Add to bag',
-            data_testid: 'mobile-bar-add-to-cart'
-          %}
-        </div>
-      {% endform %}
-    </product-form-component>
-    {% render 'add-to-cart-button-styles' %}
-  {% endif %}
-
   <header-actions class="mobile-bar__inner{% if section.settings.show_top_border %} mobile-bar__inner--bordered{% endif %}{% unless section.settings.show_labels %} mobile-bar__inner--icons-only{% endunless %}">
     {% for block in section.blocks %}
       {% liquid
@@ -284,11 +237,6 @@
     border: 1px solid var(--mobile-bar-border);
   }
 
-  .mobile-bar__product-form,
-  .mobile-bar__product-actions {
-    display: none;
-  }
-
   .mobile-bar__item {
     display: flex;
     flex: 1 1 0;
@@ -387,78 +335,6 @@
     }
   }
 
-  @media screen and (max-width: 749px) {
-    .mobile-bar--product {
-      overflow: hidden;
-      border-radius: 18px;
-      background: var(--brand-background);
-      box-shadow: 0 6px 24px rgb(0 0 0 / 0.14);
-    }
-
-    .mobile-bar--product .mobile-bar__product-actions {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      padding: 10px 12px 4px;
-    }
-
-    .mobile-bar--product .mobile-bar__product-form {
-      display: block;
-    }
-
-    .mobile-bar--product .mobile-bar__buy-now,
-    .mobile-bar--product .mobile-bar__buy-now shopify-accelerated-checkout,
-    .mobile-bar--product .mobile-bar__product-actions > add-to-cart-component {
-      display: block;
-      min-width: 0;
-      width: 100%;
-    }
-
-    .mobile-bar--product .mobile-bar__buy-now {
-      --shopify-accelerated-checkout-button-block-size: 50px;
-      --shopify-accelerated-checkout-button-border-radius: 7px;
-    }
-
-    .mobile-bar--product .mobile-bar__product-button,
-    .mobile-bar--product .shopify-payment-button__button--unbranded {
-      min-height: 50px;
-      width: 100%;
-      padding: 10px 12px;
-      border: 0;
-      border-radius: 7px;
-      background: var(--button-background-color);
-      color: var(--brand-background);
-      font: inherit;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
-
-    .mobile-bar--product .mobile-bar__product-button:disabled {
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-
-    .mobile-bar--product .mobile-bar__product-button:focus-visible {
-      outline: 2px solid var(--brand-primary);
-      outline-offset: -3px;
-    }
-
-    .mobile-bar--product .mobile-bar__inner {
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      box-shadow: none;
-      backdrop-filter: none;
-    }
-
-    body:has(.mobile-bar--product) .buy-buttons-block {
-      display: none !important;
-    }
-  }
-
   .mobile-bar__label {
     display: block;
     max-width: 100%;
@@ -500,21 +376,6 @@
     const bar = document.getElementById('MobileBar-{{ section.id }}');
     bar?.querySelectorAll('[data-mobile-bar-menu-trigger]').forEach((button) => {
       button.addEventListener('click', () => document.querySelector('.custom-desktop-header__menu-trigger')?.click());
-    });
-
-    if (!bar?.classList.contains('mobile-bar--product')) return;
-
-    document.addEventListener('shopify:product:select', async (event) => {
-      const result = await event.promise;
-      const variant = result?.detail?.resource;
-      const form = bar.querySelector('product-form-component');
-      const variantInput = form?.querySelector('[ref="variantId"]');
-      const addButton = form?.querySelector('[ref="addToCartButton"]');
-      const buyNow = form?.querySelector('[ref="acceleratedCheckoutButtonContainer"]');
-
-      if (variantInput && variant?.id) variantInput.value = variant.id;
-      if (addButton) addButton.disabled = !variant?.available;
-      if (buyNow) buyNow.hidden = !variant?.available;
     });
   })();
 </script>

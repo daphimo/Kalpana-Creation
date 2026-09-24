@@ -128,6 +128,8 @@
     data-header-alignment="{{ section.settings.header_alignment }}"
     data-card-border="{{ section.settings.show_card_border }}"
     data-autoplay="{{ section.settings.autoplay }}"
+    data-autoplay-slides="{{ section.settings.autoplay_slides }}"
+    data-slide-speed="{{ section.settings.slide_speed }}"
     data-pause-offscreen="{{ section.settings.pause_offscreen }}"
     data-slide-type="{{ section.settings.slide_type }}"
     data-drag-enabled="{{ section.settings.enable_drag }}"
@@ -340,6 +342,23 @@
       "id": "enable_drag",
       "label": "Drag to slide",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay_slides",
+      "label": "Autoplay slides",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "slide_speed",
+      "label": "Change slide every",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 4,
+      "visible_if": "{{ section.settings.autoplay_slides }}"
     },
     {
       "type": "range",

@@ -21,6 +21,8 @@
     const controller = new AbortController();
     const { signal } = controller;
     const autoplay = section.dataset.autoplay === 'true' && !reduceMotion.matches;
+    const autoplaySlides = section.dataset.autoplaySlides === 'true' && !reduceMotion.matches;
+    const slideSpeed = Math.max(2, Number(section.dataset.slideSpeed) || 4) * 1000;
     const pauseOffscreen = section.dataset.pauseOffscreen === 'true';
     const progress = sliderRoot.querySelector('.shoppable-videos__progress');
     const prev = sliderRoot.querySelector('[data-shoppable-prev]');
@@ -40,6 +42,7 @@
     let dragStart;
     let dragMoved = false;
     let suppressClickUntil = 0;
+    let slideTimer;
 
     if (modal) document.body.append(modal);
 
@@ -72,6 +75,7 @@
       document.body.style.overflow = previousBodyOverflow;
       document.documentElement.style.overflow = previousHtmlOverflow;
       observeVideos();
+      startSlideAutoplay();
       opener?.focus({ preventScroll: true });
     }
 
@@ -83,6 +87,7 @@
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
       modalOpen = true;
+      stopSlideAutoplay();
       modal.hidden = false;
       sliderRoot.querySelectorAll('video').forEach((video) => video.pause());
       if (!reelSplide) {
@@ -169,6 +174,25 @@
       else scrollToIndex(nextIndex);
     }
 
+    function stopSlideAutoplay() {
+      window.clearInterval(slideTimer);
+      slideTimer = undefined;
+    }
+
+    function advanceSlide() {
+      if (modalOpen || document.hidden) return;
+      const maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
+      if (maxScroll <= 1) return;
+      if (track.scrollLeft >= maxScroll - 1) scrollToIndex(0);
+      else navigate(1);
+    }
+
+    function startSlideAutoplay() {
+      stopSlideAutoplay();
+      if (!autoplaySlides || modalOpen) return;
+      slideTimer = window.setInterval(advanceSlide, slideSpeed);
+    }
+
     function updateLayout() {
       const mobile = window.matchMedia('(max-width: 749px)').matches;
       const count = Number(getComputedStyle(section).getPropertyValue(mobile ? '--sv-mobile-count' : '--sv-desktop-count')) || 1;
@@ -181,6 +205,16 @@
     track.addEventListener('scroll', updateProgress, { passive: true, signal });
     prev?.addEventListener('click', () => navigate(-1), { signal });
     next?.addEventListener('click', () => navigate(1), { signal });
+    sliderRoot.addEventListener('mouseenter', stopSlideAutoplay, { signal });
+    sliderRoot.addEventListener('mouseleave', startSlideAutoplay, { signal });
+    sliderRoot.addEventListener('focusin', stopSlideAutoplay, { signal });
+    sliderRoot.addEventListener('focusout', (event) => {
+      if (!sliderRoot.contains(event.relatedTarget)) startSlideAutoplay();
+    }, { signal });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stopSlideAutoplay();
+      else startSlideAutoplay();
+    }, { signal });
     if (dragEnabled) {
       track.addEventListener('pointerdown', (event) => {
         if (event.button !== 0 || event.target.closest('.shoppable-videos__sound, .shoppable-videos__play, .shoppable-videos__shop')) return;
@@ -279,8 +313,10 @@
 
     updateLayout();
     observeVideos();
+    startSlideAutoplay();
     instances.set(section, {
       controller,
+      stopSlideAutoplay,
       disconnect: () => observer?.disconnect(),
       disconnectResize: () => resizeObserver?.disconnect(),
       scrollToIndex,
@@ -303,6 +339,7 @@
       const instance = instances.get(section);
       if (!instance) return;
       instance.controller.abort();
+      instance.stopSlideAutoplay();
       instance.disconnect();
       instance.disconnectResize();
       instance.destroyReel();
