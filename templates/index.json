@@ -144,7 +144,7 @@
       "settings": {
         "heading": "",
         "show_title": false,
-        "slides_per_view_desktop": 2,
+        "slides_per_view_desktop": 5,
         "slides_per_view_mobile": 2,
         "gap_desktop": 16,
         "gap_mobile": 12,
@@ -472,6 +472,8 @@
         "show_nav_button": true,
         "show_pagination": true,
         "enable_drag": true,
+        "autoplay_slides": true,
+        "slide_speed": 4,
         "card_gap": 16,
         "card_gap_mobile": 12,
         "video_aspect_ratio": "9 / 14",
