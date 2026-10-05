@@ -1,4 +1,5 @@
 {{ 'custom-collection.css' | asset_url | stylesheet_tag }}
+{{ 'section-title.css' | asset_url | stylesheet_tag }}
 {{ 'custom-featured-collection.css' | asset_url | stylesheet_tag }}
 {{ 'custom-infinite-collection.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'custom-product-card.js' | asset_url }}" type="module" fetchpriority="low"></script>
@@ -23,7 +24,7 @@
 >
   <div class="custom-featured-collection__inner">
     {% if section.settings.heading != blank %}
-      <h2 class="custom-featured-collection__title">{{ section.settings.heading | escape }}</h2>
+      {% render 'section-title', title: section.settings.heading, tag: section.settings.heading_tag, size: section.settings.heading_size, class: 'custom-featured-collection__title' %}
     {% endif %}
 
     {% if section.settings.collection != blank and section.settings.collection.products_count > 0 %}
@@ -74,6 +75,8 @@
   "disabled_on": { "groups": ["header", "footer"] },
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading", "default": "Featured collection" },
+    { "type": "select", "id": "heading_tag", "label": "Heading tag", "options": [{ "value": "h2", "label": "H2" }, { "value": "h3", "label": "H3" }, { "value": "p", "label": "Paragraph" }], "default": "h2" },
+    { "type": "select", "id": "heading_size", "label": "Heading size", "options": [{ "value": "small", "label": "Small" }, { "value": "medium", "label": "Medium" }, { "value": "large", "label": "Large" }], "default": "medium" },
     { "type": "collection", "id": "collection", "label": "Collection" },
     { "type": "select", "id": "loading_mode", "label": "Product navigation", "options": [{ "value": "pagination", "label": "Pagination" }, { "value": "infinite", "label": "Infinite loading" }], "default": "pagination" },
     { "type": "range", "id": "products_per_page", "label": "Products per page", "min": 2, "max": 48, "step": 1, "default": 8, "info": "Controls each page or infinite-loading batch." },

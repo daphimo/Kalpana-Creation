@@ -1,4 +1,5 @@
 {{ 'cust-splide-core.min.css' | asset_url | stylesheet_tag }}
+{{ 'section-title.css' | asset_url | stylesheet_tag }}
 {{ 'custom-collection-slider.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'custom-collection-slider.js' | asset_url }}" type="module" fetchpriority="low"></script>
 
@@ -78,7 +79,9 @@
   style="--collection-slider-image-ratio: {{ section.settings.image_ratio }}%; {% render 'spacing-style', settings: section.settings %}"
 >
   <div class="custom-collection-slider__inner">
-    {% if section.settings.heading != blank %}<h2 class="custom-collection-slider__title">{{ section.settings.heading | escape }}</h2>{% endif %}
+    {% if section.settings.heading != blank %}
+      {% render 'section-title', title: section.settings.heading, tag: section.settings.heading_tag, size: section.settings.heading_size, class: 'custom-collection-slider__title' %}
+    {% endif %}
     {% if section.blocks.size > 0 %}
       {% render 'splide-slider', slider_id: slider_id, class: 'custom-collection-slider__slider', data_attribute: slider_data_attribute, aria_label: section.settings.heading, splide_options: slider_options, slides_markup: collection_slides %}
     {% elsif request.design_mode %}
@@ -103,6 +106,28 @@
       "id": "heading",
       "label": "Heading",
       "default": "Shop by collection"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "p", "label": "Paragraph" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "medium"
     },
     {
       "type": "checkbox",

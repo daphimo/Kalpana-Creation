@@ -1,6 +1,6 @@
 .custom-collection-slider { width: 100%; overflow: hidden; color: var(--color-foreground); background: var(--color-background); }
 .custom-collection-slider__inner { width: 100%; min-width: 0; }
-.custom-collection-slider__title { margin: 0 0 20px; font-family: var(--font-heading--family); font-size: clamp(20px, 2.4vw, 32px); font-weight: var(--font-heading--weight); line-height: 1.2; letter-spacing: .06em; text-align: center; text-transform: uppercase; }
+.custom-collection-slider__title { text-align: center; }
 .custom-collection-slider__slider { display: flex; flex-direction: column; }
 .custom-collection-slider__slider .splide__list { align-items: stretch; }
 .custom-collection-slider__slide { display: flex; min-width: 0; height: auto; }
@@ -20,6 +20,5 @@
 .custom-collection-slider__slider .splide__pagination__page.is-active { background: var(--color-foreground); transform: scale(1.25); }
 .custom-collection-slider__empty { padding: 48px 20px; border: 1px dashed rgb(var(--color-foreground-rgb) / .25); text-align: center; }
 @media screen and (max-width: 749px) {
-  .custom-collection-slider__title { margin-bottom: 16px; font-size: 18px; }
   .custom-collection-slider__card-title { font-size: 12px; }
 }

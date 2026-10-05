@@ -1,0 +1,17 @@
+{% doc %}
+  Renders a section title with a configurable semantic tag and shared size scale.
+
+  @param {string} title - The title text.
+  @param {string} [tag] - The HTML heading tag.
+  @param {string} [size] - The shared title size.
+  @param {string} [class] - Optional section-specific class.
+{% enddoc %}
+
+{% liquid
+  assign title_tag = tag | default: 'h2'
+  assign title_size = size | default: 'medium'
+%}
+
+<{{ title_tag }} class="section-title section-title--{{ title_size }}{% if class != blank %} {{ class }}{% endif %}">
+  {{ title | escape }}
+</{{ title_tag }}>

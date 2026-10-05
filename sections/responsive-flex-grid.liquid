@@ -1,3 +1,5 @@
+{{ 'section-title.css' | asset_url | stylesheet_tag }}
+
 <section
   id="ResponsiveFlexGrid-{{ section.id }}"
   class="section section--page-width spacing-style responsive-flex-grid responsive-flex-grid--{{ section.settings.mobile_layout }}"
@@ -10,9 +12,7 @@
   "
 >
   {% if section.settings.section_title != blank %}
-    <h2 class="responsive-flex-grid__heading">
-      {{ section.settings.section_title | escape }}
-    </h2>
+    {% render 'section-title', title: section.settings.section_title, tag: section.settings.heading_tag, size: section.settings.heading_size, class: 'responsive-flex-grid__heading' %}
   {% endif %}
 
   <div class="responsive-flex-grid__container">
@@ -98,12 +98,7 @@
   }
 
   #ResponsiveFlexGrid-{{ section.id }} .responsive-flex-grid__heading {
-    margin: 0 0 20px;
     color: inherit;
-    font-family: inherit;
-    font-size: 2.4rem;
-    font-weight: 500;
-    line-height: 1.2;
     text-align: center;
   }
 
@@ -149,11 +144,6 @@
   }
 
   @media screen and (max-width: 749px) {
-    #ResponsiveFlexGrid-{{ section.id }} .responsive-flex-grid__heading {
-      margin-bottom: 16px;
-      font-size: 2rem;
-    }
-
     #ResponsiveFlexGrid-{{ section.id }} .responsive-flex-grid__container {
       flex-wrap: nowrap;
       overflow-x: auto;
@@ -198,6 +188,28 @@
       "id": "section_title",
       "label": "Section title",
       "default": "Shop by collection"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "p", "label": "Paragraph" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "medium"
     },
     {
       "type": "range",
