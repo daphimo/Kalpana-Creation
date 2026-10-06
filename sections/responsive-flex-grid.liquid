@@ -1,5 +1,45 @@
 {{ 'section-title.css' | asset_url | stylesheet_tag }}
 
+{% liquid
+  case section.settings.grid_per_mobile
+    when 1
+      assign mobile_image_size = '100vw'
+    when 1.5
+      assign mobile_image_size = '67vw'
+    when 2
+      assign mobile_image_size = '50vw'
+    when 2.5
+      assign mobile_image_size = '40vw'
+    when 3
+      assign mobile_image_size = '34vw'
+    when 3.5
+      assign mobile_image_size = '29vw'
+    else
+      assign mobile_image_size = '25vw'
+  endcase
+
+  case section.settings.grid_per_desktop
+    when 1
+      assign desktop_image_size = '100vw'
+    when 2
+      assign desktop_image_size = '50vw'
+    when 3
+      assign desktop_image_size = '34vw'
+    when 4
+      assign desktop_image_size = '25vw'
+    when 5
+      assign desktop_image_size = '20vw'
+    when 6
+      assign desktop_image_size = '17vw'
+    when 7
+      assign desktop_image_size = '15vw'
+    else
+      assign desktop_image_size = '13vw'
+  endcase
+
+  assign grid_image_sizes = '(max-width: 749px) ' | append: mobile_image_size | append: ', ' | append: desktop_image_size
+%}
+
 <section
   id="ResponsiveFlexGrid-{{ section.id }}"
   class="section section--page-width spacing-style responsive-flex-grid responsive-flex-grid--{{ section.settings.mobile_layout }}"
@@ -31,11 +71,11 @@
             {% if block.settings.image != blank %}
               {{
                 block.settings.image
-                | image_url: width: 1200
+                | image_url: width: 960
                 | image_tag:
                   class: 'responsive-flex-grid__image',
-                  widths: '240, 360, 480, 720, 960, 1200',
-                  sizes: '(max-width: 749px) 70vw, 25vw',
+                  widths: '180, 240, 360, 480, 720, 960',
+                  sizes: grid_image_sizes,
                   width: block.settings.image.width,
                   height: block.settings.image.height,
                   alt: image_alt,
@@ -59,11 +99,11 @@
             {% if block.settings.image != blank %}
               {{
                 block.settings.image
-                | image_url: width: 1200
+                | image_url: width: 960
                 | image_tag:
                   class: 'responsive-flex-grid__image',
-                  widths: '240, 360, 480, 720, 960, 1200',
-                  sizes: '(max-width: 749px) 70vw, 25vw',
+                  widths: '180, 240, 360, 480, 720, 960',
+                  sizes: grid_image_sizes,
                   width: block.settings.image.width,
                   height: block.settings.image.height,
                   alt: image_alt,

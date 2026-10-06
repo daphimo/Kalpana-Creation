@@ -3,6 +3,7 @@
   position: relative;
   width: 100%;
   overflow: hidden;
+  visibility: visible;
 }
 
 .cust-hero-slider .splide__track,

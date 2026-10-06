@@ -63,11 +63,13 @@
         {% if logo_before != blank %}
           {{
             logo_before
-            | image_url: width: 800
+            | image_url: width: 320
             | image_tag:
               class: 'custom-desktop-header__logo-image custom-desktop-header__logo-image--before',
-              widths: '160, 240, 320, 480, 640, 800',
+              widths: '160, 240, 320',
+              sizes: '160px',
               loading: 'eager',
+              fetchpriority: 'high',
               alt: shop.name
           }}
         {% else %}
@@ -78,11 +80,13 @@
         {% if logo_after != blank %}
           {{
             logo_after
-            | image_url: width: 800
+            | image_url: width: 320
             | image_tag:
               class: 'custom-desktop-header__logo-image custom-desktop-header__logo-image--after',
-              widths: '160, 240, 320, 480, 640, 800',
-              loading: 'eager',
+              widths: '160, 240, 320',
+              sizes: '160px',
+              loading: 'lazy',
+              fetchpriority: 'low',
               alt: shop.name
           }}
         {% else %}

@@ -47,7 +47,7 @@
               <picture class="cust-hero-slider__picture">
                 <source
                   media="(max-width: 749px)"
-                  srcset="{{ mobile_image | image_url: width: 480 }} 480w, {{ mobile_image | image_url: width: 750 }} 750w, {{ mobile_image | image_url: width: 1100 }} 1100w"
+                  srcset="{{ mobile_image | image_url: width: 375 }} 375w, {{ mobile_image | image_url: width: 550 }} 550w, {{ mobile_image | image_url: width: 750 }} 750w, {{ mobile_image | image_url: width: 1000 }} 1000w"
                   sizes="100vw"
                   width="{{ mobile_image.width }}"
                   height="{{ mobile_image.height }}"
@@ -55,7 +55,7 @@
                 <img
                   class="cust-hero-slider__image"
                   src="{{ desktop_image | image_url: width: 1600 }}"
-                  srcset="{{ desktop_image | image_url: width: 750 }} 750w, {{ desktop_image | image_url: width: 1100 }} 1100w, {{ desktop_image | image_url: width: 1600 }} 1600w, {{ desktop_image | image_url: width: 2200 }} 2200w, {{ desktop_image | image_url: width: 3000 }} 3000w"
+                  srcset="{{ desktop_image | image_url: width: 750 }} 750w, {{ desktop_image | image_url: width: 1100 }} 1100w, {{ desktop_image | image_url: width: 1366 }} 1366w, {{ desktop_image | image_url: width: 1600 }} 1600w, {{ desktop_image | image_url: width: 2000 }} 2000w"
                   sizes="100vw"
                   width="{{ desktop_image.width }}"
                   height="{{ desktop_image.height }}"

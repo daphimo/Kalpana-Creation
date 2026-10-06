@@ -3,7 +3,7 @@
   <div class="cust-hero-slider__mobile-row">
     <a class="cust-hero-slider__mobile-logo" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
       {% if settings.logo != blank %}
-        {{ settings.logo | image_url: width: 360 | image_tag: widths: '120, 180, 240, 360', sizes: '140px', loading: 'eager', alt: shop.name }}
+        {{ settings.logo | image_url: width: 280 | image_tag: widths: '120, 180, 240, 280', sizes: '140px', loading: 'eager', fetchpriority: 'high', alt: shop.name }}
       {% else %}
         <span>{{ shop.name }}</span>
       {% endif %}
