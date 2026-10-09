@@ -3,19 +3,19 @@
 {% liquid
   case section.settings.grid_per_mobile
     when 1
-      assign mobile_image_size = '100vw'
+      assign mobile_image_size = 'calc(100vw - 32px)'
     when 1.5
-      assign mobile_image_size = '67vw'
+      assign mobile_image_size = 'calc((100vw - 44px) / 1.5)'
     when 2
-      assign mobile_image_size = '50vw'
+      assign mobile_image_size = 'calc((100vw - 44px) / 2)'
     when 2.5
-      assign mobile_image_size = '40vw'
+      assign mobile_image_size = 'calc((100vw - 56px) / 2.5)'
     when 3
-      assign mobile_image_size = '34vw'
+      assign mobile_image_size = 'calc((100vw - 56px) / 3)'
     when 3.5
-      assign mobile_image_size = '29vw'
+      assign mobile_image_size = 'calc((100vw - 68px) / 3.5)'
     else
-      assign mobile_image_size = '25vw'
+      assign mobile_image_size = 'calc((100vw - 68px) / 4)'
   endcase
 
   case section.settings.grid_per_desktop
@@ -74,12 +74,13 @@
                 | image_url: width: 960
                 | image_tag:
                   class: 'responsive-flex-grid__image',
-                  widths: '180, 240, 360, 480, 720, 960',
+                  widths: '160, 240, 320, 360, 480, 640, 720, 960',
                   sizes: grid_image_sizes,
                   width: block.settings.image.width,
                   height: block.settings.image.height,
                   alt: image_alt,
-                  loading: 'lazy'
+                  loading: 'lazy',
+                  decoding: 'async'
               }}
             {% else %}
               {{ 'image' | placeholder_svg_tag: 'responsive-flex-grid__placeholder' }}
@@ -102,12 +103,13 @@
                 | image_url: width: 960
                 | image_tag:
                   class: 'responsive-flex-grid__image',
-                  widths: '180, 240, 360, 480, 720, 960',
+                  widths: '160, 240, 320, 360, 480, 640, 720, 960',
                   sizes: grid_image_sizes,
                   width: block.settings.image.width,
                   height: block.settings.image.height,
                   alt: image_alt,
-                  loading: 'lazy'
+                  loading: 'lazy',
+                  decoding: 'async'
               }}
             {% else %}
               {{ 'image' | placeholder_svg_tag: 'responsive-flex-grid__placeholder' }}

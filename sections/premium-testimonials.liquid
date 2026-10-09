@@ -1,6 +1,6 @@
 {{ 'cust-splide-core.min.css' | asset_url | stylesheet_tag }}
 {{ 'section-title.css' | asset_url | stylesheet_tag }}
-{{ 'premium-testimonials.css' | asset_url | stylesheet_tag }}
+{% render 'deferred-stylesheet', asset: 'premium-testimonials.css', section_index: section.index %}
 <script src="{{ 'premium-testimonials.js' | asset_url }}" type="module" fetchpriority="low"></script>
 {% render 'brand-colors' %}
 
@@ -49,7 +49,7 @@
       >
         {% if block.settings.image != blank %}
           <div class="premium-testimonials__image">
-            {{ block.settings.image | image_url: width: 1600 | image_tag: widths: '240, 360, 480, 750, 1000, 1200, 1600', sizes: '(max-width: 749px) 100vw, (max-width: 1200px) 75vw, 1000px', loading: 'lazy', alt: image_alt }}
+            {{ block.settings.image | image_url: width: 1000 | image_tag: widths: '240, 320, 360, 480, 640, 750, 1000', sizes: '(max-width: 749px) calc(100vw - 32px), (max-width: 1200px) calc((100vw - 64px) / 3), 400px', loading: 'lazy', decoding: 'async', alt: image_alt }}
           </div>
         {% endif %}
         <div class="premium-testimonials__body">

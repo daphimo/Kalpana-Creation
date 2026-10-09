@@ -20,6 +20,10 @@
   height: auto;
 }
 
+.cust-hero-slider:not(.is-initialized) .cust-hero-slider__slide:not(:first-child) {
+  display: none;
+}
+
 .cust-hero-slider__placeholder {
   display: block;
   width: 100%;

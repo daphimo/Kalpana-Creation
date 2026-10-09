@@ -2,7 +2,7 @@
   if (customElements.get('cust-hero-slider-loader')) return;
   customElements.define('cust-hero-slider-loader', class extends HTMLElement {});
 
-  /** @type {Map<Element, {splide: any, typewriter: {destroy: () => void}, wishlistTrigger: Element | null, openWishlist: () => void}>} */
+  /** @type {Map<Element, {splide: any, typewriter: {destroy: () => void}, wishlistTrigger: Element | null, openWishlist: () => void, visibilityObserver: IntersectionObserver, handleVisibilityChange: () => void}>} */
   const instances = new Map();
   const mobileQuery = window.matchMedia('(max-width: 749px)');
   const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -70,13 +70,28 @@
     if (instances.has(root) || !window.Splide) return;
     if (!root.querySelector('.splide__slide')) return;
     const options = JSON.parse(root.dataset.splide || '{}');
+    root.classList.add('splide');
     const splide = new window.Splide(root, options);
     const typewriter = createTypewriter(root);
     const wishlistTrigger = root.querySelector('[data-cust-wishlist-trigger]');
     const openWishlist = () => document.querySelector('.custom-desktop-header__wishlist')?.click();
     wishlistTrigger?.addEventListener('click', openWishlist);
+    let inViewport = true;
+    const updateAutoplay = () => {
+      const autoplay = splide.Components.Autoplay;
+      if (!autoplay || options.autoplay !== true) return;
+      if (document.hidden || !inViewport || reducedMotionQuery.matches) autoplay.pause();
+      else autoplay.play();
+    };
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      inViewport = Boolean(entry?.isIntersecting);
+      updateAutoplay();
+    }, { threshold: 0.05 });
+    const handleVisibilityChange = () => updateAutoplay();
     splide.mount();
-    instances.set(root, { splide, typewriter, wishlistTrigger, openWishlist });
+    visibilityObserver.observe(root);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    instances.set(root, { splide, typewriter, wishlistTrigger, openWishlist, visibilityObserver, handleVisibilityChange });
   }
 
   /** @param {Element} root */
@@ -85,7 +100,10 @@
     if (!instance) return;
     instance.splide.destroy(true);
     instance.typewriter.destroy();
+    instance.visibilityObserver.disconnect();
+    document.removeEventListener('visibilitychange', instance.handleVisibilityChange);
     instance.wishlistTrigger?.removeEventListener('click', instance.openWishlist);
+    root.classList.remove('splide', 'is-initialized', 'is-rendered', 'is-active', 'is-overflow');
     instances.delete(root);
   }
 

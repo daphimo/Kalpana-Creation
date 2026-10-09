@@ -12,8 +12,7 @@
           {{ mobile_image | image_url: width: 375 }} 375w,
           {{ mobile_image | image_url: width: 550 }} 550w,
           {{ mobile_image | image_url: width: 750 }} 750w,
-          {{ mobile_image | image_url: width: 1000 }} 1000w,
-          {{ mobile_image | image_url: width: 1500 }} 1500w
+          {{ mobile_image | image_url: width: 1000 }} 1000w
         "
         sizes="100vw"
       >
@@ -27,7 +26,8 @@
           width: desktop_image.width,
           height: desktop_image.height,
           alt: section.settings.alt_text,
-          loading: 'lazy'
+          loading: 'lazy',
+          decoding: 'async'
       }}
     </picture>
   {% endcapture %}

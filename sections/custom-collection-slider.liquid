@@ -5,14 +5,20 @@
 
 {% liquid
   assign slider_id = 'CustomCollectionSlider-' | append: section.id
-  assign desktop_image_width = 100.0 | divided_by: section.settings.slides_per_view_desktop
-  assign mobile_image_width = 100.0 | divided_by: section.settings.slides_per_view_mobile
+  assign mobile_gap_count = section.settings.slides_per_view_mobile | minus: 1
+  assign mobile_total_gap = section.settings.gap_mobile | times: mobile_gap_count
+  assign desktop_gap_count = section.settings.slides_per_view_desktop | minus: 1
+  assign desktop_total_gap = section.settings.gap_desktop | times: desktop_gap_count
   capture image_sizes
-    echo '(max-width: 749px) '
-    echo mobile_image_width
-    echo 'vw, '
-    echo desktop_image_width
-    echo 'vw'
+    echo '(max-width: 749px) calc((100vw - 32px - '
+    echo mobile_total_gap
+    echo 'px) / '
+    echo section.settings.slides_per_view_mobile
+    echo '), calc((100vw - 64px - '
+    echo desktop_total_gap
+    echo 'px) / '
+    echo section.settings.slides_per_view_desktop
+    echo ')'
   endcapture
   capture slider_data_attribute
     echo 'data-custom-collection-slider data-splide-asset="'
@@ -59,7 +65,7 @@
       <{{ card_tag }} class="custom-collection-slider__card" {% if collection != blank %}href="{{ collection.url }}"{% endif %}>
         <div class="custom-collection-slider__media">
           {% if card_image != blank %}
-            {{ card_image | image_url: width: 2000 | image_tag: widths: '240, 360, 480, 750, 1000, 1500, 2000', sizes: image_sizes, loading: 'lazy', alt: image_alt }}
+            {{ card_image | image_url: width: 1000 | image_tag: widths: '180, 240, 320, 360, 480, 640, 750, 1000', sizes: image_sizes, loading: 'lazy', decoding: 'async', alt: image_alt }}
           {% else %}
             {{ 'collection-1' | placeholder_svg_tag: 'custom-collection-slider__placeholder' }}
           {% endif %}

@@ -1,6 +1,6 @@
 {% render 'brand-colors' %}
 {{ 'section-title.css' | asset_url | stylesheet_tag }}
-{{ 'section-shoppable-videos.css' | asset_url | stylesheet_tag }}
+{% render 'deferred-stylesheet', asset: 'section-shoppable-videos.css', section_index: section.index %}
 
 {% if section.settings.data_source == 'metaobjects' %}
   {% assign video_items = shop.metaobjects.shopable_video_popup.values %}
@@ -123,8 +123,41 @@
     <div class="shoppable-videos__inner">
       {% if rendered_count > 0 %}
         {{ 'cust-splide-core.min.css' | asset_url | stylesheet_tag }}
-        <script src="{{ 'cust-splide.min.js' | asset_url }}" defer></script>
-        <script src="{{ 'section-shoppable-videos.js' | asset_url }}" defer></script>
+        <script>
+          (() => {
+            const section = document.currentScript.closest('[data-shoppable-videos]');
+            if (!section) return;
+            const loadScript = (src) => new Promise((resolve, reject) => {
+              const existing = [...document.scripts].find((script) => script.src === src);
+              if (existing) {
+                if (existing.dataset.loaded === 'true' || (src.includes('cust-splide') && window.Splide) || (src.includes('section-shoppable-videos') && window.shoppableVideosInitialized)) resolve();
+                else {
+                  existing.addEventListener('load', resolve, { once: true });
+                  existing.addEventListener('error', reject, { once: true });
+                }
+                return;
+              }
+              const script = document.createElement('script');
+              script.src = src;
+              script.addEventListener('load', () => { script.dataset.loaded = 'true'; resolve(); }, { once: true });
+              script.addEventListener('error', reject, { once: true });
+              document.head.append(script);
+            });
+            const load = async () => {
+              if (!window.Splide) await loadScript({{ 'cust-splide.min.js' | asset_url | json }});
+              await loadScript({{ 'section-shoppable-videos.js' | asset_url | json }});
+            };
+            if (!('IntersectionObserver' in window) || window.Shopify?.designMode) load();
+            else {
+              const observer = new IntersectionObserver((entries) => {
+                if (!entries.some((entry) => entry.isIntersecting)) return;
+                observer.disconnect();
+                load();
+              }, { rootMargin: '400px 0px' });
+              observer.observe(section);
+            }
+          })();
+        </script>
       {% endif %}
       {% if section.settings.show_header %}
         <header class="shoppable-videos__header">

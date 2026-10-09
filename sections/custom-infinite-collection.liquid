@@ -1,7 +1,7 @@
-{{ 'custom-collection.css' | asset_url | stylesheet_tag }}
+{% render 'deferred-stylesheet', asset: 'custom-collection.css', section_index: section.index %}
 {{ 'section-title.css' | asset_url | stylesheet_tag }}
-{{ 'custom-featured-collection.css' | asset_url | stylesheet_tag }}
-{{ 'custom-infinite-collection.css' | asset_url | stylesheet_tag }}
+{% render 'deferred-stylesheet', asset: 'custom-featured-collection.css', section_index: section.index %}
+{% render 'deferred-stylesheet', asset: 'custom-infinite-collection.css', section_index: section.index %}
 <script src="{{ 'custom-product-card.js' | asset_url }}" type="module" fetchpriority="low"></script>
 {% if section.settings.loading_mode == 'infinite' %}
   <script src="{{ 'custom-infinite-collection.js' | asset_url }}" type="module" fetchpriority="low"></script>

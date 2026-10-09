@@ -42,6 +42,20 @@ if (!customElements.get('product-floating-video')) {
       this.video.addEventListener('play', this.updateHandler);
       this.video.addEventListener('pause', this.updateHandler);
       this.video.addEventListener('volumechange', this.updateHandler);
+
+      const startPreview = () => {
+        if (!this.isConnected || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        this.previewVideo.play().catch(() => {});
+      };
+      if (document.readyState === 'complete') {
+        if ('requestIdleCallback' in window) requestIdleCallback(startPreview, { timeout: 2500 });
+        else window.setTimeout(startPreview, 1200);
+      } else {
+        window.addEventListener('load', () => {
+          if ('requestIdleCallback' in window) requestIdleCallback(startPreview, { timeout: 2500 });
+          else window.setTimeout(startPreview, 1200);
+        }, { once: true });
+      }
     }
 
     disconnectedCallback() {
@@ -80,7 +94,7 @@ if (!customElements.get('product-floating-video')) {
       this.overlay.hidden = true;
       document.body.style.overflow = this.previousOverflow;
       document.documentElement.style.overflow = this.previousRootOverflow;
-      if (resumePreview) {
+      if (resumePreview && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         this.previewVideo.play().catch(() => {});
         this.returnFocus?.focus();
       }

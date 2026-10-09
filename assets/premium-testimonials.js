@@ -1,6 +1,16 @@
 const ROOT_SELECTOR = '[data-premium-testimonials]';
 const instances = new Map();
+const pending = new WeakSet();
 let splidePromise;
+const viewportObserver = 'IntersectionObserver' in window
+  ? new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        observer.unobserve(entry.target);
+        initialize(entry.target);
+      });
+    }, { rootMargin: '300px 0px' })
+  : null;
 
 function ensureSplide(assetUrl) {
   if (window.Splide) return Promise.resolve();
@@ -46,11 +56,18 @@ async function initialize(root) {
 }
 
 function initializeWithin(scope) {
-  scope.querySelectorAll(ROOT_SELECTOR).forEach(initialize);
+  scope.querySelectorAll(ROOT_SELECTOR).forEach((root) => {
+    if (instances.has(root) || pending.has(root)) return;
+    pending.add(root);
+    if (viewportObserver) viewportObserver.observe(root);
+    else initialize(root);
+  });
 }
 
 function destroyWithin(scope) {
   scope.querySelectorAll(ROOT_SELECTOR).forEach((root) => {
+    viewportObserver?.unobserve(root);
+    pending.delete(root);
     const instance = instances.get(root);
     instance?.observer.disconnect(); instance?.splide.destroy(true); instances.delete(root);
   });
@@ -61,6 +78,10 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
 document.addEventListener('shopify:section:load', (event) => initializeWithin(event.target));
 document.addEventListener('shopify:section:unload', (event) => destroyWithin(event.target));
 document.addEventListener('shopify:block:select', (event) => {
-  const slide = event.target.closest?.('.splide__slide'); const root = slide?.closest(ROOT_SELECTOR); const instance = instances.get(root);
-  if (slide && instance) instance.splide.go(Number(slide.dataset.index || [...slide.parentElement.children].indexOf(slide)));
+  const slide = event.target.closest?.('.splide__slide'); const root = slide?.closest(ROOT_SELECTOR);
+  if (!slide || !root) return;
+  viewportObserver?.unobserve(root);
+  Promise.resolve(initialize(root)).then(() => {
+    instances.get(root)?.splide.go(Number(slide.dataset.index || [...slide.parentElement.children].indexOf(slide)));
+  });
 });

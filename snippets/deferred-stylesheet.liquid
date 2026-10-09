@@ -1,0 +1,13 @@
+{% doc %}
+  Loads a theme stylesheet without blocking the first render when its section is below the fold.
+
+  @param {string} asset - The stylesheet asset filename.
+  @param {number} [section_index] - The section's position in the template.
+{% enddoc %}
+
+{% if section_index > 2 and request.design_mode == false %}
+  <link rel="stylesheet" href="{{ asset | asset_url }}" media="print" onload="this.media='all'">
+  <noscript>{{ asset | asset_url | stylesheet_tag }}</noscript>
+{% else %}
+  {{ asset | asset_url | stylesheet_tag }}
+{% endif %}

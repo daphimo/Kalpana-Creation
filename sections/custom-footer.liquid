@@ -1,4 +1,4 @@
-{{ 'custom-footer.css' | asset_url | stylesheet_tag }}
+{% render 'deferred-stylesheet', asset: 'custom-footer.css', section_index: section.index %}
 
 {% liquid
   if section.settings.background_color != blank

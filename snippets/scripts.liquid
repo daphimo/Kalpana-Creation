@@ -40,10 +40,28 @@
   }
 </script>
 
-<script
-  src="{{ 'wishlist.js' | asset_url }}"
-  type="module"
-></script>
+<script type="module">
+  const loadWishlist = (() => {
+    let promise;
+    return () => promise ||= import({{ 'wishlist.js' | asset_url | json }});
+  })();
+
+  {% if template.suffix == 'wishlist' %}
+    loadWishlist();
+  {% else %}
+    const wishlistSelector = '[button-wishlist], [grid-wishlist], [data-wishlist-add-all]';
+    const loadForWishlistInteraction = (event) => {
+      if (!(event.target instanceof Element) || !event.target.closest(wishlistSelector)) return;
+      document.removeEventListener('pointerover', loadForWishlistInteraction);
+      document.removeEventListener('focusin', loadForWishlistInteraction);
+      loadWishlist();
+    };
+    document.addEventListener('pointerover', loadForWishlistInteraction, { passive: true });
+    document.addEventListener('focusin', loadForWishlistInteraction);
+    if ('requestIdleCallback' in window) requestIdleCallback(loadWishlist, { timeout: 2500 });
+    else window.setTimeout(loadWishlist, 1500);
+  {% endif %}
+</script>
 
 {%- comment -%}
   Registers Horizon's cart-drawer behaviour against the standard-actions

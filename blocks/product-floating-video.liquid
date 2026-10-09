@@ -7,7 +7,7 @@
     {{ block.shopify_attributes }}
   >
     <button class="product-floating-video__preview" type="button" aria-label="Open product video">
-      <video autoplay muted loop playsinline preload="metadata" aria-hidden="true" {% if floating_video.preview_image %}poster="{{ floating_video.preview_image | image_url: width: 400 }}"{% endif %}>
+      <video muted loop playsinline preload="none" aria-hidden="true" {% if floating_video.preview_image %}poster="{{ floating_video.preview_image | image_url: width: 400 }}"{% endif %}>
         {% for source in floating_video.sources %}
           <source src="{{ source.url }}" type="{{ source.mime_type }}">
         {% endfor %}
@@ -15,7 +15,7 @@
     </button>
     <div class="product-floating-video__overlay" hidden role="dialog" aria-modal="true" aria-label="Product video" tabindex="-1">
       <div class="product-floating-video__player">
-        <video playsinline preload="metadata" {% if floating_video.preview_image %}poster="{{ floating_video.preview_image | image_url: width: 1200 }}"{% endif %}>
+        <video playsinline preload="none" {% if floating_video.preview_image %}poster="{{ floating_video.preview_image | image_url: width: 1200 }}"{% endif %}>
           {% for source in floating_video.sources %}
             <source src="{{ source.url }}" type="{{ source.mime_type }}">
           {% endfor %}
@@ -31,7 +31,7 @@
       </div>
     </div>
   </product-floating-video>
-  {{ 'product-floating-video.js' | asset_url | script_tag }}
+  <script src="{{ 'product-floating-video.js' | asset_url }}" defer fetchpriority="low"></script>
 {% endif %}
 
 {% stylesheet %}
