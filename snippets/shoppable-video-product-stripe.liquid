@@ -1,6 +1,17 @@
 {% if product != blank %}
-  {% assign stripe_variant = product.selected_or_first_available_variant %}
-  <div class="shoppable-videos__stripe">
+  {% liquid
+    assign stripe_variant = product.selected_or_first_available_variant
+    assign savings_percentage = 0
+    if stripe_variant.compare_at_price > stripe_variant.price
+      assign savings_amount = stripe_variant.compare_at_price | minus: stripe_variant.price
+      assign savings_percentage = savings_amount | times: 100.0 | divided_by: stripe_variant.compare_at_price | round
+    endif
+  %}
+  {% if card_style %}
+    <a class="shoppable-videos__stripe shoppable-videos__stripe--card" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+  {% else %}
+    <div class="shoppable-videos__stripe">
+  {% endif %}
     <div class="shoppable-videos__product-image">
       {% if product.featured_image != blank %}
         {{ product.featured_image | image_url: width: 160 | image_tag: widths: '80,160', sizes: '80px', loading: 'lazy', alt: product.title }}
@@ -15,10 +26,15 @@
             <s class="shoppable-videos__compare-price">{{ stripe_variant.compare_at_price | money }}</s>
           {% endif %}
         </div>
+        {% if card_style and savings_percentage > 0 %}
+          <span class="shoppable-videos__savings">{{ savings_percentage }}% off</span>
+        {% endif %}
       {% endif %}
     </div>
-    <a class="shoppable-videos__shop" href="{{ product.url }}" aria-label="Shop {{ product.title | escape }}">
-      {{ button_label | default: 'Shop' | escape }}
-    </a>
-  </div>
+    {% unless card_style %}
+      <a class="shoppable-videos__shop" href="{{ product.url }}" aria-label="Shop {{ product.title | escape }}">
+        {{ button_label | default: 'Shop' | escape }}
+      </a>
+    {% endunless %}
+  {% if card_style %}</a>{% else %}</div>{% endif %}
 {% endif %}

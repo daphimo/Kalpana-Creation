@@ -197,5 +197,9 @@
     {% if settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add-modal' %}
     {% endif %}
+
+    {% if template.name == 'collection' %}
+      {% render 'back-to-top' %}
+    {% endif %}
   </body>
 </html>

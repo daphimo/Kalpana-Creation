@@ -1,0 +1,148 @@
+{% doc %}
+  Renders the collection-page back-to-top button with scroll progress.
+{% enddoc %}
+
+<back-to-top class="back-to-top" style="--scroll-progress: 0; --scroll-progress-percent: 0%">
+  <button class="back-to-top__button" type="button" aria-label="{{ 'accessibility.back_to_top' | t }}">
+    <span class="back-to-top__fill" aria-hidden="true"></span>
+    <svg class="back-to-top__icon back-to-top__icon--base" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 4.83582L5.79291 11.0429L7.20712 12.4571L12 7.66424L16.7929 12.4571L18.2071 11.0429L12 4.83582ZM12 10.4857L5.79291 16.6928L7.20712 18.107L12 13.3141L16.7929 18.107L18.2071 16.6928L12 10.4857Z"></path>
+    </svg>
+    <span class="back-to-top__icon-mask" aria-hidden="true">
+      <svg class="back-to-top__icon back-to-top__icon--filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 4.83582L5.79291 11.0429L7.20712 12.4571L12 7.66424L16.7929 12.4571L18.2071 11.0429L12 4.83582ZM12 10.4857L5.79291 16.6928L7.20712 18.107L12 13.3141L16.7929 18.107L18.2071 16.6928L12 10.4857Z"></path>
+      </svg>
+    </span>
+  </button>
+</back-to-top>
+
+{% stylesheet %}
+  .back-to-top {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 39;
+    display: block;
+  }
+
+  .back-to-top__button {
+    position: relative;
+    display: grid;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #000;
+    border-radius: 50%;
+    place-items: center;
+    background: #fff;
+    color: #000;
+    box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
+    cursor: pointer;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+
+  .back-to-top__fill {
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    bottom: -3px;
+    background: #000;
+    transform: scaleY(var(--scroll-progress));
+    transform-origin: bottom;
+    will-change: transform;
+    width: 105%;
+  }
+
+  .back-to-top__icon,
+  .back-to-top__icon-mask {
+    position: absolute;
+    z-index: 1;
+    width: 24px;
+    height: 24px;
+  }
+
+  .back-to-top__icon-mask {
+    z-index: 2;
+    overflow: hidden;
+    color: #fff;
+    clip-path: inset(calc(100% - var(--scroll-progress-percent)) 0 0 0);
+    will-change: clip-path;
+  }
+
+  .back-to-top__icon--filled {
+    inset: 0;
+  }
+
+  .back-to-top__button:hover {
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.25);
+    transform: translateY(-2px);
+  }
+
+  .back-to-top__button:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 3px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .back-to-top {
+      right: 16px;
+      bottom: 72px;
+    }
+
+    .back-to-top__button {
+      width: 44px;
+      height: 44px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .back-to-top__button {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('back-to-top')) {
+    customElements.define(
+      'back-to-top',
+      class extends HTMLElement {
+        connectedCallback() {
+          this.button = this.querySelector('button');
+          this.mediaQuery = window.matchMedia('(min-width: 990px)');
+          this.update = this.update.bind(this);
+          this.changeScrollContainer = this.changeScrollContainer.bind(this);
+
+          this.button?.addEventListener('click', () => {
+            this.scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+          this.mediaQuery.addEventListener('change', this.changeScrollContainer);
+          this.changeScrollContainer();
+        }
+
+        disconnectedCallback() {
+          this.scrollTarget?.removeEventListener('scroll', this.update);
+          this.mediaQuery?.removeEventListener('change', this.changeScrollContainer);
+        }
+
+        changeScrollContainer() {
+          this.scrollTarget?.removeEventListener('scroll', this.update);
+          this.scrollContainer = this.mediaQuery.matches
+            ? document.querySelector('.page-wrapper') || document.scrollingElement
+            : document.scrollingElement;
+          this.scrollTarget = this.mediaQuery.matches ? this.scrollContainer : document;
+          this.scrollTarget.addEventListener('scroll', this.update, { passive: true });
+          this.update();
+        }
+
+        update() {
+          const maximum = this.scrollContainer.scrollHeight - this.scrollContainer.clientHeight;
+          const progress = maximum > 0 ? Math.min(1, Math.max(0, this.scrollContainer.scrollTop / maximum)) : 0;
+          this.style.setProperty('--scroll-progress', progress.toFixed(4));
+          this.style.setProperty('--scroll-progress-percent', `${(progress * 100).toFixed(2)}%`);
+        }
+      }
+    );
+  }
+{% endjavascript %}

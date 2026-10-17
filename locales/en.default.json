@@ -54,6 +54,7 @@
     "skip_to_product_info": "Skip to product information",
     "skip_to_results_list": "Skip to results list",
     "skip_to_text": "Skip to content",
+    "back_to_top": "Back to top",
     "slide_status": "Slide {{ index }} of {{ length }}",
     "slideshow": "Slideshow",
     "slideshow_next": "Next slide",
@@ -65,7 +66,9 @@
     "view_disclosure_information_for_product": "View disclosure information for {{ product_title }}",
     "view_pricing_info": "View pricing information",
     "price_filter_low": "Low price",
-    "price_filter_high": "High price"
+    "price_filter_high": "High price",
+    "testimonial_rating": "{{ rating }} out of 5 stars",
+    "verified_buyer": "Verified Buyer"
   },
   "actions": {
     // Quick add button on product cards, shortened version of add to cart

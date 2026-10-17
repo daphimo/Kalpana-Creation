@@ -30,16 +30,18 @@
       <li class="shoppable-videos__card"
         {% if section.settings.data_source == 'blocks' %}{{ video_item.shopify_attributes }}{% endif %}
       >
-        <div class="shoppable-videos__media">
-          {% if current_poster != blank %}
-            {{ current_poster | image_url: width: 1000 | image_tag: widths: '320, 480, 640, 800, 1000', sizes: '(max-width: 749px) 67vw, 29vw', loading: 'lazy', class: 'shoppable-videos__poster', alt: '' }}
-          {% endif %}
+        <div class="shoppable-videos__video-shell">
+          <div class="shoppable-videos__media">
+            {% if current_poster != blank %}
+              {{ current_poster | image_url: width: 1000 | image_tag: widths: '320, 480, 640, 800, 1000', sizes: '(max-width: 749px) 67vw, 29vw', loading: 'lazy', class: 'shoppable-videos__poster', alt: '' }}
+            {% endif %}
+          </div>
+          <button class="shoppable-videos__open" type="button" data-reel-open data-reel-index="{{ rendered_count | minus: 1 }}" aria-label="Watch shoppable video {{ rendered_count }}"></button>
+          <button class="shoppable-videos__play" type="button" data-reel-open data-reel-index="{{ rendered_count | minus: 1 }}" aria-label="Play video">
+            <svg class="shoppable-videos__play-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5L8 5.5Z"/></svg>
+          </button>
         </div>
-        <button class="shoppable-videos__open" type="button" data-reel-open data-reel-index="{{ rendered_count | minus: 1 }}" aria-label="Watch shoppable video {{ rendered_count }}"></button>
-        <button class="shoppable-videos__play" type="button" data-reel-open data-reel-index="{{ rendered_count | minus: 1 }}" aria-label="Play video">
-          <svg class="shoppable-videos__play-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5L8 5.5Z"/></svg>
-        </button>
-        {% render 'shoppable-video-product-stripe', product: current_product, button_label: section.settings.shop_button_label %}
+        {% render 'shoppable-video-product-stripe', product: current_product, card_style: true %}
       </li>
     {% endif %}
   {% endfor %}
