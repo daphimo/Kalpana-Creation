@@ -57,7 +57,9 @@
               {% endif %}
             </div>
           {% else %}
+            {% unless section.settings.loading_mode == 'grid' %}
             {% render 'pagination-controls', paginate: paginate %}
+            {% endunless %}
           {% endif %}
         {% endif %}
       {% endpaginate %}
@@ -78,7 +80,7 @@
     { "type": "select", "id": "heading_tag", "label": "Heading tag", "options": [{ "value": "h2", "label": "H2" }, { "value": "h3", "label": "H3" }, { "value": "p", "label": "Paragraph" }], "default": "h2" },
     { "type": "select", "id": "heading_size", "label": "Heading size", "options": [{ "value": "small", "label": "Small" }, { "value": "medium", "label": "Medium" }, { "value": "large", "label": "Large" }], "default": "medium" },
     { "type": "collection", "id": "collection", "label": "Collection" },
-    { "type": "select", "id": "loading_mode", "label": "Product navigation", "options": [{ "value": "pagination", "label": "Pagination" }, { "value": "infinite", "label": "Infinite loading" }], "default": "pagination" },
+    { "type": "select", "id": "loading_mode", "label": "Product navigation", "options": [{ "value": "pagination", "label": "Pagination" }, { "value": "infinite", "label": "Infinite loading" },{ "value": "grid", "label": "Grid Style" }], "default": "pagination" },
     { "type": "range", "id": "products_per_page", "label": "Products per page", "min": 2, "max": 48, "step": 1, "default": 8, "info": "Controls each page or infinite-loading batch." },
     { "type": "range", "id": "columns_desktop", "label": "Desktop columns", "min": 2, "max": 6, "step": 1, "default": 4 },
     { "type": "select", "id": "columns_mobile", "label": "Mobile columns", "options": [{ "value": "1", "label": "1" }, { "value": "2", "label": "2" }], "default": "2" },
