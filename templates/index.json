@@ -619,7 +619,7 @@
         "heading_tag": "h2",
         "heading_size": "medium",
         "collection": "best-sellers",
-        "loading_mode": "pagination",
+        "loading_mode": "grid",
         "products_per_page": 5,
         "columns_desktop": 5,
         "columns_mobile": "2",
