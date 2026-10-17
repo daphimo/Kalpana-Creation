@@ -461,8 +461,6 @@
 .shoppable-reel__wishlist .wishlist-button {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
   padding: 9px;
   border: 1px solid color-mix(in srgb, var(--brand-background) 32%, transparent);
   border-radius: 50%;

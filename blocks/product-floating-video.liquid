@@ -6,6 +6,11 @@
     data-side="{{ block.settings.horizontal_position }}"
     {{ block.shopify_attributes }}
   >
+    <button class="product-floating-video__close" type="button" aria-label="Hide product video">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="m6 6 12 12M18 6 6 18"/>
+      </svg>
+    </button>
     <button class="product-floating-video__preview" type="button" aria-label="Open product video">
       <video muted loop playsinline preload="none" aria-hidden="true" {% if floating_video.preview_image %}poster="{{ floating_video.preview_image | image_url: width: 400 }}"{% endif %}>
         {% for source in floating_video.sources %}
@@ -38,6 +43,8 @@
   .product-floating-video { position: fixed; bottom: var(--floating-bottom); z-index: 20; width: min(var(--floating-width), calc(100vw - 32px)); line-height: 0; }
   .product-floating-video[data-side='left'] { left: var(--floating-side); }
   .product-floating-video[data-side='right'] { right: var(--floating-side); }
+  .product-floating-video__close { position: absolute; top: -5px; right: -5px; z-index: 1; display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 1px solid #fff; border-radius: 50%; background: #111; color: #fff; cursor: pointer; box-shadow: 0 1px 4px #0005; }
+  .product-floating-video__close svg { width: 14px; height: 14px; }
   .product-floating-video__preview { display: block; width: 100%; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: #000; cursor: pointer; box-shadow: 0 4px 18px #0004; }
   .product-floating-video__preview video { display: block; width: 100%; height: auto; object-fit: cover; }
   .product-floating-video__overlay[hidden] { display: none; }
@@ -49,7 +56,7 @@
   .product-floating-video__mute { top: 12px; right: 12px; }
   .product-floating-video__play svg, .product-floating-video__mute svg { width: 24px; height: 24px; }
   .product-floating-video__play [hidden], .product-floating-video__mute [hidden] { display: none; }
-  .product-floating-video__play:focus-visible, .product-floating-video__mute:focus-visible, .product-floating-video__preview:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  .product-floating-video__play:focus-visible, .product-floating-video__mute:focus-visible, .product-floating-video__close:focus-visible, .product-floating-video__preview:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 {% endstylesheet %}
 
 {% schema %}

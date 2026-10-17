@@ -143,6 +143,8 @@
       "name": "Custom collection slider",
       "settings": {
         "heading": "SHOP BY CATEGORIES",
+        "heading_tag": "h2",
+        "heading_size": "medium",
         "show_title": false,
         "slides_per_view_desktop": 5,
         "slides_per_view_mobile": 2,
@@ -222,6 +224,8 @@
       "name": "Responsive flex grid",
       "settings": {
         "section_title": "",
+        "heading_tag": "h2",
+        "heading_size": "medium",
         "grid_per_desktop": 6,
         "grid_per_mobile": 2.5,
         "mobile_layout": "slide",
@@ -274,6 +278,8 @@
       "name": "Responsive flex grid",
       "settings": {
         "section_title": "THE SAVINGS EDIT",
+        "heading_tag": "h2",
+        "heading_size": "medium",
         "grid_per_desktop": 4,
         "grid_per_mobile": 2,
         "mobile_layout": "stack",
@@ -317,6 +323,8 @@
       "name": "Responsive flex grid",
       "settings": {
         "section_title": "FESTIVE FAVOURITES",
+        "heading_tag": "h2",
+        "heading_size": "medium",
         "grid_per_desktop": 3,
         "grid_per_mobile": 1,
         "mobile_layout": "stack",
@@ -396,6 +404,8 @@
       "name": "Responsive flex grid",
       "settings": {
         "section_title": "FESTIVE FAVOURITES",
+        "heading_tag": "h2",
+        "heading_size": "medium",
         "grid_per_desktop": 6,
         "grid_per_mobile": 2,
         "mobile_layout": "stack",
@@ -460,6 +470,8 @@
         "show_header": true,
         "accent_title": "Shop the moment",
         "heading": "Watch. Discover. Shop.",
+        "heading_tag": "h2",
+        "heading_size": "medium",
         "description": "",
         "header_alignment": "left",
         "data_source": "metaobjects",
@@ -467,10 +479,10 @@
         "section_width": "page_width",
         "max_width": 1480,
         "slide_type": "loop",
-        "desktop_count": 3.5,
+        "desktop_count": 5,
         "mobile_count": 1.5,
-        "show_nav_button": true,
-        "show_pagination": true,
+        "show_nav_button": false,
+        "show_pagination": false,
         "enable_drag": true,
         "autoplay_slides": true,
         "slide_speed": 4,
@@ -546,21 +558,49 @@
             "product": "kalpna-creation-digital-print-bhagalpuri-linen-saree-multicolor-1",
             "card_alignment": "top"
           }
+        },
+        "testimonial_hmNp3V": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Priya Sharma",
+            "rating": 5,
+            "title": "Beautifully made and effortless to wear",
+            "description": "<p>The fabric and finish exceeded my expectations. Every detail feels considered and special.</p>",
+            "image": "shopify://shop_images/5.jpg",
+            "product": "kalpna-creation-printed-bandhani-georgette-saree-green",
+            "card_alignment": "top"
+          }
+        },
+        "testimonial_HfT3Jg": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Kavya Rao",
+            "rating": 5,
+            "title": "Luxury in every detail",
+            "description": "<p>From the thoughtful packaging to the graceful silhouette, the entire experience felt exceptional.</p>",
+            "image": "shopify://shop_images/1.jpg",
+            "product": "supalee-tex-solid-bollywood-georgette-saree-with-unstitched-blouse-multicolor",
+            "card_alignment": "top"
+          }
         }
       },
       "block_order": [
         "testimonial_TXKCKP",
         "testimonial_tjYCib",
         "testimonial_ECmqAw",
-        "testimonial_mpTcPk"
+        "testimonial_mpTcPk",
+        "testimonial_hmNp3V",
+        "testimonial_HfT3Jg"
       ],
       "name": "Premium testimonials",
       "settings": {
         "eyebrow": "Discover how we're making a difference, one outfit at a time.",
         "heading": "See why everyone loves Kalpana's Creations.",
+        "heading_tag": "h2",
+        "heading_size": "medium",
         "heading_alignment": "center",
         "section_width": "contained",
-        "slides_per_view_desktop": 3,
+        "slides_per_view_desktop": 5,
         "slides_per_view_mobile": 1,
         "autoplay": false,
         "autoplay_speed": 5,
@@ -576,8 +616,10 @@
       "name": "Infinite collection",
       "settings": {
         "heading": "Best Sellers",
+        "heading_tag": "h2",
+        "heading_size": "medium",
         "collection": "best-sellers",
-        "loading_mode": "infinite",
+        "loading_mode": "grid",
         "products_per_page": 5,
         "columns_desktop": 5,
         "columns_mobile": "2",

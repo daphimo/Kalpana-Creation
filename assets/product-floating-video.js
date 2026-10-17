@@ -3,6 +3,7 @@ if (!customElements.get('product-floating-video')) {
     connectedCallback() {
       this.previewButton = this.querySelector('.product-floating-video__preview');
       this.previewVideo = this.previewButton.querySelector('video');
+      this.closeButton = this.querySelector('.product-floating-video__close');
       this.overlay = this.querySelector('.product-floating-video__overlay');
       this.player = this.overlay.querySelector('.product-floating-video__player');
       this.video = this.player.querySelector('video');
@@ -12,6 +13,7 @@ if (!customElements.get('product-floating-video')) {
       // The popup must escape sticky product details and other stacking contexts.
       document.body.appendChild(this.overlay);
       this.openHandler = () => this.open();
+      this.dismissHandler = () => this.dismiss();
       this.backdropHandler = (event) => {
         if (event.target === this.overlay) this.close();
       };
@@ -35,6 +37,7 @@ if (!customElements.get('product-floating-video')) {
       this.updateHandler = () => this.updateControls();
 
       this.previewButton.addEventListener('click', this.openHandler);
+      this.closeButton.addEventListener('click', this.dismissHandler);
       this.overlay.addEventListener('click', this.backdropHandler);
       document.addEventListener('keydown', this.keyHandler);
       this.playButton.addEventListener('click', this.playHandler);
@@ -61,6 +64,7 @@ if (!customElements.get('product-floating-video')) {
     disconnectedCallback() {
       this.close(false);
       this.previewButton.removeEventListener('click', this.openHandler);
+      this.closeButton.removeEventListener('click', this.dismissHandler);
       this.overlay.removeEventListener('click', this.backdropHandler);
       document.removeEventListener('keydown', this.keyHandler);
       this.playButton.removeEventListener('click', this.playHandler);
@@ -86,6 +90,11 @@ if (!customElements.get('product-floating-video')) {
       this.playButton.focus();
       this.updateControls();
       this.video.play().catch(() => this.updateControls());
+    }
+
+    dismiss() {
+      this.previewVideo.pause();
+      this.hidden = true;
     }
 
     close(resumePreview = true) {
