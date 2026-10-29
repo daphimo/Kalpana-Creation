@@ -21,6 +21,9 @@
     const controller = new AbortController();
     const { signal } = controller;
     const autoplaySlides = section.dataset.autoplaySlides === 'true' && !reduceMotion.matches;
+    const saveData = navigator.connection?.saveData === true;
+    const autoplayVideos = section.dataset.autoplay === 'true' && !reduceMotion.matches && !saveData;
+    const pauseOffscreen = section.dataset.pauseOffscreen !== 'false';
     const slideSpeed = Math.max(2, Number(section.dataset.slideSpeed) || 4) * 1000;
     const progress = sliderRoot.querySelector('.shoppable-videos__progress');
     const prev = sliderRoot.querySelector('[data-shoppable-prev]');
@@ -34,14 +37,72 @@
     let opener;
     let previousBodyOverflow;
     let previousHtmlOverflow;
-    let popupMuted = false;
+    let popupMuted = true;
     let resizeObserver;
+    let cardObserver;
+    let sectionObserver;
+    let sectionVisible = false;
+    const visibleCards = new Set();
     let dragStart;
     let dragMoved = false;
     let suppressClickUntil = 0;
     let slideTimer;
 
     if (modal) document.body.append(modal);
+
+    function videoSources(element) {
+      try {
+        const sources = JSON.parse(element?.dataset.videoSources || '[]');
+        return Array.isArray(sources) ? sources : [];
+      } catch (error) {
+        console.warn('[shoppable-videos] Invalid video sources', error);
+        return [];
+      }
+    }
+
+    function ensureCardVideo(card) {
+      const media = card.querySelector('[data-card-video-media]');
+      if (!media) return null;
+      const existing = media.querySelector('.shoppable-videos__card-video');
+      if (existing) return existing;
+      const videoIndex = Number(card.dataset.videoIndex);
+      const sourcePlayer = modal?.querySelectorAll('.shoppable-reel__player')[videoIndex];
+      const sources = videoSources(sourcePlayer);
+      if (!sources.length) return null;
+
+      const video = document.createElement('video');
+      video.className = 'shoppable-videos__card-video';
+      video.preload = 'none';
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.loop = sourcePlayer.dataset.videoLoop === 'true';
+      if (sourcePlayer.dataset.videoPoster) video.poster = sourcePlayer.dataset.videoPoster;
+      sources.forEach(({ url, mime_type: type }) => {
+        if (!url) return;
+        const source = document.createElement('source');
+        source.src = url;
+        if (type) source.type = type;
+        video.append(source);
+      });
+      video.addEventListener('playing', () => {
+        video.classList.add('is-playing');
+        const playButton = card.querySelector('.shoppable-videos__play');
+        if (playButton) playButton.hidden = true;
+      }, { signal });
+      media.append(video);
+      video.load();
+      return video;
+    }
+
+    function pauseCardVideos() {
+      cards.forEach((card) => card.querySelector('video')?.pause());
+    }
+
+    function playVisibleCards() {
+      if (!sectionVisible || modalOpen || !autoplayVideos) return;
+      visibleCards.forEach((card) => ensureCardVideo(card)?.play().catch(() => {}));
+    }
 
     function updateReelSound(video) {
       const button = video?.closest('.shoppable-reel__player')?.querySelector('.shoppable-reel__sound');
@@ -95,6 +156,7 @@
       document.body.style.overflow = previousBodyOverflow;
       document.documentElement.style.overflow = previousHtmlOverflow;
       startSlideAutoplay();
+      playVisibleCards();
       opener?.focus({ preventScroll: true });
     }
 
@@ -107,6 +169,7 @@
       document.documentElement.style.overflow = 'hidden';
       modalOpen = true;
       stopSlideAutoplay();
+      pauseCardVideos();
       modal.hidden = false;
       if (!reelSplide) {
         reelSplide = new window.Splide(reelRoot, JSON.parse(reelRoot.dataset.splide || '{}'));
@@ -164,7 +227,7 @@
 
     function startSlideAutoplay() {
       stopSlideAutoplay();
-      if (!autoplaySlides || modalOpen) return;
+      if (!autoplaySlides || modalOpen || !sectionVisible) return;
       slideTimer = window.setInterval(advanceSlide, slideSpeed);
     }
 
@@ -246,6 +309,38 @@
       window.addEventListener('resize', updateLayout, { signal });
     }
 
+    if ('IntersectionObserver' in window) {
+      sectionObserver = new IntersectionObserver((entries) => {
+        sectionVisible = entries.some((entry) => entry.isIntersecting);
+        if (sectionVisible) {
+          playVisibleCards();
+          startSlideAutoplay();
+        } else {
+          stopSlideAutoplay();
+          if (pauseOffscreen) pauseCardVideos();
+        }
+      }, { threshold: 0.05 });
+      sectionObserver.observe(section);
+
+      cardObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          const card = entry.target;
+          if (entry.isIntersecting) {
+            visibleCards.add(card);
+            if (sectionVisible && !modalOpen && autoplayVideos) ensureCardVideo(card)?.play().catch(() => {});
+          } else {
+            visibleCards.delete(card);
+            if (pauseOffscreen) card.querySelector('video')?.pause();
+          }
+        });
+      }, { root: track, rootMargin: '0px 80px', threshold: 0.35 });
+      cards.forEach((card) => cardObserver.observe(card));
+    } else {
+      sectionVisible = true;
+      visibleCards.add(cards[0]);
+      playVisibleCards();
+    }
+
     sliderRoot.addEventListener('click', (event) => {
       const openButton = event.target.closest('[data-reel-open]');
       if (openButton && sliderRoot.contains(openButton)) {
@@ -279,6 +374,10 @@
       controller,
       stopSlideAutoplay,
       disconnectResize: () => resizeObserver?.disconnect(),
+      disconnectVisibility: () => {
+        cardObserver?.disconnect();
+        sectionObserver?.disconnect();
+      },
       scrollToIndex,
       destroyReel: () => {
         closeReel();
@@ -301,6 +400,7 @@
       instance.controller.abort();
       instance.stopSlideAutoplay();
       instance.disconnectResize();
+      instance.disconnectVisibility();
       instance.destroyReel();
       instances.delete(section);
     });

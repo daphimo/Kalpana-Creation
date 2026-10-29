@@ -40,6 +40,8 @@ function updateSelectedVariant(dialog) {
   const input = dialog.querySelector('[data-card-variant-id]');
   const price = dialog.querySelector('[data-card-variant-price]');
   const image = dialog.querySelector('.custom-collection-card__variant-image');
+  const addToCart = dialog.querySelector('add-to-cart-component');
+  const cardImage = dialog.closest('.custom-collection-card')?.querySelector('.custom-collection-card__image');
 
   if (input) input.value = variant?.id || '';
   if (submit) {
@@ -48,6 +50,10 @@ function updateSelectedVariant(dialog) {
   }
   if (price && variant) price.textContent = variant.price;
   if (image && variant?.image) image.src = variant.image;
+  if (addToCart instanceof HTMLElement) {
+    const fallbackImage = cardImage instanceof HTMLImageElement ? cardImage.currentSrc || cardImage.src : '';
+    addToCart.dataset.productVariantMedia = variant?.image || fallbackImage;
+  }
   updateOptionAvailability(dialog, variants);
 }
 

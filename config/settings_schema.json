@@ -1845,6 +1845,43 @@
     ]
   },
   {
+    "name": "Cart drawer free shipping tier",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "cart_free_shipping_tier_enabled",
+        "label": "Enable free shipping progress",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "cart_free_shipping_threshold",
+        "label": "Free shipping threshold",
+        "info": "Enter the amount in the store currency.",
+        "default": 1999
+      },
+      {
+        "type": "text",
+        "id": "cart_free_shipping_label",
+        "label": "Tier label",
+        "default": "Free Shipping"
+      },
+      {
+        "type": "text",
+        "id": "cart_free_shipping_message",
+        "label": "Message before unlock",
+        "info": "Use {amount} for the remaining amount or {threshold} for the target.",
+        "default": "You're only {amount} away from FREE SHIPPING!"
+      },
+      {
+        "type": "text",
+        "id": "cart_free_shipping_success_message",
+        "label": "Message after unlock",
+        "default": "Congratulations! You've unlocked FREE SHIPPING!"
+      }
+    ]
+  },
+  {
     "name": "t:names.product_cards",
     "settings": [
       {

@@ -134,7 +134,9 @@
   flex: none;
   align-items: center;
   gap: 4px;
+  min-width: 82px;
   min-height: 28px;
+  justify-content: center;
   padding: 4px 6px;
   border: 0;
   border-radius: 4px;

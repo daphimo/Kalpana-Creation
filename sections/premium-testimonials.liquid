@@ -60,6 +60,11 @@
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3.25 8.25 3 3 6.5-6.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
             <span>{{ 'accessibility.verified_buyer' | t }}</span>
           </div>
+          {% if block.settings.review_image != blank %}
+            <div class="premium-testimonials__review-image-wrap">
+              {{ block.settings.review_image | image_url: width: 1200 | image_tag: class: 'premium-testimonials__review-image', widths: '320, 480, 720, 960, 1200', sizes: '(min-width: 990px) 30vw, (min-width: 750px) 45vw, calc(100vw - 76px)', loading: 'lazy', decoding: 'async', alt: block.settings.review_image.alt }}
+            </div>
+          {% endif %}
           <div class="premium-testimonials__copy">
             {% if block.settings.title != blank %}<h3>{{ block.settings.title | escape }}</h3>{% endif %}
             {% if block.settings.description != blank %}<div class="rte">{{ block.settings.description }}</div>{% endif %}
@@ -90,7 +95,7 @@
   id="PremiumTestimonials-{{ section.id }}"
   class="{{ section_class }} spacing-style"
   data-premium-testimonials-section
-  style="--testimonial-heading-align: {{ section.settings.heading_alignment }}; {% render 'spacing-style', settings: section.settings %}"
+  style="--testimonial-heading-align: {{ section.settings.heading_alignment }}; --testimonial-image-height: {{ section.settings.image_height }}px; {% render 'spacing-style', settings: section.settings %}"
 >
   <div class="premium-testimonials__inner{% if section.settings.section_width == 'full' %} premium-testimonials__inner--full{% endif %}">
     <header class="premium-testimonials__heading-wrap">
@@ -139,6 +144,7 @@
       "settings": [
         { "type": "text", "id": "customer_name", "label": "Customer name", "default": "Priya Sharma" },
         { "type": "range", "id": "rating", "label": "Star rating", "min": 1, "max": 5, "step": 1, "default": 5 },
+        { "type": "image_picker", "id": "review_image", "label": "Review image", "info": "Shown below the verified buyer label." },
         { "type": "text", "id": "title", "label": "Testimonial title", "default": "Beautifully made and effortless to wear" },
         { "type": "richtext", "id": "description", "label": "Testimonial description", "default": "<p>The fabric, finish and thoughtful detailing exceeded my expectations. It felt special from the moment I opened the package.</p>" },
         { "type": "image_picker", "id": "image", "label": "Customer or product image" },

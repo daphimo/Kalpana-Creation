@@ -9,6 +9,7 @@
 -%}
 
 {%- if settings.cart_type == 'drawer' and template.name != 'cart' -%}
+  {% render 'brand-colors' %}
   {% if render_wrapper %}
     <div
       id="shopify-section-cart-drawer-section"
@@ -102,6 +103,7 @@
               heading_id: 'cart-drawer-heading',
               title_append: cart_badge_html
             %}
+            {% render 'cart-tier-progress', cart: cart %}
           {%- endif -%}
 
           {% capture cart_items_children %}

@@ -1,0 +1,47 @@
+{% doc %}
+  Renders the configured cart subtotal tier and its progress.
+
+  @param {object} cart - The current Shopify cart.
+{% enddoc %}
+
+{%- if settings.cart_free_shipping_tier_enabled and settings.cart_free_shipping_threshold > 0 -%}
+  {%- liquid
+    assign threshold_cents = settings.cart_free_shipping_threshold | times: 100 | round
+    assign cart_subtotal = cart.items_subtotal_price
+    assign remaining_cents = threshold_cents | minus: cart_subtotal | at_least: 0
+    assign remaining_money = remaining_cents | money | strip_html
+    assign threshold_money = threshold_cents | money | strip_html
+    assign progress = cart_subtotal | times: 100.0 | divided_by: threshold_cents | at_most: 100
+    assign unlocked = false
+    if cart_subtotal >= threshold_cents
+      assign unlocked = true
+      assign status_message = settings.cart_free_shipping_success_message
+    else
+      assign status_message = settings.cart_free_shipping_message | replace: '{amount}', remaining_money | replace: '{threshold}', threshold_money
+    endif
+  -%}
+
+  <div
+    class="cart-tier-progress{% if unlocked %} is-unlocked{% endif %}"
+    data-cart-tier-progress
+    data-tier-id="free_shipping"
+    data-tier-type="free_shipping"
+  >
+    <div class="cart-tier-progress__heading">
+      <p class="cart-tier-progress__message" role="status" aria-live="polite" aria-atomic="true">
+        {{- status_message | escape -}}
+      </p>
+      <span class="cart-tier-progress__label">{{ settings.cart_free_shipping_label | escape }}</span>
+    </div>
+    <div
+      class="cart-tier-progress__track"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="{{ progress | round }}"
+      aria-valuetext="{{ status_message | escape }}"
+    >
+      <span class="cart-tier-progress__fill" style="--cart-tier-progress: {{ progress }}%;"></span>
+    </div>
+  </div>
+{%- endif -%}

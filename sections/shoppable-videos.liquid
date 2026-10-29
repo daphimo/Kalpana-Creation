@@ -22,16 +22,19 @@
     {% else %}
       {% assign current_video = video_item.settings.video %}
       {% assign current_product = video_item.settings.product %}
-      {% assign current_poster = video_item.settings.poster_image %}
+      {% assign current_poster = video_item.settings.poster_image | default: current_video.preview_image %}
     {% endif %}
 
     {% if current_video != blank and current_video.sources != blank %}
       {% assign rendered_count = rendered_count | plus: 1 %}
-      <li class="shoppable-videos__card"
+      <li class="shoppable-videos__card" data-video-index="{{ rendered_count | minus: 1 }}"
         {% if section.settings.data_source == 'blocks' %}{{ video_item.shopify_attributes }}{% endif %}
       >
         <div class="shoppable-videos__video-shell">
-          <div class="shoppable-videos__media">
+          <div
+            class="shoppable-videos__media"
+            data-card-video-media
+          >
             {% if current_poster != blank %}
               {{ current_poster | image_url: width: 1000 | image_tag: widths: '320, 480, 640, 800, 1000', sizes: '(max-width: 749px) 67vw, 29vw', loading: 'lazy', class: 'shoppable-videos__poster', alt: '' }}
             {% endif %}
@@ -60,7 +63,7 @@
     {% else %}
       {% assign current_video = video_item.settings.video %}
       {% assign current_product = video_item.settings.product %}
-      {% assign current_poster = video_item.settings.poster_image %}
+      {% assign current_poster = video_item.settings.poster_image | default: current_video.preview_image %}
     {% endif %}
     {% if current_video != blank and current_video.sources != blank %}
       {% assign popup_count = popup_count | plus: 1 %}
