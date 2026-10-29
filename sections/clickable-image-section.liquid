@@ -5,7 +5,10 @@
 
 {% if desktop_image != blank %}
   {% capture responsive_image %}
-    <picture class="clickable-image-section__picture">
+    <picture
+      class="clickable-image-section__picture"
+      style="--clickable-desktop-ratio: {{ desktop_image.aspect_ratio }}; --clickable-mobile-ratio: {{ mobile_image.aspect_ratio }};"
+    >
       <source
         media="(max-width: 749px)"
         srcset="
@@ -15,6 +18,8 @@
           {{ mobile_image | image_url: width: 1000 }} 1000w
         "
         sizes="100vw"
+        width="{{ mobile_image.width }}"
+        height="{{ mobile_image.height }}"
       >
       {{
         desktop_image
@@ -54,7 +59,18 @@
   #ClickableImageSection-{{ section.id }} .clickable-image-section__image {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #ClickableImageSection-{{ section.id }} .clickable-image-section__picture {
+    aspect-ratio: var(--clickable-desktop-ratio);
+  }
+
+  @media screen and (max-width: 749px) {
+    #ClickableImageSection-{{ section.id }} .clickable-image-section__picture {
+      aspect-ratio: var(--clickable-mobile-ratio);
+    }
   }
 {% endstyle %}
 

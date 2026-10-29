@@ -10,9 +10,9 @@
       {% assign mobile_reel_count = mobile_reel_count | plus: 1 %}
       <li class="splide__slide shoppable-reel__slide">
         <div class="shoppable-reel__player">
-          <video class="shoppable-reel__video" preload="metadata" playsinline loop {% if reel_video.preview_image != blank %}poster="{{ reel_video.preview_image | image_url: width: 1000 }}"{% endif %}>
+          <video class="shoppable-reel__video" preload="none" playsinline loop {% if reel_video.preview_image != blank %}poster="{{ reel_video.preview_image | image_url: width: 750 }}"{% endif %}>
             {% for video_source in reel_video.sources %}
-              <source src="{{ video_source.url }}" type="{{ video_source.mime_type }}">
+              <source data-src="{{ video_source.url }}" type="{{ video_source.mime_type }}">
             {% endfor %}
           </video>
           <div class="shoppable-reel__overlay">
@@ -51,11 +51,11 @@
 {% endcapture %}
 
 {% if mobile_reel_count > 0 %}
-  {{ 'cust-splide-core.min.css' | asset_url | stylesheet_tag }}
-  {{ 'section-shoppable-videos.css' | asset_url | stylesheet_tag }}
-  <script src="{{ 'cust-splide.min.js' | asset_url }}" defer></script>
+  <link rel="stylesheet" href="{{ 'cust-splide-core.min.css' | asset_url }}" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="{{ 'section-shoppable-videos.css' | asset_url }}" media="print" onload="this.media='all'">
+  <noscript>{{ 'cust-splide-core.min.css' | asset_url | stylesheet_tag }}{{ 'section-shoppable-videos.css' | asset_url | stylesheet_tag }}</noscript>
   <script src="{{ 'mobile-bar-shoppable-videos.js' | asset_url }}" defer></script>
-  <button type="button" class="mobile-bar__item mobile-bar__item--videos" data-mobile-reels-open aria-label="{{ block.settings.label | default: 'Videos' | escape }}" aria-haspopup="dialog" aria-controls="MobileBarReels-{{ section_id }}" {{ block.shopify_attributes }}>
+  <button type="button" class="mobile-bar__item mobile-bar__item--videos" data-mobile-reels-open data-splide-asset="{{ 'cust-splide.min.js' | asset_url }}" aria-label="{{ block.settings.label | default: 'Videos' | escape }}" aria-haspopup="dialog" aria-controls="MobileBarReels-{{ section_id }}" {{ block.shopify_attributes }}>
     <span class="mobile-bar__icon-wrap">
       {% if block.settings.custom_image != blank %}
         {{ block.settings.custom_image | image_url: width: 96 | image_tag: class: 'mobile-bar__custom-image', widths: '48, 72, 96', sizes: '(max-width: 749px) var(--mobile-bar-icon-size), 1px', alt: block.settings.label, loading: 'eager' }}

@@ -3,14 +3,33 @@
   window.mobileBarShoppableVideosInitialized = true;
 
   const instances = new Map();
+  let splidePromise;
+
+  function ensureSplide(assetUrl) {
+    if (window.Splide) return Promise.resolve();
+    if (splidePromise) return splidePromise;
+    splidePromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = assetUrl;
+      script.addEventListener('load', resolve, { once: true });
+      script.addEventListener('error', reject, { once: true });
+      document.head.append(script);
+    });
+    return splidePromise;
+  }
+
+  function loadVideo(video) {
+    if (video.dataset.sourcesLoaded === 'true') return;
+    video.querySelectorAll('source[data-src]').forEach((source) => {
+      source.src = source.dataset.src;
+      source.removeAttribute('data-src');
+    });
+    video.dataset.sourcesLoaded = 'true';
+    video.load();
+  }
 
   function initialize(trigger) {
     if (!trigger.isConnected || instances.has(trigger)) return;
-    if (!window.Splide) {
-      document.querySelector('script[src*="cust-splide.min.js"]')?.addEventListener('load', () => initialize(trigger), { once: true });
-      return;
-    }
-
     const modal = trigger.nextElementSibling;
     const sliderRoot = modal?.querySelector('[data-mobile-reels-slider]');
     if (!modal?.matches('[data-mobile-reels-modal]') || !sliderRoot?.querySelector('.shoppable-reel__slide')) return;
@@ -40,6 +59,7 @@
         }
         video.muted = muted;
         updateSound(video);
+        loadVideo(video);
         video.play().catch(() => {});
       });
     }
@@ -55,7 +75,13 @@
       trigger.focus({ preventScroll: true });
     }
 
-    trigger.addEventListener('click', () => {
+    trigger.addEventListener('click', async () => {
+      try {
+        await ensureSplide(trigger.dataset.splideAsset);
+      } catch (error) {
+        console.error('[mobile-reels] Slider could not load', error);
+        return;
+      }
       previousBodyOverflow = document.body.style.overflow;
       previousHtmlOverflow = document.documentElement.style.overflow;
       document.body.style.overflow = 'hidden';

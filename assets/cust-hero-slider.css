@@ -17,7 +17,13 @@
 .cust-hero-slider__image {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cust-hero-slider__picture {
+  display: block;
+  aspect-ratio: var(--cust-hero-desktop-ratio);
 }
 
 .cust-hero-slider:not(.is-initialized) .cust-hero-slider__slide:not(:first-child) {
@@ -103,6 +109,8 @@
 .cust-hero-slider__mobile-header { display: none; }
 
 @media screen and (max-width: 749px) {
+  .cust-hero-slider__picture { aspect-ratio: var(--cust-hero-mobile-ratio); }
+
   .cust-hero-slider__mobile-header {
     position: absolute;
     z-index: 4;

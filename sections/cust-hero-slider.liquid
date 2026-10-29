@@ -44,7 +44,10 @@
               <div class="cust-hero-slider__media">
             {% endif %}
             {% if desktop_image != blank %}
-              <picture class="cust-hero-slider__picture">
+              <picture
+                class="cust-hero-slider__picture"
+                style="--cust-hero-desktop-ratio: {{ desktop_image.aspect_ratio }}; --cust-hero-mobile-ratio: {{ mobile_image.aspect_ratio }};"
+              >
                 <source
                   media="(max-width: 749px)"
                   srcset="{{ mobile_image | image_url: width: 375 }} 375w, {{ mobile_image | image_url: width: 550 }} 550w, {{ mobile_image | image_url: width: 750 }} 750w, {{ mobile_image | image_url: width: 1000 }} 1000w"
