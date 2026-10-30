@@ -197,6 +197,7 @@
   pointer-events: none;
 }
 
+.shoppable-videos__card-video.is-ready,
 .shoppable-videos__card-video.is-playing {
   opacity: 1;
 }

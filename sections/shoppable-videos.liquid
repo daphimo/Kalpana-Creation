@@ -26,6 +26,7 @@
     {% endif %}
 
     {% if current_video != blank and current_video.sources != blank %}
+      {% capture current_video_sources %}[{% for video_source in current_video.sources %}{"url":{{ video_source.url | json }},"type":{{ video_source.mime_type | json }}}{% unless forloop.last %},{% endunless %}{% endfor %}]{% endcapture %}
       {% assign rendered_count = rendered_count | plus: 1 %}
       <li class="shoppable-videos__card" data-video-index="{{ rendered_count | minus: 1 }}"
         {% if section.settings.data_source == 'blocks' %}{{ video_item.shopify_attributes }}{% endif %}
@@ -34,6 +35,9 @@
           <div
             class="shoppable-videos__media"
             data-card-video-media
+            data-video-sources="{{ current_video_sources | strip | escape }}"
+            data-video-loop="{{ section.settings.loop }}"
+            {% if current_poster != blank %}data-video-poster="{{ current_poster | image_url: width: 1000 }}"{% endif %}
           >
             {% if current_poster != blank %}
               {{ current_poster | image_url: width: 1000 | image_tag: widths: '320, 480, 640, 800, 1000', sizes: '(max-width: 749px) 67vw, 29vw', loading: 'lazy', class: 'shoppable-videos__poster', alt: '' }}
@@ -66,11 +70,13 @@
       {% assign current_poster = video_item.settings.poster_image | default: current_video.preview_image %}
     {% endif %}
     {% if current_video != blank and current_video.sources != blank %}
+      {% capture current_video_sources %}[{% for video_source in current_video.sources %}{"url":{{ video_source.url | json }},"type":{{ video_source.mime_type | json }}}{% unless forloop.last %},{% endunless %}{% endfor %}]{% endcapture %}
       {% assign popup_count = popup_count | plus: 1 %}
       <li class="splide__slide shoppable-reel__slide">
         <div
           class="shoppable-reel__player"
-          data-video-sources="{{ current_video.sources | json | escape }}"
+          data-video-index="{{ popup_count | minus: 1 }}"
+          data-video-sources="{{ current_video_sources | strip | escape }}"
           data-video-loop="{{ section.settings.loop }}"
           {% if current_poster != blank %}data-video-poster="{{ current_poster | image_url: width: 1000 }}"{% endif %}
         >
@@ -458,7 +464,8 @@
     {
       "type": "checkbox",
       "id": "autoplay",
-      "label": "Autoplay videos",
+      "label": "Show autoplay video instead of poster",
+      "info": "When disabled, only the poster image is shown. Enabling autoplay video previews may decrease page speed.",
       "default": true
     },
     {

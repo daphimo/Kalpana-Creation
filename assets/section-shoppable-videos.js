@@ -20,8 +20,13 @@
 
     const controller = new AbortController();
     const { signal } = controller;
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const effectiveType = connection?.effectiveType || '';
+    const saveData = connection?.saveData === true;
+    const slowConnection = saveData || effectiveType === 'slow-2g' || effectiveType === '2g';
+    const fastConnection = effectiveType === '4g' && Number(connection?.downlink || 0) >= 5;
+    const mobileViewport = window.matchMedia('(max-width: 749px)');
     const autoplaySlides = section.dataset.autoplaySlides === 'true' && !reduceMotion.matches;
-    const saveData = navigator.connection?.saveData === true;
     const autoplayVideos = section.dataset.autoplay === 'true' && !reduceMotion.matches && !saveData;
     const pauseOffscreen = section.dataset.pauseOffscreen !== 'false';
     const slideSpeed = Math.max(2, Number(section.dataset.slideSpeed) || 4) * 1000;
@@ -32,6 +37,7 @@
     const dragEnabled = section.dataset.dragEnabled === 'true';
     const modal = section.nextElementSibling?.matches('[data-reel-modal]') ? section.nextElementSibling : null;
     const reelRoot = modal?.querySelector('[data-reel-slider]');
+    const reelPlayers = [...(modal?.querySelectorAll('.shoppable-reel__player') || [])];
     let reelSplide;
     let modalOpen = false;
     let opener;
@@ -41,8 +47,16 @@
     let resizeObserver;
     let cardObserver;
     let sectionObserver;
+    let relevanceObserver;
     let sectionVisible = false;
+    let sectionRelevant = false;
     const visibleCards = new Set();
+    let activeIndex = 0;
+    let navigationDirection = 1;
+    let lastScrollLeft = 0;
+    let queueVersion = 0;
+    let reelQueueVersion = 0;
+    let scrollFrame;
     let dragStart;
     let dragMoved = false;
     let suppressClickUntil = 0;
@@ -50,58 +64,201 @@
 
     if (modal) document.body.append(modal);
 
+    function lookaheadCount() {
+      if (slowConnection) return 0;
+      return fastConnection && !mobileViewport.matches ? 2 : 1;
+    }
+
     function videoSources(element) {
       try {
         const sources = JSON.parse(element?.dataset.videoSources || '[]');
-        return Array.isArray(sources) ? sources : [];
+        if (!Array.isArray(sources)) return [];
+        const normalizedSources = sources.map((source) => {
+          if (typeof source === 'string') return { url: source, type: '' };
+          if (!source || typeof source !== 'object') return null;
+          return {
+            url: source.url || source.src || '',
+            type: source.type || source.mime_type || source.mimeType || '',
+          };
+        }).filter((source) => {
+          if (!source || typeof source.url !== 'string') return false;
+          const url = source.url.trim();
+          return url !== '' && url !== 'undefined' && url !== 'null';
+        });
+        if (!normalizedSources.length && sources.length) {
+          console.warn('[shoppable-videos] No valid video sources for item', element?.dataset.videoIndex || 'unknown');
+        }
+        return normalizedSources;
       } catch (error) {
         console.warn('[shoppable-videos] Invalid video sources', error);
         return [];
       }
     }
 
-    function ensureCardVideo(card) {
-      const media = card.querySelector('[data-card-video-media]');
-      if (!media) return null;
-      const existing = media.querySelector('.shoppable-videos__card-video');
-      if (existing) return existing;
-      const videoIndex = Number(card.dataset.videoIndex);
-      const sourcePlayer = modal?.querySelectorAll('.shoppable-reel__player')[videoIndex];
-      const sources = videoSources(sourcePlayer);
-      if (!sources.length) return null;
-
-      const video = document.createElement('video');
-      video.className = 'shoppable-videos__card-video';
-      video.preload = 'none';
-      video.muted = true;
-      video.defaultMuted = true;
-      video.playsInline = true;
-      video.loop = sourcePlayer.dataset.videoLoop === 'true';
-      if (sourcePlayer.dataset.videoPoster) video.poster = sourcePlayer.dataset.videoPoster;
-      sources.forEach(({ url, mime_type: type }) => {
-        if (!url) return;
+    function appendSources(video, sources) {
+      sources.forEach(({ url, type }) => {
         const source = document.createElement('source');
         source.src = url;
         if (type) source.type = type;
         video.append(source);
       });
+    }
+
+    function setMediaState(video, state) {
+      video.dataset.mediaState = state;
+      video.closest('[data-card-video-media], .shoppable-reel__player')?.setAttribute('data-media-state', state);
+    }
+
+    function registerMediaEvents(video, onReady) {
+      let readyHandled = false;
+      const ready = () => {
+        setMediaState(video, 'ready');
+        video.classList.add('is-ready');
+        if (readyHandled) return;
+        readyHandled = true;
+        onReady?.();
+      };
+      video.addEventListener('loadstart', () => setMediaState(video, 'loading'), { signal });
+      video.addEventListener('loadedmetadata', () => setMediaState(video, 'metadata'), { signal });
+      video.addEventListener('loadeddata', ready, { signal });
+      video.addEventListener('canplay', ready, { signal });
       video.addEventListener('playing', () => {
-        video.classList.add('is-playing');
+        setMediaState(video, 'playing');
+        video.classList.add('is-ready', 'is-playing');
+        onReady?.();
+      }, { signal });
+      video.addEventListener('waiting', () => setMediaState(video, 'waiting'), { signal });
+      video.addEventListener('stalled', () => setMediaState(video, 'waiting'), { signal });
+      video.addEventListener('error', () => {
+        setMediaState(video, 'error');
+        video.classList.remove('is-ready', 'is-playing');
+        video.closest('.shoppable-videos__card')?.querySelector('.shoppable-videos__play')?.removeAttribute('hidden');
+      }, { signal });
+    }
+
+    function ensureCardVideo(index, priority = 'upcoming') {
+      const card = cards[index];
+      const media = card?.querySelector('[data-card-video-media]');
+      if (!media) return null;
+      const existing = media.querySelector('.shoppable-videos__card-video');
+      if (existing) {
+        if (priority === 'active' && existing.preload !== 'auto') existing.preload = 'auto';
+        return existing.dataset.mediaState === 'error' ? null : existing;
+      }
+      const sources = videoSources(media);
+      if (!sources.length) {
+        media.dataset.mediaState = 'error';
+        return null;
+      }
+
+      const video = document.createElement('video');
+      video.className = 'shoppable-videos__card-video';
+      video.preload = priority === 'active' ? 'auto' : 'metadata';
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.loop = media.dataset.videoLoop === 'true';
+      if (media.dataset.videoPoster) video.poster = media.dataset.videoPoster;
+      registerMediaEvents(video, () => {
+        if (index === activeIndex && sectionVisible && !modalOpen) prepareCardLookahead(queueVersion);
+      });
+      video.addEventListener('playing', () => {
         const playButton = card.querySelector('.shoppable-videos__play');
         if (playButton) playButton.hidden = true;
       }, { signal });
+      video.addEventListener('pause', () => {
+        if (!video.ended) video.classList.remove('is-playing');
+      }, { signal });
+      video.addEventListener('timeupdate', () => {
+        if (video.duration && video.duration - video.currentTime < 4) prepareCardLookahead(queueVersion, true);
+      }, { signal });
+      setMediaState(video, 'source-assigned');
+      appendSources(video, sources);
       media.append(video);
       video.load();
       return video;
     }
 
-    function pauseCardVideos() {
-      cards.forEach((card) => card.querySelector('video')?.pause());
+    function pauseCardVideos(exceptIndex = -1) {
+      cards.forEach((card, index) => {
+        if (index === exceptIndex) return;
+        const video = card.querySelector('.shoppable-videos__card-video');
+        video?.pause();
+        video?.classList.remove('is-playing');
+      });
     }
 
     function playVisibleCards() {
       if (!sectionVisible || modalOpen || !autoplayVideos) return;
-      visibleCards.forEach((card) => ensureCardVideo(card)?.play().catch(() => {}));
+      visibleCards.forEach((card) => {
+        const index = cards.indexOf(card);
+        if (index < 0) return;
+        const video = ensureCardVideo(index, 'active');
+        const playPromise = video?.play();
+        if (playPromise?.catch) playPromise.catch(() => video.classList.remove('is-playing'));
+      });
+    }
+
+    function neighborIndexes(index, count, direction = 1) {
+      const indexes = [];
+      for (let distance = 1; distance <= count; distance += 1) {
+        let candidate = index + distance * direction;
+        if (loop) candidate = (candidate + cards.length) % cards.length;
+        if (candidate < 0 || candidate >= cards.length || indexes.includes(candidate)) continue;
+        indexes.push(candidate);
+      }
+      return indexes;
+    }
+
+    function prepareCardLookahead(version, urgent = false) {
+      if (version !== queueVersion || modalOpen || !sectionRelevant) return;
+      const count = lookaheadCount();
+      if (!count) return;
+      const run = () => {
+        if (version !== queueVersion || modalOpen || !section.isConnected) return;
+        neighborIndexes(activeIndex, count, navigationDirection).forEach((index) => ensureCardVideo(index, urgent ? 'active' : 'upcoming'));
+      };
+      if (urgent) run();
+      else if ('requestIdleCallback' in window) window.requestIdleCallback(run, { timeout: 700 });
+      else window.setTimeout(run, 80);
+    }
+
+    function releaseDistantCardVideos() {
+      if (!slowConnection) return;
+      cards.forEach((card, index) => {
+        if (visibleCards.has(card) || Math.abs(index - activeIndex) <= 1) return;
+        const video = card.querySelector('.shoppable-videos__card-video');
+        if (!video) return;
+        video.pause();
+        video.removeAttribute('src');
+        video.querySelectorAll('source').forEach((source) => source.removeAttribute('src'));
+        video.load();
+        video.remove();
+        card.querySelector('.shoppable-videos__play')?.removeAttribute('hidden');
+      });
+    }
+
+    function activateCard(index, direction = navigationDirection) {
+      const boundedIndex = Math.max(0, Math.min(cards.length - 1, index));
+      if (boundedIndex !== activeIndex) {
+        navigationDirection = direction || 1;
+        activeIndex = boundedIndex;
+        queueVersion += 1;
+      }
+      releaseDistantCardVideos();
+      if (!sectionRelevant || modalOpen || !autoplayVideos) return;
+      const video = ensureCardVideo(activeIndex, sectionVisible ? 'active' : 'upcoming');
+      if (!video || !sectionVisible) return;
+      playVisibleCards();
+    }
+
+    function updateActiveCard() {
+      const step = cardStep();
+      if (!step) return;
+      const nextIndex = Math.max(0, Math.min(cards.length - 1, Math.round(track.scrollLeft / step)));
+      const direction = track.scrollLeft >= lastScrollLeft ? 1 : -1;
+      lastScrollLeft = track.scrollLeft;
+      activateCard(nextIndex, direction);
     }
 
     function updateReelSound(video) {
@@ -112,51 +269,96 @@
       button.querySelector('.shoppable-reel__sound-off').hidden = !video.muted;
     }
 
-    function playActiveReel() {
-      if (!modalOpen || !reelSplide) return;
-      modal.querySelectorAll('.shoppable-reel__player').forEach((player, index) => {
-        unloadReel(player);
-        if (index !== reelSplide.index) return;
-        const video = document.createElement('video');
-        video.className = 'shoppable-reel__video';
-        video.preload = 'metadata';
-        video.playsInline = true;
-        video.loop = player.dataset.videoLoop === 'true';
-        video.muted = popupMuted;
-        if (player.dataset.videoPoster) video.poster = player.dataset.videoPoster;
-        JSON.parse(player.dataset.videoSources || '[]').forEach(({ url, mime_type: type }) => {
-          const source = document.createElement('source');
-          source.src = url;
-          if (type) source.type = type;
-          video.append(source);
-        });
-        player.prepend(video);
-        popupMuted = video.muted;
-        updateReelSound(video);
-        video.load();
-        video.play().catch(() => {});
-      });
-    }
-
     function unloadReel(player) {
-      const video = player.querySelector('.shoppable-reel__video');
+      const video = player?.querySelector('.shoppable-reel__video');
       if (!video) return;
       video.pause();
       video.removeAttribute('src');
       video.querySelectorAll('source').forEach((source) => source.removeAttribute('src'));
       video.load();
       video.remove();
+      player.removeAttribute('data-media-state');
+    }
+
+    function ensureReelVideo(index, priority = 'upcoming', version = reelQueueVersion) {
+      const player = reelPlayers[index];
+      if (!player) return null;
+      const existing = player.querySelector('.shoppable-reel__video');
+      if (existing) {
+        if (priority === 'active' && existing.preload !== 'auto') existing.preload = 'auto';
+        return existing.dataset.mediaState === 'error' ? null : existing;
+      }
+      const sources = videoSources(player);
+      if (!sources.length) {
+        player.dataset.mediaState = 'error';
+        return null;
+      }
+      const video = document.createElement('video');
+      video.className = 'shoppable-reel__video';
+      video.preload = priority === 'active' ? 'auto' : 'metadata';
+      video.playsInline = true;
+      video.loop = player.dataset.videoLoop === 'true';
+      video.muted = popupMuted;
+      if (player.dataset.videoPoster) video.poster = player.dataset.videoPoster;
+      registerMediaEvents(video, () => prepareReelLookahead(version));
+      video.addEventListener('timeupdate', () => {
+        if (video.duration && video.duration - video.currentTime < 4) prepareReelLookahead(version, true);
+      }, { signal });
+      setMediaState(video, 'source-assigned');
+      appendSources(video, sources);
+      player.prepend(video);
+      video.load();
+      return video;
+    }
+
+    function prepareReelLookahead(version, urgent = false) {
+      if (!modalOpen || !reelSplide || version !== reelQueueVersion) return;
+      const count = lookaheadCount();
+      if (!count) return;
+      const run = () => {
+        if (!modalOpen || version !== reelQueueVersion) return;
+        neighborIndexes(reelSplide.index, count, 1).forEach((index) => ensureReelVideo(index, urgent ? 'active' : 'upcoming', version));
+      };
+      if (urgent) run();
+      else window.setTimeout(run, 60);
+    }
+
+    function trimReelVideos(activeReelIndex) {
+      const keep = new Set([activeReelIndex, ...neighborIndexes(activeReelIndex, lookaheadCount(), 1)]);
+      reelPlayers.forEach((player, index) => {
+        const video = player.querySelector('.shoppable-reel__video');
+        if (!video) return;
+        if (!keep.has(index)) unloadReel(player);
+        else if (index !== activeReelIndex) video.pause();
+      });
+    }
+
+    function playActiveReel() {
+      if (!modalOpen || !reelSplide) return;
+      reelQueueVersion += 1;
+      const version = reelQueueVersion;
+      const index = reelSplide.index;
+      trimReelVideos(index);
+      const video = ensureReelVideo(index, 'active', version);
+      if (!video) return;
+      video.muted = popupMuted;
+      updateReelSound(video);
+      if (video.readyState >= 2) prepareReelLookahead(version);
+      else video.addEventListener('loadeddata', () => prepareReelLookahead(version), { once: true, signal });
+      const playPromise = video.play();
+      if (playPromise?.catch) playPromise.catch(() => setMediaState(video, video.readyState >= 2 ? 'ready' : 'loading'));
     }
 
     function closeReel() {
       if (!modalOpen) return;
       modalOpen = false;
-      modal.querySelectorAll('.shoppable-reel__player').forEach(unloadReel);
+      reelQueueVersion += 1;
+      reelPlayers.forEach(unloadReel);
       modal.hidden = true;
       document.body.style.overflow = previousBodyOverflow;
       document.documentElement.style.overflow = previousHtmlOverflow;
       startSlideAutoplay();
-      playVisibleCards();
+      activateCard(activeIndex);
       opener?.focus({ preventScroll: true });
     }
 
@@ -168,15 +370,18 @@
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
       modalOpen = true;
+      queueVersion += 1;
       stopSlideAutoplay();
       pauseCardVideos();
       modal.hidden = false;
       if (!reelSplide) {
         reelSplide = new window.Splide(reelRoot, JSON.parse(reelRoot.dataset.splide || '{}'));
-        reelSplide.on('move', () => modal.querySelectorAll('.shoppable-reel__player').forEach(unloadReel));
+        reelSplide.on('move', () => reelPlayers.forEach((player) => player.querySelector('video')?.pause()));
         reelSplide.on('moved', playActiveReel);
         reelSplide.mount();
       }
+      reelQueueVersion += 1;
+      ensureReelVideo(index, 'active', reelQueueVersion);
       const previousIndex = reelSplide.index;
       reelSplide.go(index);
       if (reelSplide.index === previousIndex) playActiveReel();
@@ -203,6 +408,7 @@
     }
 
     function navigate(direction) {
+      navigationDirection = direction;
       const maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
       if (maxScroll <= 1) return;
       const step = cardStep();
@@ -232,15 +438,24 @@
     }
 
     function updateLayout() {
-      const mobile = window.matchMedia('(max-width: 749px)').matches;
-      const count = Number(getComputedStyle(section).getPropertyValue(mobile ? '--sv-mobile-count' : '--sv-desktop-count')) || 1;
+      const count = Number(getComputedStyle(section).getPropertyValue(mobileViewport.matches ? '--sv-mobile-count' : '--sv-desktop-count')) || 1;
       const gap = parseFloat(getComputedStyle(list).gap) || 0;
       const width = Math.max(1, (track.clientWidth - gap * (count - 1)) / count);
       section.style.setProperty('--sv-item-width', `${width}px`);
-      requestAnimationFrame(updateProgress);
+      requestAnimationFrame(() => {
+        updateProgress();
+        updateActiveCard();
+      });
     }
 
-    track.addEventListener('scroll', updateProgress, { passive: true, signal });
+    track.addEventListener('scroll', () => {
+      updateProgress();
+      if (scrollFrame) return;
+      scrollFrame = requestAnimationFrame(() => {
+        scrollFrame = undefined;
+        updateActiveCard();
+      });
+    }, { passive: true, signal });
     prev?.addEventListener('click', () => navigate(-1), { signal });
     next?.addEventListener('click', () => navigate(1), { signal });
     sliderRoot.addEventListener('mouseenter', stopSlideAutoplay, { signal });
@@ -250,9 +465,17 @@
       if (!sliderRoot.contains(event.relatedTarget)) startSlideAutoplay();
     }, { signal });
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stopSlideAutoplay();
-      else startSlideAutoplay();
+      if (document.hidden) {
+        stopSlideAutoplay();
+        pauseCardVideos();
+        reelPlayers.forEach((player) => player.querySelector('video')?.pause());
+      } else if (modalOpen) playActiveReel();
+      else {
+        startSlideAutoplay();
+        activateCard(activeIndex);
+      }
     }, { signal });
+
     if (dragEnabled) {
       track.addEventListener('pointerdown', (event) => {
         if (event.button !== 0 || event.target.closest('.shoppable-videos__sound, .shoppable-videos__play, .shoppable-videos__shop')) return;
@@ -302,6 +525,7 @@
         event.stopImmediatePropagation();
       }, { capture: true, signal });
     }
+
     if ('ResizeObserver' in window) {
       resizeObserver = new ResizeObserver(updateLayout);
       resizeObserver.observe(track);
@@ -310,9 +534,17 @@
     }
 
     if ('IntersectionObserver' in window) {
+      relevanceObserver = new IntersectionObserver((entries) => {
+        sectionRelevant = entries.some((entry) => entry.isIntersecting);
+        if (sectionRelevant) activateCard(activeIndex);
+        else if (pauseOffscreen) pauseCardVideos();
+      }, { rootMargin: '400px 0px', threshold: 0 });
+      relevanceObserver.observe(section);
+
       sectionObserver = new IntersectionObserver((entries) => {
         sectionVisible = entries.some((entry) => entry.isIntersecting);
         if (sectionVisible) {
+          activateCard(activeIndex);
           playVisibleCards();
           startSlideAutoplay();
         } else {
@@ -327,26 +559,24 @@
           const card = entry.target;
           if (entry.isIntersecting) {
             visibleCards.add(card);
-            if (sectionVisible && !modalOpen && autoplayVideos) ensureCardVideo(card)?.play().catch(() => {});
+            if (sectionVisible) playVisibleCards();
           } else {
             visibleCards.delete(card);
-            if (pauseOffscreen) card.querySelector('video')?.pause();
+            if (pauseOffscreen) card.querySelector('.shoppable-videos__card-video')?.pause();
           }
         });
-      }, { root: track, rootMargin: '0px 80px', threshold: 0.35 });
+      }, { root: track, rootMargin: '0px 80px', threshold: [0.35, 0.75] });
       cards.forEach((card) => cardObserver.observe(card));
     } else {
+      sectionRelevant = true;
       sectionVisible = true;
-      visibleCards.add(cards[0]);
-      playVisibleCards();
+      cards.forEach((card) => visibleCards.add(card));
+      activateCard(0);
     }
 
     sliderRoot.addEventListener('click', (event) => {
       const openButton = event.target.closest('[data-reel-open]');
-      if (openButton && sliderRoot.contains(openButton)) {
-        openReel(Number(openButton.dataset.reelIndex) || 0, openButton);
-        return;
-      }
+      if (openButton && sliderRoot.contains(openButton)) openReel(Number(openButton.dataset.reelIndex) || 0, openButton);
     }, { signal });
 
     modal?.addEventListener('click', (event) => {
@@ -358,6 +588,7 @@
       const soundButton = event.target.closest('.shoppable-reel__sound');
       if (soundButton) {
         const video = soundButton.closest('.shoppable-reel__player').querySelector('video');
+        if (!video) return;
         popupMuted = !video.muted;
         video.muted = popupMuted;
         updateReelSound(video);
@@ -369,7 +600,6 @@
     }, { signal });
 
     updateLayout();
-    startSlideAutoplay();
     instances.set(section, {
       controller,
       stopSlideAutoplay,
@@ -377,12 +607,13 @@
       disconnectVisibility: () => {
         cardObserver?.disconnect();
         sectionObserver?.disconnect();
+        relevanceObserver?.disconnect();
       },
       scrollToIndex,
       destroyReel: () => {
         closeReel();
         reelSplide?.destroy(true);
-        modal?.querySelectorAll('.shoppable-reel__player').forEach(unloadReel);
+        reelPlayers.forEach(unloadReel);
         modal?.remove();
       },
     });
