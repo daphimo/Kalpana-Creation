@@ -2,6 +2,26 @@ import { yieldToMainThread } from '@theme/utilities';
 import { Component } from '@theme/component';
 
 /**
+ * Returns the cart icon that is actually visible in the current header layout.
+ * The theme can render Horizon, custom desktop, and mobile cart icons together.
+ * @returns {Element | null}
+ */
+export function getVisibleCartIcon() {
+  const cartIcons = document.querySelectorAll(
+    '.header-actions__cart-icon, .custom-desktop-header__cart-icon, .mobile-bar__icon-wrap'
+  );
+
+  return (
+    Array.from(cartIcons).find((cartIcon) => {
+      const rect = cartIcon.getBoundingClientRect();
+      const styles = getComputedStyle(cartIcon);
+
+      return rect.width > 0 && rect.height > 0 && styles.display !== 'none' && styles.visibility !== 'hidden';
+    }) || null
+  );
+}
+
+/**
  * FlyToCart custom element for animating product images to cart
  * This component creates a visual effect of a product "flying" to the cart when added
  */
@@ -17,12 +37,17 @@ class FlyToCart extends Component {
 
   connectedCallback() {
     super.connectedCallback();
-    const intersectionObserver = new IntersectionObserver((entries) => {
-      /** @type {DOMRectReadOnly | null} */
-      let sourceRect = null;
-      /** @type {DOMRectReadOnly | null} */
-      let destinationRect = null;
+    if (!this.source || !this.destination) {
+      this.remove();
+      return;
+    }
 
+    /** @type {DOMRectReadOnly | null} */
+    let sourceRect = null;
+    /** @type {DOMRectReadOnly | null} */
+    let destinationRect = null;
+
+    const intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.target === this.source) {
           sourceRect = entry.boundingClientRect;
@@ -32,10 +57,9 @@ class FlyToCart extends Component {
       });
 
       if (sourceRect && destinationRect) {
+        intersectionObserver.disconnect();
         this.#animate(sourceRect, destinationRect);
       }
-
-      intersectionObserver.disconnect();
     });
     intersectionObserver.observe(this.source);
     intersectionObserver.observe(this.destination);

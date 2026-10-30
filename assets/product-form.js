@@ -4,6 +4,7 @@ import { cartPerformance } from '@theme/performance';
 import { morph } from '@theme/morph';
 import { CartLinesUpdateEvent, CartErrorEvent, ProductSelectEvent, StandardEvents } from '@shopify/events';
 import { resolveVariantId } from '@theme/variant-resolution';
+import { getVisibleCartIcon } from '@theme/fly-to-cart';
 
 // Error message display duration - gives users time to read the message
 const ERROR_MESSAGE_DISPLAY_DURATION = 10000;
@@ -83,10 +84,6 @@ export class AddToCartComponent extends Component {
       }
     }
     if (this.refs.addToCartButton.dataset.puppet !== 'true') {
-      const animationEnabled = this.dataset.addToCartAnimation === 'true';
-      if (animationEnabled && !event.target.closest('.quick-add-modal')) {
-        this.#animateFlyToCart();
-      }
       this.animateAddToCart();
     }
   }
@@ -102,19 +99,29 @@ export class AddToCartComponent extends Component {
   /**
    * Animates the fly to cart animation.
    */
-  #animateFlyToCart() {
+  animateFlyToCart() {
     const { addToCartButton } = this.refs;
-    const cartIcon = document.querySelector('.header-actions__cart-icon');
+    const cartIcon = getVisibleCartIcon();
 
     const image = this.dataset.productVariantMedia;
 
-    if (!cartIcon || !addToCartButton || !image) return;
+    if (
+      !addToCartButton ||
+      !addToCartButton.isConnected ||
+      !customElements.get('fly-to-cart') ||
+      this.dataset.addToCartAnimation !== 'true' ||
+      addToCartButton.dataset.puppet === 'true' ||
+      this.closest('.quick-add-modal') ||
+      !cartIcon ||
+      !image
+    ) return;
 
     const flyToCartElement = /** @type {FlyToCart} */ (document.createElement('fly-to-cart'));
 
-    let flyToCartClass = addToCartButton.classList.contains('quick-add__button')
-      ? 'fly-to-cart--quick'
-      : 'fly-to-cart--main';
+    const flyToCartClass =
+      addToCartButton.classList.contains('quick-add__button') || addToCartButton.closest('.custom-collection-card')
+        ? 'fly-to-cart--quick'
+        : 'fly-to-cart--main';
 
     flyToCartElement.classList.add(flyToCartClass);
     flyToCartElement.style.setProperty('background-image', `url(${image})`);
@@ -432,8 +439,8 @@ class ProductFormComponent extends Component {
       if (item instanceof HTMLElement && item.dataset.sectionId) {
         cartItemComponentsSectionIds.push(item.dataset.sectionId);
       }
-      formData.append('sections', cartItemComponentsSectionIds.join(','));
     });
+    formData.set('sections', [...new Set(cartItemComponentsSectionIds)].join(','));
 
     const itemCount = Number(formData.get('quantity')) || Number(this.dataset.quantityDefault);
     const deferredEventPromise = CartLinesUpdateEvent.createPromise();
@@ -485,7 +492,7 @@ class ProductFormComponent extends Component {
                   items: ajaxCart.items,
                   source: 'product-form-component',
                   sourceId: this.id.toString(),
-                  itemCount,
+                  itemCount: ajaxCart.item_count,
                   productId: this.dataset.productId,
                 },
               })
@@ -526,6 +533,8 @@ class ProductFormComponent extends Component {
 
           if (!id) throw new Error('Form ID is required');
 
+          this.refs.addToCartButtonContainer?.animateFlyToCart?.();
+
           // Add aria-live region to inform screen readers that the item was added
           // Get the added text from any add-to-cart button
           const anyAddToCartButton = allAddToCartContainers[0]?.refs.addToCartButton;
@@ -549,7 +558,7 @@ class ProductFormComponent extends Component {
                   items: ajaxCart.items,
                   source: 'product-form-component',
                   sourceId: this.id.toString(),
-                  itemCount,
+                  itemCount: ajaxCart.item_count,
                   productId: this.dataset.productId,
                   sections: response.sections,
                   didError: false,
@@ -653,7 +662,7 @@ class ProductFormComponent extends Component {
                   items: ajaxCart.items,
                   source: 'product-form-component',
                   sourceId: this.id.toString(),
-                  itemCount: totalQuantity,
+                  itemCount: ajaxCart.item_count,
                   productId: this.dataset.productId,
                 },
               })
@@ -678,6 +687,8 @@ class ProductFormComponent extends Component {
           return;
         }
 
+        this.refs.addToCartButtonContainer?.animateFlyToCart?.();
+
         if (addToCartTextError) {
           addToCartTextError.classList.add('hidden');
           addToCartTextError.removeAttribute('aria-live');
@@ -701,7 +712,7 @@ class ProductFormComponent extends Component {
             items: cart.items,
             source: 'product-form-component',
             sourceId: this.id.toString(),
-            itemCount: totalQuantity,
+            itemCount: cart.item_count,
             productId: this.dataset.productId,
             sections: response.sections,
             didError: false,
@@ -829,11 +840,18 @@ class ProductFormComponent extends Component {
 
       // Set the data attribute for the product variant media if it exists
       if (resource) {
-        const productVariantMedia = resource.featured_media?.preview_image?.src;
+        const newAddToCartButtonContainer = html.querySelector(
+          'product-form-component [ref="addToCartButtonContainer"]'
+        );
+        const productVariantMedia =
+          resource.featured_media?.preview_image?.src || newAddToCartButtonContainer?.dataset.productVariantMedia;
         if (productVariantMedia) {
+          const mediaUrl = productVariantMedia.includes('width=')
+            ? productVariantMedia
+            : productVariantMedia + (productVariantMedia.includes('?') ? '&width=100' : '?width=100');
           this.refs.addToCartButtonContainer?.setAttribute(
             'data-product-variant-media',
-            productVariantMedia + '&width=100'
+            mediaUrl
           );
         }
       }

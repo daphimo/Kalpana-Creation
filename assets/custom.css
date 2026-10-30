@@ -1,8 +1,12 @@
 /* Custom desktop header is desktop-only. */
 @media screen and (max-width: 749px) {
-  .custom-desktop-header__bar {
+  .custom-desktop-header__bar, .custom-desktop-header, .custom-desktop-header__drawer {
     display: none !important;
   }
+}
+
+.theme-drawer__dialog.color-custom-drawer{
+  overflow: hidden !important;
 }
 
 /* Mobile bottom bar is mobile-only. */

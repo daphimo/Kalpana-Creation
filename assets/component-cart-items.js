@@ -10,6 +10,7 @@ import {
 import { morphSection, sectionRenderer } from '@theme/section-renderer';
 import { ThemeEvents, QuantitySelectorUpdateEvent } from '@theme/events';
 import { cartPerformance } from '@theme/performance';
+import { syncCartIcons } from '@theme/cart-icon';
 import {
   createViewEventElement,
   CartErrorEvent,
@@ -20,6 +21,8 @@ import {
 } from '@shopify/events';
 
 /** @typedef {import('./utilities').TextComponent} TextComponent */
+
+let cartMutationQueue = Promise.resolve();
 
 /**
  * A custom element that displays a cart items component.
@@ -41,6 +44,9 @@ export class CartItemsComponent extends createViewEventElement(Component) {
   );
   /** @type {Promise<any> | null} */
   #pendingCartFetch = null;
+
+  /** @type {number} */
+  #pendingMutationCount = 0;
 
   /**
    * True when the event was dispatched from outside this cart-items-component (e.g.
@@ -208,10 +214,14 @@ export class CartItemsComponent extends createViewEventElement(Component) {
   updateQuantity(config) {
     const cartPerformaceUpdateMarker = cartPerformance.createStartingMarker(`${config.action}:user-action`);
 
-    this.#disableCartItems();
-
     const { line, quantity } = config;
     const { cartTotal } = this.refs;
+    const lineId = this.refs.cartItemRows[line - 1]?.dataset.key;
+
+    if (!lineId) return;
+
+    this.#pendingMutationCount += 1;
+    this.#disableCartItems();
 
     const cartItemsComponents = document.querySelectorAll('cart-items-component');
     const sectionsToUpdate = new Set([this.sectionId]);
@@ -222,7 +232,7 @@ export class CartItemsComponent extends createViewEventElement(Component) {
     });
 
     const body = JSON.stringify({
-      line: line,
+      id: lineId,
       quantity: quantity,
       sections: Array.from(sectionsToUpdate).join(','),
       sections_url: window.location.pathname,
@@ -231,7 +241,6 @@ export class CartItemsComponent extends createViewEventElement(Component) {
     cartTotal?.shimmer();
 
     const deferredUpdatePromise = CartLinesUpdateEvent.createPromise();
-    const lineId = this.refs.cartItemRows[line - 1]?.dataset.key ?? '';
     this.dispatchEvent(
       new CartLinesUpdateEvent({
         action: config.action === 'change' && quantity > 0 ? 'update' : 'remove',
@@ -241,53 +250,78 @@ export class CartItemsComponent extends createViewEventElement(Component) {
       })
     );
 
-    fetch(`${Theme.routes.cart_change_url}`, fetchConfig('json', { body }))
-      .then((response) => {
-        return response.text();
-      })
-      .then((responseText) => {
-        const parsedResponseText = JSON.parse(responseText);
+    const runMutation = async () => {
+      const response = await fetch(`${Theme.routes.cart_change_url}`, fetchConfig('json', { body }));
+      const parsedResponseText = await response.json();
 
-        resetShimmer(this);
+      if (!response.ok || parsedResponseText.errors) {
+        const message = parsedResponseText.errors || parsedResponseText.description || `Cart update failed (${response.status})`;
+        throw new Error(message);
+      }
 
-        if (parsedResponseText.errors) {
-          this.#handleCartError(line, parsedResponseText);
-          deferredUpdatePromise.reject(new Error(parsedResponseText.errors));
-          return;
-        }
+      resetShimmer(this);
 
-        const newSectionHTML = new DOMParser().parseFromString(
-          parsedResponseText.sections[this.sectionId],
-          'text/html'
-        );
+      const sectionHtml = parsedResponseText.sections?.[this.sectionId];
+      if (!sectionHtml) throw new Error(`Cart section ${this.sectionId} was not returned`);
 
-        // Grab the new cart item count from a hidden element
-        const newCartHiddenItemCount = newSectionHTML.querySelector('[ref="cartItemCount"]')?.textContent;
-        const newCartItemCount = newCartHiddenItemCount ? parseInt(newCartHiddenItemCount, 10) : 0;
+      let authoritativeCart = parsedResponseText;
 
-        // Update data-cart-quantity for all matching variants
-        this.#updateQuantitySelectors(parsedResponseText);
-
-        deferredUpdatePromise.resolve({
-          cart: CartLinesUpdateEvent.createCartFromAjaxResponse(parsedResponseText),
-          detail: {
-            sections: parsedResponseText.sections,
-            items: parsedResponseText.items,
-            itemCount: newCartItemCount,
-            source: 'cart-items-component',
-            didError: false,
-          },
+      try {
+        const cartResponse = await fetch(`${Theme.routes.cart_url}.js`, {
+          headers: { Accept: 'application/json' },
+          credentials: 'same-origin',
+          cache: 'no-store',
         });
 
-        morphSection(this.sectionId, parsedResponseText.sections[this.sectionId], {
-          mode: this.isDrawer ? 'hydration' : 'full',
-        });
+        if (cartResponse.ok) authoritativeCart = await cartResponse.json();
+      } catch (error) {
+        console.warn('[cart-items] Failed to refresh authoritative cart count:', error);
+      }
 
-        this.#updateCartQuantitySelectorButtonStates();
-      })
+      const newCartItemCount = Number(authoritativeCart.item_count) || 0;
+
+      this.#updateQuantitySelectors(authoritativeCart);
+      document.dispatchEvent(
+        new CustomEvent('custom-header:cart-count-update', {
+          detail: { itemCount: newCartItemCount },
+        })
+      );
+      syncCartIcons(newCartItemCount);
+
+      deferredUpdatePromise.resolve({
+        cart: CartLinesUpdateEvent.createCartFromAjaxResponse(authoritativeCart),
+        detail: {
+          sections: parsedResponseText.sections,
+          items: authoritativeCart.items,
+          itemCount: newCartItemCount,
+          source: 'cart-items-component',
+          cartIconsSynchronized: true,
+          didError: false,
+        },
+      });
+
+      await morphSection(this.sectionId, sectionHtml, {
+        mode: this.isDrawer ? 'hydration' : 'full',
+      });
+
+      this.#updateCartQuantitySelectorButtonStates();
+    };
+
+    const queuedMutation = cartMutationQueue.catch(() => {}).then(runMutation);
+    cartMutationQueue = queuedMutation;
+
+    queuedMutation
       .catch((error) => {
         console.error(error);
         deferredUpdatePromise.reject(error);
+
+        resetShimmer(this);
+        sectionRenderer
+          .renderSection(this.sectionId, {
+            cache: false,
+            mode: this.isDrawer ? 'hydration' : 'full',
+          })
+          .catch((renderError) => console.error('[cart-items] Failed to restore cart section:', renderError));
 
         this.dispatchEvent(
           new CartErrorEvent({
@@ -297,7 +331,8 @@ export class CartItemsComponent extends createViewEventElement(Component) {
         );
       })
       .finally(() => {
-        this.#enableCartItems();
+        this.#pendingMutationCount = Math.max(0, this.#pendingMutationCount - 1);
+        if (this.#pendingMutationCount === 0) this.#enableCartItems();
         cartPerformance.measureFromMarker(cartPerformaceUpdateMarker);
       });
   }

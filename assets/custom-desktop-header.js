@@ -21,6 +21,10 @@ class CustomDesktopHeader extends HTMLElement {
     /** @type {(event: KeyboardEvent) => void} */
     this.onKeydown = () => {};
     this.onResize = () => {};
+    this.onCartCountUpdate = (event) => {
+      if (!(event instanceof CustomEvent)) return;
+      this.updateCartCount(Number(event.detail?.itemCount) || 0);
+    };
   }
 
   connectedCallback() {
@@ -49,8 +53,27 @@ class CustomDesktopHeader extends HTMLElement {
     this.scrollContainer?.addEventListener('scroll', this.onScroll, { passive: true });
     window.addEventListener('scroll', this.onScroll, { passive: true });
     window.addEventListener('resize', this.onResize, { passive: true });
+    document.addEventListener('custom-header:cart-count-update', this.onCartCountUpdate);
     document.documentElement.style.setProperty('--cdh-page-offset', `${this.offsetHeight}px`);
     this.onScroll();
+  }
+
+  disconnectedCallback() {
+    this.teardown();
+  }
+
+  updateCartCount(itemCount) {
+    const cartIcon = this.querySelector('.custom-desktop-header__cart-icon');
+    const cartBubble = cartIcon?.querySelector('[ref="cartBubble"]');
+    const cartBubbleCount = cartIcon?.querySelector('[ref="cartBubbleCount"]');
+
+    if (!(cartIcon instanceof HTMLElement)) return;
+    if (!(cartBubble instanceof HTMLElement) || !(cartBubbleCount instanceof HTMLElement)) return;
+
+    cartBubbleCount.textContent = itemCount < 100 ? String(itemCount) : '';
+    cartBubbleCount.classList.toggle('hidden', itemCount === 0);
+    cartBubble.classList.toggle('visually-hidden', itemCount === 0);
+    cartIcon.dataset.cartCount = String(itemCount);
   }
 
   openDrawer() {
@@ -79,6 +102,7 @@ class CustomDesktopHeader extends HTMLElement {
     this.scrollContainer?.removeEventListener('scroll', this.onScroll);
     window.removeEventListener('scroll', this.onScroll);
     window.removeEventListener('resize', this.onResize);
+    document.removeEventListener('custom-header:cart-count-update', this.onCartCountUpdate);
     this.initialized = false;
   }
 }

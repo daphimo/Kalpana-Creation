@@ -1,4 +1,5 @@
 import { Component } from '@theme/component';
+import { getVisibleCartIcon } from '@theme/fly-to-cart';
 import { ThemeEvents, QuantitySelectorUpdateEvent } from '@theme/events';
 import { morph } from '@theme/morph';
 import { onAnimationEnd } from '@theme/utilities';
@@ -68,6 +69,9 @@ class StickyAddToCartComponent extends Component {
 
   /** @type {boolean} */
   #hiddenByBottom = false;
+
+  /** @type {boolean} */
+  #pendingFlyToCart = false;
 
   connectedCallback() {
     super.connectedCallback();
@@ -173,17 +177,21 @@ class StickyAddToCartComponent extends Component {
   /**
    * Handles the add to cart button click in the sticky bar
    */
-  handleAddToCartClick = async () => {
+  handleAddToCartClick = () => {
     if (!this.#targetAddToCartButton) return;
+    this.#pendingFlyToCart = true;
     this.#targetAddToCartButton.dataset.puppet = 'true';
     this.#targetAddToCartButton.click();
-    const cartIcon = document.querySelector('.header-actions__cart-icon');
+  };
+
+  #animateFlyToCart = async () => {
+    const cartIcon = getVisibleCartIcon();
 
     if (this.refs.addToCartButton.dataset.added !== 'true') {
       this.refs.addToCartButton.dataset.added = 'true';
     }
 
-    if (!cartIcon || !this.refs.addToCartButton || !this.refs.productImage) return;
+    if (!cartIcon || !this.refs.addToCartButton || !this.refs.productImage || !customElements.get('fly-to-cart')) return;
     if (this.#resetTimeout) clearTimeout(this.#resetTimeout);
 
     const flyToCartElement = /** @type {FlyToCart} */ (document.createElement('fly-to-cart'));
@@ -288,9 +296,11 @@ class StickyAddToCartComponent extends Component {
    * @param {CartLinesUpdateEvent | CartErrorEvent} event - The cart event
    */
   #handleCartAddComplete = (event) => {
+    if (!this.#pendingFlyToCart) return;
     // Reset the puppet flag only after the cart operation's promise settles,
     // not when the event is first dispatched (before the HTTP request completes).
     const resetPuppet = () => {
+      this.#pendingFlyToCart = false;
       if (this.#targetAddToCartButton) {
         this.#targetAddToCartButton.dataset.puppet = 'false';
       }
@@ -298,7 +308,11 @@ class StickyAddToCartComponent extends Component {
 
     // CartLinesUpdateEvent has a promise; CartErrorEvent does not (error already happened).
     if ('promise' in event && event.promise instanceof Promise) {
-      event.promise.finally(resetPuppet);
+      event.promise
+        .then(({ detail }) => {
+          if (!detail?.didError) this.#animateFlyToCart();
+        }, () => {})
+        .finally(resetPuppet);
     } else {
       resetPuppet();
     }

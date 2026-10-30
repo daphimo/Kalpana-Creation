@@ -57,7 +57,12 @@ class CartIcon extends Component {
   onCartUpdate = (event) => {
     event.promise
       ?.then(({ cart, detail }) => {
-        const itemCount = cart?.totalQuantity ?? detail?.itemCount ?? 0;
+        if (detail?.cartIconsSynchronized) return;
+
+        const itemCount =
+          detail?.source === 'cart-items-component'
+            ? detail.itemCount
+            : cart?.totalQuantity ?? detail?.itemCount ?? 0;
 
         this.renderCartBubble(itemCount);
       })
@@ -131,6 +136,37 @@ class CartIcon extends Component {
       // no-op
     }
   };
+}
+
+/**
+ * Updates every rendered cart icon from an authoritative Shopify cart count.
+ * @param {number} itemCount
+ * @param {boolean} [animate=true]
+ */
+export function syncCartIcons(itemCount, animate = true) {
+  for (const cartIcon of document.querySelectorAll('cart-icon')) {
+    if ('renderCartBubble' in cartIcon && typeof cartIcon.renderCartBubble === 'function') {
+      cartIcon.renderCartBubble(itemCount, animate);
+      continue;
+    }
+
+    const cartBubble = cartIcon.querySelector('[ref="cartBubble"]');
+    const cartBubbleCount = cartIcon.querySelector('[ref="cartBubbleCount"]');
+    if (!(cartBubble instanceof HTMLElement) || !(cartBubbleCount instanceof HTMLElement)) continue;
+
+    cartBubbleCount.textContent = itemCount < 100 ? String(itemCount) : '';
+    cartBubbleCount.classList.toggle('hidden', itemCount === 0);
+    cartBubble.classList.toggle('visually-hidden', itemCount === 0);
+    cartIcon.classList.toggle('header-actions__cart-icon--has-cart', itemCount > 0);
+  }
+
+  sessionStorage.setItem(
+    'cart-count',
+    JSON.stringify({
+      value: String(itemCount),
+      timestamp: Date.now(),
+    })
+  );
 }
 
 if (!customElements.get('cart-icon')) {
