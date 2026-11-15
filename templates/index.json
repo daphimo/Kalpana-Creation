@@ -24,8 +24,8 @@
         "slide_fQbQHY": {
           "type": "slide",
           "settings": {
-            "desktop_image": "shopify://shop_images/ChatGPT_Image_Nov_15_2026_09_25_04_PM.png",
-            "mobile_image": "shopify://shop_images/ChatGPT_Image_Nov_15_2026_09_25_08_PM.png",
+            "desktop_image": "shopify://shop_images/ChatGPT_Image_Nov_15_2026_09_54_33_PM.png",
+            "mobile_image": "shopify://shop_images/ChatGPT_Image_Nov_15_2026_09_54_40_PM.png",
             "image_link": "shopify://collections/all",
             "image_alt": "Home Page Banner"
           }
@@ -87,15 +87,15 @@
           "type": "collection",
           "settings": {
             "collection": "banarasi-saree",
-            "image": "shopify://shop_images/2c83374cf3f841acb94bfe4d5df46ac2.webp",
-            "title": ""
+            "image": "shopify://shop_images/Golden_Arch_Saree_Fashion_Portrait.png",
+            "title": "saree"
           }
         },
         "collection_hJAprm": {
           "type": "collection",
           "settings": {
             "collection": "best-sellers",
-            "image": "shopify://shop_images/32c80520d52741dab8cacc99af0ab987.webp",
+            "image": "shopify://shop_images/Maroon_Velvet_Ensemble_in_Mughal_Arch.png",
             "title": ""
           }
         },
@@ -103,7 +103,7 @@
           "type": "collection",
           "settings": {
             "collection": "casual-everyday",
-            "image": "shopify://shop_images/e453a844c3504913b76b7623c4034f4e.webp",
+            "image": "shopify://shop_images/Royal_Purple_Gown_in_Mughal_Arch.png",
             "title": ""
           }
         },
