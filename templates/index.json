@@ -16,7 +16,7 @@
           "type": "slide",
           "settings": {
             "desktop_image": "shopify://shop_images/Elegant_Ethnic_Wear_Showcase.png",
-            "mobile_image": "shopify://shop_images/Banner_Kalpana_Mobile.png",
+            "mobile_image": "shopify://shop_images/Kalpana_Creation_Luxury_Fashion_Banner.png",
             "image_link": "shopify://collections/all",
             "image_alt": "Home Page Banner"
           }
@@ -25,7 +25,7 @@
           "type": "slide",
           "settings": {
             "desktop_image": "shopify://shop_images/Kalpana_Creation_Luxury_Fashion_Banner.png",
-            "mobile_image": "shopify://shop_images/Banner_Kalpana_Mobile.png",
+            "mobile_image": "shopify://shop_images/Elegant_Ethnic_Wear_Showcase.png",
             "image_link": "shopify://collections/all",
             "image_alt": "Home Page Banner"
           }
